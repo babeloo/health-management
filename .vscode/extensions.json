@@ -1,0 +1,15 @@
+{
+  "recommendations": [
+    "esbenp.prettier-vscode",
+    "dbaeumer.vscode-eslint",
+    "editorconfig.editorconfig",
+    "prisma.prisma",
+    "ms-python.python",
+    "ms-python.black-formatter",
+    "ms-azuretools.vscode-docker",
+    "humao.rest-client",
+    "eamodio.gitlens",
+    "usernamehw.errorlens",
+    "streetsidesoftware.code-spell-checker"
+  ]
+}
