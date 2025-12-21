@@ -893,7 +893,7 @@ class ChatSocketServer {
 ```typescript
 class FileStorageService {
   private ossClient: OSS;
-  private bucketName = 'vakyi-health';
+  private bucketName = 'health-mgmt';
 
   async uploadHealthDocument(
     file: Buffer,
@@ -2259,7 +2259,7 @@ services:
   postgres:
     image: postgres:15-alpine
     environment:
-      POSTGRES_DB: vakyi_health
+      POSTGRES_DB: health_mgmt
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: ${DB_PASSWORD}
     volumes:
@@ -2298,7 +2298,7 @@ services:
       context: ./services/user
       dockerfile: Dockerfile
     environment:
-      DATABASE_URL: postgresql://admin:${DB_PASSWORD}@postgres:5432/vakyi_health
+      DATABASE_URL: postgresql://admin:${DB_PASSWORD}@postgres:5432/health_mgmt
       REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379
       JWT_SECRET: ${JWT_SECRET}
     depends_on:
@@ -2315,7 +2315,7 @@ services:
       context: ./services/health
       dockerfile: Dockerfile
     environment:
-      DATABASE_URL: postgresql://admin:${DB_PASSWORD}@postgres:5432/vakyi_health
+      DATABASE_URL: postgresql://admin:${DB_PASSWORD}@postgres:5432/health_mgmt
       REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379
     depends_on:
       - postgres
@@ -2397,7 +2397,7 @@ spec:
     spec:
       containers:
       - name: health-service
-        image: vakyi-health/health-service:latest
+        image: health-mgmt/health-service:latest
         ports:
         - containerPort: 3000
         env:
@@ -2516,11 +2516,11 @@ jobs:
 
       - name: Build and push images
         run: |
-          docker build -t vakyi-health/user-service:${{ github.sha }} ./services/user
-          docker push vakyi-health/user-service:${{ github.sha }}
+          docker build -t health-mgmt/user-service:${{ github.sha }} ./services/user
+          docker push health-mgmt/user-service:${{ github.sha }}
 
-          docker build -t vakyi-health/health-service:${{ github.sha }} ./services/health
-          docker push vakyi-health/health-service:${{ github.sha }}
+          docker build -t health-mgmt/health-service:${{ github.sha }} ./services/health
+          docker push health-mgmt/health-service:${{ github.sha }}
 
   deploy:
     needs: build
@@ -2533,8 +2533,8 @@ jobs:
             k8s/deployment.yaml
             k8s/service.yaml
           images: |
-            vakyi-health/user-service:${{ github.sha }}
-            vakyi-health/health-service:${{ github.sha }}
+            health-mgmt/user-service:${{ github.sha }}
+            health-mgmt/health-service:${{ github.sha }}
           kubectl-version: 'latest'
 ```
 
@@ -2732,7 +2732,7 @@ app.get('/metrics', async (req, res) => {
 ```bash
 # 使用阿里云ACK托管集群
 aliyun cs CreateManagedKubernetesCluster \
-  --name vakyi-health-prod \
+  --name health-mgmt-prod \
   --kubernetes-version 1.28 \
   --num-of-nodes 3 \
   --worker-instance-types ecs.c6.xlarge
@@ -2742,8 +2742,8 @@ aliyun cs CreateManagedKubernetesCluster \
 ```sql
 -- PostgreSQL → MySQL 数据迁移
 -- 使用工具：pgloader
-pgloader postgresql://user:pass@old-host/vakyi_health \
-          mysql://user:pass@new-host/vakyi_health
+pgloader postgresql://user:pass@old-host/health_mgmt \
+          mysql://user:pass@new-host/health_mgmt
 
 -- 数据验证
 SELECT COUNT(*) FROM users;  -- 对比数量
@@ -2810,7 +2810,7 @@ spec:
     spec:
       containers:
       - name: ai-service
-        image: registry.cn-hangzhou.aliyuncs.com/vakyi-health/ai-service:1.0.0
+        image: registry.cn-hangzhou.aliyuncs.com/health-mgmt/ai-service:1.0.0
         ports:
         - containerPort: 8000
         env:
@@ -2995,10 +2995,10 @@ public class CheckInService {
 
 ```bash
 # 备份PostgreSQL数据
-pg_dump -h old-server -U admin vakyi_health > backup_$(date +%Y%m%d).sql
+pg_dump -h old-server -U admin health_mgmt > backup_$(date +%Y%m%d).sql
 
 # 归档到对象存储
-ossutil cp backup_*.sql oss://vakyi-backup/postgres/
+ossutil cp backup_*.sql oss://health-mgmt-backup/postgres/
 
 # 保留1年，然后删除
 ```

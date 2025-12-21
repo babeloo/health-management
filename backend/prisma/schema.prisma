@@ -1,0 +1,218 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// 用户表
+model User {
+  id String @id @default(uuid())
+
+  // 认证信息
+  username String @unique
+  password String
+  email    String? @unique
+  phone    String? @unique
+  role     UserRole
+
+  // 个人信息
+  fullName  String?
+  gender    Gender?
+  birthDate DateTime?
+  idCardEncrypted String? // 加密存储
+  avatarUrl String?
+
+  // 状态
+  status        UserStatus @default(ACTIVE)
+  emailVerified Boolean @default(false)
+  phoneVerified Boolean @default(false)
+
+  // 时间戳
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  lastLoginAt DateTime?
+
+  // 关系
+  healthRecords         HealthRecord[]
+  checkIns              CheckIn[]
+  riskAssessments       RiskAssessment[]
+  pointsTransactions    PointsTransaction[]
+  doctorPatientRelations DoctorPatientRelation[] @relation("PatientRelations")
+  doctorRelations        DoctorPatientRelation[] @relation("DoctorRelations")
+
+  @@index([role])
+  @@index([status])
+  @@index([createdAt])
+  @@map("users")
+}
+
+// 健康档案表
+model HealthRecord {
+  id     String @id @default(uuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // 基础信息
+  height     Float?
+  weight     Float?
+  bloodType  String?
+
+  // 病史 (JSON)
+  chronicDiseases Json?
+  allergies       Json?
+  familyHistory   Json?
+
+  // 医疗文档 (JSON)
+  documents Json?
+
+  // 时间戳
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@map("health_records")
+}
+
+// 打卡记录表
+model CheckIn {
+  id     String @id @default(uuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  type          CheckInType
+  data          Json
+  notes         String?
+  pointsEarned  Int @default(0)
+
+  checkInDate   DateTime @db.Date
+  createdAt     DateTime @default(now())
+
+  @@unique([userId, type, checkInDate])
+  @@index([userId, checkInDate])
+  @@index([type])
+  @@index([createdAt])
+  @@map("check_ins")
+}
+
+// 风险评估表
+model RiskAssessment {
+  id     String @id @default(uuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  type                String
+  questionnaireData   Json?
+  deviceData          Json?
+
+  riskLevel           RiskLevel
+  riskScore           Float?
+  resultDetails       Json?
+  aiRecommendations   String?
+
+  assessedAt DateTime @default(now())
+
+  @@index([userId, type])
+  @@index([riskLevel])
+  @@index([assessedAt])
+  @@map("risk_assessments")
+}
+
+// 积分交易表
+model PointsTransaction {
+  id     String @id @default(uuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  type        TransactionType
+  points      Int
+  source      String?
+  sourceId    String?
+  description String?
+
+  createdAt DateTime @default(now())
+
+  @@index([userId, createdAt])
+  @@index([type])
+  @@map("points_transactions")
+}
+
+// 医患关系表
+model DoctorPatientRelation {
+  id        String @id @default(uuid())
+  doctorId  String
+  patientId String
+
+  doctor    User @relation("DoctorRelations", fields: [doctorId], references: [id])
+  patient   User @relation("PatientRelations", fields: [patientId], references: [id])
+
+  status    RelationStatus @default(ACTIVE)
+  notes     String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([doctorId, patientId])
+  @@index([doctorId])
+  @@index([patientId])
+  @@map("doctor_patient_relations")
+}
+
+// 枚举类型
+enum UserRole {
+  PATIENT
+  DOCTOR
+  HEALTH_MANAGER
+  ADMIN
+  @@map("user_role")
+}
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+  BANNED
+  @@map("user_status")
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+  @@map("gender_type")
+}
+
+enum CheckInType {
+  BLOOD_PRESSURE
+  BLOOD_SUGAR
+  MEDICATION
+  EXERCISE
+  DIET
+  THERAPY
+  @@map("check_in_type")
+}
+
+enum RiskLevel {
+  LOW
+  MEDIUM
+  HIGH
+  @@map("risk_level")
+}
+
+enum TransactionType {
+  EARN
+  REDEEM
+  BONUS
+  PENALTY
+  @@map("transaction_type")
+}
+
+enum RelationStatus {
+  ACTIVE
+  INACTIVE
+  @@map("relation_status")
+}

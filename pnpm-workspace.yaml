@@ -1,0 +1,5 @@
+packages:
+  - 'backend'
+  - 'ai-service'
+  - 'frontend-patient'
+  - 'frontend-web'

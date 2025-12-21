@@ -1,0 +1,27 @@
+{
+  "name": "intl-health-mgmt",
+  "version": "1.0.0",
+  "private": true,
+  "description": "智慧慢病管理系统",
+  "scripts": {
+    "dev:backend": "pnpm --filter backend dev",
+    "dev:ai": "cd ai-service && uvicorn app.main:app --reload",
+    "dev:patient": "pnpm --filter frontend-patient dev",
+    "dev:web": "pnpm --filter frontend-web dev",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down",
+    "docker:logs": "docker-compose logs -f",
+    "lint": "pnpm -r lint",
+    "format": "pnpm -r format",
+    "test": "pnpm -r test"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "pnpm": ">=8.0.0"
+  },
+  "packageManager": "pnpm@8.15.0",
+  "devDependencies": {
+    "husky": "^8.0.3",
+    "lint-staged": "^15.2.0"
+  }
+}
