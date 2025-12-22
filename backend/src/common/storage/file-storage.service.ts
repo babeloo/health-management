@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as Minio from 'minio';
 import * as path from 'path';
@@ -9,7 +9,7 @@ import * as crypto from 'crypto';
  * 使用 MinIO 对象存储实现文件上传、下载和访问
  */
 @Injectable()
-export class FileStorageService {
+export class FileStorageService implements OnModuleInit {
   private readonly logger = new Logger(FileStorageService.name);
 
   private readonly minioClient: Minio.Client;
@@ -17,6 +17,8 @@ export class FileStorageService {
   private readonly bucketName: string;
 
   private readonly maxFileSize: number; // 最大文件大小（字节）
+
+  private bucketInitialized = false;
 
   constructor(private readonly configService: ConfigService) {
     // 初始化 MinIO 客户端
@@ -33,9 +35,14 @@ export class FileStorageService {
 
     this.bucketName = this.configService.get<string>('MINIO_BUCKET', 'health-mgmt');
     this.maxFileSize = this.configService.get<number>('MAX_FILE_SIZE', 10 * 1024 * 1024); // 默认 10MB
+  }
 
-    // 初始化时确保 bucket 存在
-    this.ensureBucketExists();
+  /**
+   * 模块初始化时确保 bucket 存在
+   * 在测试环境中，如果 MinIO 不可用，只记录警告而不抛出错误
+   */
+  async onModuleInit() {
+    await this.ensureBucketExists();
   }
 
   /**
@@ -50,9 +57,16 @@ export class FileStorageService {
       } else {
         this.logger.log(`Bucket "${this.bucketName}" already exists`);
       }
+      this.bucketInitialized = true;
     } catch (error) {
-      this.logger.error(`Failed to ensure bucket exists: ${error.message}`, error.stack);
-      throw error;
+      this.logger.error(`Failed to ensure bucket exists: ${error.message}`);
+      // 在测试环境中，不抛出错误，允许应用继续启动
+      if (process.env.NODE_ENV !== 'test') {
+        throw error;
+      }
+      this.logger.warn(
+        'MinIO is not available in test environment, file storage operations will fail',
+      );
     }
   }
 

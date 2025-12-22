@@ -31,8 +31,8 @@ describe('FileStorageService', () => {
   beforeEach(async () => {
     // 创建 Mock MinIO Client
     mockMinioClient = {
-      bucketExists: jest.fn(),
-      makeBucket: jest.fn(),
+      bucketExists: jest.fn().mockResolvedValue(true),
+      makeBucket: jest.fn().mockResolvedValue(undefined),
       putObject: jest.fn(),
       presignedGetObject: jest.fn(),
       removeObject: jest.fn(),
@@ -56,10 +56,8 @@ describe('FileStorageService', () => {
 
     service = module.get<FileStorageService>(FileStorageService);
 
-    // 等待 ensureBucketExists 完成
-    await new Promise((resolve) => {
-      setTimeout(resolve, 100);
-    });
+    // 手动调用 onModuleInit 来触发 bucket 初始化
+    await service.onModuleInit();
   });
 
   afterEach(() => {

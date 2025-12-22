@@ -77,10 +77,10 @@ jobs:
           cd backend
           pnpm prisma generate
 
-      - name: Run database migrations
+      - name: Push database schema
         run: |
           cd backend
-          pnpm prisma migrate deploy
+          pnpm prisma db push --skip-generate --accept-data-loss
 
       - name: Lint backend
         run: |

@@ -218,7 +218,50 @@
 
 **关联需求**：需求 #2（患者端 - 健康档案管理）
 
-### 6. 健康管理模块
+### 6. CI/CD 配置
+
+- [x] 配置 GitHub Actions 工作流 ✅ 完成于 2025-12-22
+  - [x] CI - 持续集成（ci.yml）✅
+    - Backend 测试（Node.js 18.x, 20.x）
+    - Python 测试（Python 3.11）
+    - 测试环境服务（PostgreSQL, Redis, MinIO）
+  - [x] Code Quality - 代码质量检查（code-quality.yml）✅
+    - ESLint, Prettier, 测试覆盖率检查
+  - [x] CD - 持续部署（cd.yml）✅
+    - Staging 和 Production 环境部署
+  - [x] Dependency Update - 依赖更新（dependency-update.yml）✅
+    - 每周自动检查依赖更新
+  - [x] 添加详细的 CI/CD 配置文档 ✅
+
+**实现细节**：
+
+- ✅ 多版本 Node.js 并行测试
+- ✅ 依赖缓存加速构建
+- ✅ 测试覆盖率报告
+- ✅ 同时支持 master 和 main 分支
+
+### 7. AI 服务基础框架
+
+- [x] 初始化 AI 服务模块 ✅ 完成于 2025-12-22
+  - [x] 创建 FastAPI 应用入口 ✅
+  - [x] 配置 CORS 中间件 ✅
+  - [x] 实现健康检查端点 ✅
+  - [x] 配置依赖管理（requirements.txt）✅
+  - [x] 配置代码质量工具（black, flake8, mypy）✅
+  - [x] 搭建测试框架（pytest）✅
+  - [x] 编写基础测试用例 ✅
+  - [x] 添加 AI Service README ✅
+
+**实现细节**：
+
+- ✅ FastAPI 框架搭建完成
+- ✅ 测试框架配置完成
+- ✅ 代码质量工具配置完成
+- 🚧 核心 AI 功能待实现（RAG, LangChain, Qdrant）
+
+**关联需求**：需求 #7（AI 科普与健康建议）
+
+### 8. 健康管理模块
 
 - [ ] 实现健康档案接口
   - [ ] 创建 HealthModule、HealthService、HealthController

@@ -7,7 +7,7 @@ import {
   MaxLength,
   Matches,
 } from 'class-validator';
-import { UserRole } from '@prisma/client';
+import { Role } from '../enums/role.enum';
 
 /**
  * 用户注册 DTO
@@ -37,8 +37,8 @@ export class RegisterDto {
   })
   phone?: string;
 
-  @IsEnum(UserRole)
-  role: UserRole;
+  @IsEnum(Role)
+  role: Role;
 
   @IsString()
   @IsOptional()
