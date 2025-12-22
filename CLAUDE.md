@@ -107,6 +107,7 @@ pnpm format                    # Prettier 格式化
 
 # 测试
 pnpm test                      # 运行所有测试
+pnpm test:unit                 # 运行单元测试
 pnpm test:watch                # 监听模式
 pnpm test:cov                  # 测试覆盖率
 pnpm test:e2e                  # E2E 测试

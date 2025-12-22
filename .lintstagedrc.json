@@ -1,8 +1,20 @@
 {
   "*": ["node scripts/check-pm-protocol.js"],
-  "backend/**/*.{ts,tsx}": ["eslint --fix", "prettier --write"],
-  "frontend-patient/**/*.{js,jsx,ts,tsx,vue}": ["eslint --fix", "prettier --write"],
-  "frontend-web/**/*.{js,jsx,ts,tsx}": ["eslint --fix", "prettier --write"],
-  "ai-service/**/*.py": ["black", "flake8"],
+  "backend/**/*.{ts,tsx}": [
+    "eslint --fix",
+    "prettier --write",
+    "pnpm --filter backend test:unit -- --bail --findRelatedTests"
+  ],
+  "frontend-patient/**/*.{js,jsx,ts,tsx,vue}": [
+    "eslint --fix",
+    "prettier --write",
+    "pnpm --filter frontend-patient test:unit -- --bail --findRelatedTests"
+  ],
+  "frontend-web/**/*.{js,jsx,ts,tsx}": [
+    "eslint --fix",
+    "prettier --write",
+    "pnpm --filter frontend-web test:unit -- --bail --findRelatedTests"
+  ],
+  "ai-service/**/*.py": ["black", "flake8", "pytest ai-service/tests/unit"],
   "*.{json,md,yml,yaml}": ["prettier --write"]
 }

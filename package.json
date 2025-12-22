@@ -14,7 +14,9 @@
     "docker:logs": "docker-compose logs -f",
     "lint": "pnpm -r lint",
     "format": "pnpm -r format",
-    "test": "pnpm -r test"
+    "test": "pnpm -r test",
+    "test:unit": "pnpm -r test:unit",
+    "test:e2e": "pnpm -r test:e2e"
   },
   "engines": {
     "node": ">=18.0.0",
