@@ -23,7 +23,12 @@ export class LoggerMiddleware implements NestMiddleware {
       const duration = Date.now() - startTime;
 
       // 根据状态码选择日志级别
-      const logLevel = statusCode >= 500 ? 'error' : statusCode >= 400 ? 'warn' : 'log';
+      let logLevel: 'error' | 'warn' | 'log' = 'log';
+      if (statusCode >= 500) {
+        logLevel = 'error';
+      } else if (statusCode >= 400) {
+        logLevel = 'warn';
+      }
 
       this.logger[logLevel](`← [${method}] ${originalUrl} - ${statusCode} - ${duration}ms`);
     });

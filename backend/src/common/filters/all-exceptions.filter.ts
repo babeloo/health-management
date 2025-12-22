@@ -18,7 +18,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
 
   catch(exception: unknown, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
-    const response = response<Response>();
+    const response = ctx.getResponse<Response>();
     const request = ctx.getRequest<Request>();
 
     let status: number;
@@ -30,8 +30,9 @@ export class AllExceptionsFilter implements ExceptionFilter {
       const exceptionResponse = exception.getResponse();
 
       if (typeof exceptionResponse === 'object') {
-        message = (exceptionResponse as any).message || exception.message;
-        error = (exceptionResponse as any).error || HttpStatus[status];
+        const responseObj = exceptionResponse as Record<string, unknown>;
+        message = (responseObj.message as string) || exception.message;
+        error = (responseObj.error as string) || HttpStatus[status];
       } else {
         message = exception.message;
         error = HttpStatus[status];

@@ -7,7 +7,12 @@ import * as DailyRotateFile from 'winston-daily-rotate-file';
  * 支持控制台输出和文件轮转
  */
 export const createWinstonLogger = (env: string = 'development') => {
-  const logLevel = env === 'production' ? 'warn' : env === 'staging' ? 'info' : 'debug';
+  let logLevel = 'debug';
+  if (env === 'production') {
+    logLevel = 'warn';
+  } else if (env === 'staging') {
+    logLevel = 'info';
+  }
 
   const transports: winston.transport[] = [
     // 控制台输出

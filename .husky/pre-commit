@@ -1,4 +1,10 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
+echo "运行提交前检查"
 pnpm exec lint-staged
+if [ $? -ne 0 ]; then
+  echo "提交前检查失败，请修复后重新提交"
+  exit 1
+fi
+echo "所有检查通过，继续提交"
