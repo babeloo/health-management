@@ -36,22 +36,6 @@ jobs:
           --health-timeout 5s
           --health-retries 5
 
-      minio:
-        image: minio/minio:latest
-        env:
-          MINIO_ROOT_USER: admin
-          MINIO_ROOT_PASSWORD: minio123
-        ports:
-          - 9000:9000
-          - 9001:9001
-        options: >-
-          --health-cmd "curl -f http://localhost:9000/minio/health/live || exit 1"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        # Note: MinIO needs to be started with 'server' command
-        # This is a limitation of GitHub Actions services
-
     strategy:
       matrix:
         node-version: [18.x, 20.x]
