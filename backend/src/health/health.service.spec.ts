@@ -5,7 +5,7 @@ import {
   BadRequestException,
   ConflictException,
 } from '@nestjs/common';
-import { CheckInType } from '@prisma/client';
+import { CheckInType } from '../generated/prisma/client';
 import { HealthService } from './health.service';
 import { PrismaService } from '../common/prisma/prisma.service';
 import { FileStorageService } from '../common/storage/file-storage.service';

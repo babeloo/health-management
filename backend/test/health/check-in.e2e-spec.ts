@@ -2,7 +2,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import request from 'supertest';
-import { CheckInType } from '@prisma/client';
+import { CheckInType } from '../../src/generated/prisma/client';
 import { AppModule } from '../../src/app.module';
 import { PrismaService } from '../../src/common/prisma/prisma.service';
 import { Role } from '../../src/auth/enums/role.enum';

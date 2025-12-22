@@ -93,7 +93,7 @@ export class HealthController {
     description: '健康档案不存在',
   })
   async getHealthRecord(@Param('userId') userId: string, @Request() req: any) {
-    const currentUserId = req.user.userId;
+    const currentUserId = req.user.id; // 修复：CurrentUser 使用 id
     const currentUserRole = req.user.role;
 
     const record = await this.healthService.getHealthRecord(userId, currentUserId, currentUserRole);
@@ -132,7 +132,7 @@ export class HealthController {
     @Body() updateDto: UpdateHealthRecordDto,
     @Request() req: any,
   ) {
-    const currentUserId = req.user.userId;
+    const currentUserId = req.user.id; // 修复：CurrentUser 使用 id
     const currentUserRole = req.user.role;
 
     const record = await this.healthService.updateHealthRecord(
@@ -199,7 +199,7 @@ export class HealthController {
       throw new PayloadTooLargeException('文件大小不能超过 10MB');
     }
 
-    const currentUserId = req.user.userId;
+    const currentUserId = req.user.id; // 修复：CurrentUser 使用 id
     const currentUserRole = req.user.role;
 
     const record = await this.healthService.addDocument(
@@ -246,7 +246,7 @@ export class HealthController {
     description: '今日已完成该类型打卡',
   })
   async createCheckIn(@Request() req: any, @Body() createDto: CreateCheckInDto) {
-    const { userId } = req.user;
+    const userId = req.user.id; // 修复：CurrentUser 使用 id 而不是 userId
     const checkIn = await this.healthService.createCheckIn(userId, createDto);
 
     return {

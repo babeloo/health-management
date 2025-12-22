@@ -1,7 +1,7 @@
 import { IsEnum, IsOptional, IsDateString, IsInt, Min } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
-import { CheckInType } from '@prisma/client';
+import { CheckInType } from '../../generated/prisma/client';
 
 /**
  * 打卡记录查询 DTO

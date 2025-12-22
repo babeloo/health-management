@@ -38,6 +38,8 @@ docker-compose.override.yml
 
 # Prisma
 backend/prisma/migrations/**/migration.sql
+# Prisma 7 生成目录（自定义输出路径）
+backend/src/generated/
 
 # Python
 __pycache__/

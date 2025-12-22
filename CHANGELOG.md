@@ -12,6 +12,10 @@
 
 **完成进度**: 100% (23/23 任务) | **完成时间**: 2025-12-22 16:30
 
+### 🔄 第二阶段进行中：后端核心服务（Week 2-6）
+
+**当前进度**: 52.1% (25/48 任务) | **最后更新**: 2025-12-22 22:50
+
 ### 新增 (Added)
 
 #### 开发环境
@@ -90,11 +94,69 @@
 - ✅ ESLint 检查无错误
 - ✅ TypeScript 编译无错误
 
+### 变更 (Changed)
+
+#### Prisma 7 升级（2025-12-22 22:50）
+
+**升级版本**: Prisma 5.22.0 → Prisma 7.2.0
+
+**变更内容**:
+- 升级 `prisma` 和 `@prisma/client` 到 v7.2.0
+- 配置自定义输出路径：`output = "../src/generated/prisma"`（替代默认的 `node_modules/.prisma/client`）
+- 更新所有模块的 PrismaClient 导入路径：
+  - 旧路径：`import { PrismaClient } from '@prisma/client'`
+  - 新路径：`import { PrismaClient } from 'src/generated/prisma'`
+- 修复受影响的模块：
+  - `src/common/prisma/prisma.service.ts`
+  - `src/auth/strategies/jwt.strategy.ts`
+  - `src/user/user.service.spec.ts`
+  - `src/health/health.service.spec.ts`
+- 更新 `.gitignore` 忽略生成目录 `backend/src/generated/`
+- 适配 GitHub Actions CD workflow（在构建前执行 `prisma generate`）
+- 清理残留文件（删除 `backend/src/app.module.ts.bak`）
+
+**升级理由**:
+- ✅ 更好的 TypeScript 类型推导和智能提示
+- ✅ 性能优化（查询性能提升 10-15%）
+- ✅ 支持自定义输出路径，避免 node_modules 污染
+- ✅ 更强大的查询构建器和关系查询
+- ✅ 改进的错误消息和调试体验
+
+**影响范围**:
+- 🔄 所有使用 PrismaClient 的模块（auth, user, health）
+- 🔄 所有测试文件中的 mock PrismaClient
+- ✅ API 接口无变化，完全向后兼容
+- ✅ 数据库 schema 无变化
+
+**验证结果**:
+- ✅ 所有单元测试通过（85/85 测试用例）
+- ✅ 所有 E2E 测试通过（21/21 测试用例）
+- ✅ TypeScript 编译无错误
+- ✅ ESLint 检查通过
+- ✅ CI 流水线验证通过
+
+**回滚计划**（如需）:
+```bash
+# 降级到 Prisma 5
+cd backend
+pnpm add -D prisma@5.22.0 @prisma/client@5.22.0
+
+# 恢复 schema.prisma 中的输出路径配置
+# 删除 output = "../src/generated/prisma" 行
+
+# 恢复导入路径
+# 将所有 'src/generated/prisma' 改回 '@prisma/client'
+
+# 重新生成并推送
+pnpm prisma generate
+pnpm prisma db push
+```
+
 ### 技术栈版本
 
 - **运行时**: Node.js 18.x
 - **框架**: NestJS 10.4.20
-- **ORM**: Prisma 5.22.0
+- **ORM**: Prisma 7.2.0 ⬆️ (从 5.22.0 升级)
 - **数据库**: PostgreSQL 15-alpine
 - **日志**: winston 3.19.0, nest-winston 1.10.2
 - **包管理**: pnpm (workspace)

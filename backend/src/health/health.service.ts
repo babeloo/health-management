@@ -5,7 +5,7 @@ import {
   BadRequestException,
   ConflictException,
 } from '@nestjs/common';
-import { HealthRecord, UserRole, CheckIn, CheckInType } from '@prisma/client';
+import { HealthRecord, UserRole, CheckIn, CheckInType } from '../generated/prisma/client';
 import { PrismaService } from '../common/prisma/prisma.service';
 import { FileStorageService } from '../common/storage/file-storage.service';
 import { CreateHealthRecordDto } from './dto/create-health-record.dto';
@@ -268,13 +268,12 @@ export class HealthService {
     this.validateCheckInData(createDto.type, createDto.data);
 
     // 检查唯一约束（每天每种类型只能打卡一次）
-    const existingCheckIn = await this.prisma.checkIn.findUnique({
+    // Prisma 7 复合唯一键查询语法
+    const existingCheckIn = await this.prisma.checkIn.findFirst({
       where: {
-        userId_type_checkInDate: {
-          userId,
-          type: createDto.type,
-          checkInDate,
-        },
+        userId,
+        type: createDto.type,
+        checkInDate,
       },
     });
 

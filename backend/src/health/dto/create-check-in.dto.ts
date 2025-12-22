@@ -11,7 +11,7 @@ import {
   Max,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { CheckInType } from '@prisma/client';
+import { CheckInType } from '../../generated/prisma/client';
 
 /**
  * 血压打卡数据 DTO

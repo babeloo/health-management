@@ -1,7 +1,7 @@
 import { IsInt, Min, Max } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
-import { CheckInType } from '@prisma/client';
+import { CheckInType } from '../../generated/prisma/client';
 
 /**
  * 日历视图查询 DTO
