@@ -150,6 +150,7 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
           cache: 'pip'
+          cache-dependency-path: 'ai-service/requirements.txt'
 
       - name: Install uv
         run: pip install uv

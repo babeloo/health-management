@@ -7,6 +7,5 @@
   ],
   "frontend-patient/**/*.{js,jsx,ts,tsx,vue}": ["eslint --fix", "prettier --write"],
   "frontend-web/**/*.{js,jsx,ts,tsx}": ["eslint --fix", "prettier --write"],
-  "ai-service/**/*.py": ["black", "flake8"],
   "*.{json,md,yml,yaml}": ["prettier --write"]
 }

@@ -1,0 +1,45 @@
+"""
+FastAPI Main Application
+
+AI 服务的主入口文件
+"""
+
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+
+app = FastAPI(
+    title="智慧慢病管理系统 - AI 服务",
+    description="提供 RAG 知识库检索、AI 对话、辅助诊断等功能",
+    version="0.1.0",
+)
+
+# CORS 配置
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # 生产环境应该配置具体的域名
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
+@app.get("/")
+async def root():
+    """健康检查端点"""
+    return {
+        "service": "AI Service",
+        "version": "0.1.0",
+        "status": "healthy",
+    }
+
+
+@app.get("/health")
+async def health_check():
+    """健康检查端点"""
+    return {"status": "ok"}
+
+
+if __name__ == "__main__":
+    import uvicorn
+
+    uvicorn.run(app, host="0.0.0.0", port=8000)
