@@ -5,6 +5,7 @@ import request from 'supertest';
 import { AppModule } from '../../src/app.module';
 import { PrismaService } from '../../src/common/prisma/prisma.service';
 import { Role } from '../../src/auth/enums/role.enum';
+import { AllExceptionsFilter } from '../../src/common/filters/all-exceptions.filter';
 
 describe('UserController (e2e)', () => {
   let app: INestApplication;
@@ -20,6 +21,9 @@ describe('UserController (e2e)', () => {
     }).compile();
 
     app = moduleFixture.createNestApplication();
+
+    // 应用全局异常过滤器（与 main.ts 保持一致）
+    app.useGlobalFilters(new AllExceptionsFilter());
 
     // 应用全局管道（与 main.ts 保持一致）
     app.useGlobalPipes(

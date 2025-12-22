@@ -5,6 +5,7 @@ import request from 'supertest';
 import { AppModule } from '../../src/app.module';
 import { PrismaService } from '../../src/common/prisma/prisma.service';
 import { Role } from '../../src/auth/enums/role.enum';
+import { AllExceptionsFilter } from '../../src/common/filters/all-exceptions.filter';
 
 describe('AuthController (e2e)', () => {
   let app: INestApplication;
@@ -17,6 +18,9 @@ describe('AuthController (e2e)', () => {
 
     app = moduleFixture.createNestApplication();
 
+    // 应用全局异常过滤器（与 main.ts 保持一致）
+    app.useGlobalFilters(new AllExceptionsFilter());
+
     // 应用全局管道（与 main.ts 保持一致）
     app.useGlobalPipes(
       new ValidationPipe({
@@ -25,6 +29,9 @@ describe('AuthController (e2e)', () => {
         transform: true,
       }),
     );
+
+    // 设置全局前缀（与 main.ts 保持一致）
+    app.setGlobalPrefix('api/v1');
 
     await app.init();
 
