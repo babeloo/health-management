@@ -1,3 +1,7 @@
 export * from './create-health-record.dto';
 export * from './update-health-record.dto';
 export * from './health-document.dto';
+export * from './create-check-in.dto';
+export * from './check-in-query.dto';
+export * from './check-in-trend.dto';
+export * from './check-in-calendar.dto';

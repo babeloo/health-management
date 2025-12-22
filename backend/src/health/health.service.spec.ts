@@ -1,10 +1,17 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { ForbiddenException, NotFoundException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  NotFoundException,
+  BadRequestException,
+  ConflictException,
+} from '@nestjs/common';
+import { CheckInType } from '@prisma/client';
 import { HealthService } from './health.service';
 import { PrismaService } from '../common/prisma/prisma.service';
 import { FileStorageService } from '../common/storage/file-storage.service';
 import { CreateHealthRecordDto } from './dto/create-health-record.dto';
 import { UpdateHealthRecordDto } from './dto/update-health-record.dto';
+import { CreateCheckInDto } from './dto/create-check-in.dto';
 
 describe('HealthService', () => {
   let service: HealthService;
@@ -17,6 +24,12 @@ describe('HealthService', () => {
     },
     doctorPatientRelation: {
       findFirst: jest.fn(),
+    },
+    checkIn: {
+      create: jest.fn(),
+      findUnique: jest.fn(),
+      findMany: jest.fn(),
+      count: jest.fn(),
     },
   };
 
@@ -431,6 +444,450 @@ describe('HealthService', () => {
 
       expect(mockFileStorageService.uploadHealthDocument).not.toHaveBeenCalled();
       expect(mockPrismaService.healthRecord.update).not.toHaveBeenCalled();
+    });
+  });
+
+  // ==================== 打卡功能测试 ====================
+
+  describe('createCheckIn', () => {
+    it('应该成功创建血压打卡记录', async () => {
+      const userId = 'user-123';
+      const createDto: CreateCheckInDto = {
+        type: CheckInType.BLOOD_PRESSURE,
+        data: {
+          systolic: 120,
+          diastolic: 80,
+          pulse: 72,
+        },
+        notes: '今日状态良好',
+      };
+
+      const expectedCheckIn = {
+        id: 'checkin-123',
+        userId,
+        type: CheckInType.BLOOD_PRESSURE,
+        data: createDto.data,
+        notes: createDto.notes,
+        pointsEarned: 10,
+        checkInDate: expect.any(Date),
+        createdAt: new Date(),
+      };
+
+      mockPrismaService.checkIn.findUnique.mockResolvedValue(null);
+      mockPrismaService.checkIn.create.mockResolvedValue(expectedCheckIn);
+
+      const result = await service.createCheckIn(userId, createDto);
+
+      expect(result).toEqual(expectedCheckIn);
+      expect(mockPrismaService.checkIn.create).toHaveBeenCalledWith({
+        data: {
+          userId,
+          type: CheckInType.BLOOD_PRESSURE,
+          data: createDto.data,
+          notes: createDto.notes,
+          pointsEarned: 10,
+          checkInDate: expect.any(Date),
+        },
+      });
+    });
+
+    it('应该成功创建血糖打卡记录', async () => {
+      const userId = 'user-123';
+      const createDto: CreateCheckInDto = {
+        type: CheckInType.BLOOD_SUGAR,
+        data: {
+          value: 5.6,
+          timing: 'fasting',
+        },
+      };
+
+      const expectedCheckIn = {
+        id: 'checkin-124',
+        userId,
+        type: CheckInType.BLOOD_SUGAR,
+        data: createDto.data,
+        notes: null,
+        pointsEarned: 10,
+        checkInDate: expect.any(Date),
+        createdAt: new Date(),
+      };
+
+      mockPrismaService.checkIn.findUnique.mockResolvedValue(null);
+      mockPrismaService.checkIn.create.mockResolvedValue(expectedCheckIn);
+
+      const result = await service.createCheckIn(userId, createDto);
+
+      expect(result).toEqual(expectedCheckIn);
+      expect(result.pointsEarned).toBe(10);
+    });
+
+    it('应该成功创建用药打卡记录', async () => {
+      const userId = 'user-123';
+      const createDto: CreateCheckInDto = {
+        type: CheckInType.MEDICATION,
+        data: {
+          medication: '阿司匹林',
+          dosage: '100mg',
+          taken: true,
+        },
+      };
+
+      const expectedCheckIn = {
+        id: 'checkin-125',
+        userId,
+        type: CheckInType.MEDICATION,
+        data: createDto.data,
+        notes: null,
+        pointsEarned: 5,
+        checkInDate: expect.any(Date),
+        createdAt: new Date(),
+      };
+
+      mockPrismaService.checkIn.findUnique.mockResolvedValue(null);
+      mockPrismaService.checkIn.create.mockResolvedValue(expectedCheckIn);
+
+      const result = await service.createCheckIn(userId, createDto);
+
+      expect(result).toEqual(expectedCheckIn);
+      expect(result.pointsEarned).toBe(5);
+    });
+
+    it('应该拒绝打卡未来日期', async () => {
+      const userId = 'user-123';
+      const futureDate = new Date();
+      futureDate.setDate(futureDate.getDate() + 1);
+
+      const createDto: CreateCheckInDto = {
+        type: CheckInType.BLOOD_PRESSURE,
+        data: {
+          systolic: 120,
+          diastolic: 80,
+        },
+        checkInDate: futureDate.toISOString().split('T')[0],
+      };
+
+      await expect(service.createCheckIn(userId, createDto)).rejects.toThrow(BadRequestException);
+      expect(mockPrismaService.checkIn.create).not.toHaveBeenCalled();
+    });
+
+    it('应该拒绝重复打卡（每天每种类型只能打卡一次）', async () => {
+      const userId = 'user-123';
+      const createDto: CreateCheckInDto = {
+        type: CheckInType.BLOOD_PRESSURE,
+        data: {
+          systolic: 120,
+          diastolic: 80,
+        },
+      };
+
+      const existingCheckIn = {
+        id: 'checkin-123',
+        userId,
+        type: CheckInType.BLOOD_PRESSURE,
+        data: { systolic: 115, diastolic: 75 },
+        pointsEarned: 10,
+        checkInDate: new Date(),
+        createdAt: new Date(),
+      };
+
+      mockPrismaService.checkIn.findUnique.mockResolvedValue(existingCheckIn);
+
+      await expect(service.createCheckIn(userId, createDto)).rejects.toThrow(ConflictException);
+      expect(mockPrismaService.checkIn.create).not.toHaveBeenCalled();
+    });
+
+    it('应该拒绝血压数据超出范围', async () => {
+      const userId = 'user-123';
+      const createDto: CreateCheckInDto = {
+        type: CheckInType.BLOOD_PRESSURE,
+        data: {
+          systolic: 250, // 超出范围
+          diastolic: 80,
+        },
+      };
+
+      await expect(service.createCheckIn(userId, createDto)).rejects.toThrow(BadRequestException);
+      expect(mockPrismaService.checkIn.create).not.toHaveBeenCalled();
+    });
+
+    it('应该拒绝血糖数据缺少必填字段', async () => {
+      const userId = 'user-123';
+      const createDto: CreateCheckInDto = {
+        type: CheckInType.BLOOD_SUGAR,
+        data: {
+          value: 5.6,
+          // 缺少 timing 字段
+        },
+      };
+
+      await expect(service.createCheckIn(userId, createDto)).rejects.toThrow(BadRequestException);
+      expect(mockPrismaService.checkIn.create).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('getCheckIns', () => {
+    it('应该成功查询打卡记录列表', async () => {
+      const userId = 'user-123';
+      const query = {
+        page: 1,
+        limit: 20,
+      };
+
+      const mockCheckIns = [
+        {
+          id: 'checkin-1',
+          userId,
+          type: CheckInType.BLOOD_PRESSURE,
+          data: { systolic: 120, diastolic: 80 },
+          pointsEarned: 10,
+          checkInDate: new Date('2025-12-22'),
+          createdAt: new Date(),
+        },
+        {
+          id: 'checkin-2',
+          userId,
+          type: CheckInType.BLOOD_SUGAR,
+          data: { value: 5.6, timing: 'fasting' },
+          pointsEarned: 10,
+          checkInDate: new Date('2025-12-21'),
+          createdAt: new Date(),
+        },
+      ];
+
+      mockPrismaService.checkIn.count.mockResolvedValue(2);
+      mockPrismaService.checkIn.findMany.mockResolvedValue(mockCheckIns);
+
+      const result = await service.getCheckIns(userId, query);
+
+      expect(result.items).toEqual(mockCheckIns);
+      expect(result.total).toBe(2);
+      expect(result.page).toBe(1);
+      expect(result.limit).toBe(20);
+    });
+
+    it('应该支持按类型筛选打卡记录', async () => {
+      const userId = 'user-123';
+      const query = {
+        type: CheckInType.BLOOD_PRESSURE,
+        page: 1,
+        limit: 20,
+      };
+
+      const mockCheckIns = [
+        {
+          id: 'checkin-1',
+          userId,
+          type: CheckInType.BLOOD_PRESSURE,
+          data: { systolic: 120, diastolic: 80 },
+          pointsEarned: 10,
+          checkInDate: new Date('2025-12-22'),
+          createdAt: new Date(),
+        },
+      ];
+
+      mockPrismaService.checkIn.count.mockResolvedValue(1);
+      mockPrismaService.checkIn.findMany.mockResolvedValue(mockCheckIns);
+
+      const result = await service.getCheckIns(userId, query);
+
+      expect(result.items).toEqual(mockCheckIns);
+      expect(mockPrismaService.checkIn.findMany).toHaveBeenCalledWith({
+        where: {
+          userId,
+          type: CheckInType.BLOOD_PRESSURE,
+        },
+        orderBy: { checkInDate: 'desc' },
+        skip: 0,
+        take: 20,
+      });
+    });
+
+    it('应该支持按日期范围筛选打卡记录', async () => {
+      const userId = 'user-123';
+      const query = {
+        startDate: '2025-12-01',
+        endDate: '2025-12-31',
+        page: 1,
+        limit: 20,
+      };
+
+      mockPrismaService.checkIn.count.mockResolvedValue(0);
+      mockPrismaService.checkIn.findMany.mockResolvedValue([]);
+
+      await service.getCheckIns(userId, query);
+
+      expect(mockPrismaService.checkIn.findMany).toHaveBeenCalledWith({
+        where: {
+          userId,
+          checkInDate: {
+            gte: new Date('2025-12-01'),
+            lte: new Date('2025-12-31'),
+          },
+        },
+        orderBy: { checkInDate: 'desc' },
+        skip: 0,
+        take: 20,
+      });
+    });
+  });
+
+  describe('getCheckInTrends', () => {
+    it('应该成功计算血压趋势统计数据', async () => {
+      const userId = 'user-123';
+      const trendQuery = {
+        type: CheckInType.BLOOD_PRESSURE,
+        startDate: '2025-11-22',
+        endDate: '2025-12-22',
+      };
+
+      const mockCheckIns = [
+        {
+          id: 'checkin-1',
+          userId,
+          type: CheckInType.BLOOD_PRESSURE,
+          data: { systolic: 120, diastolic: 80, pulse: 72 },
+          pointsEarned: 10,
+          checkInDate: new Date('2025-12-20'),
+          createdAt: new Date(),
+        },
+        {
+          id: 'checkin-2',
+          userId,
+          type: CheckInType.BLOOD_PRESSURE,
+          data: { systolic: 118, diastolic: 78, pulse: 70 },
+          pointsEarned: 10,
+          checkInDate: new Date('2025-12-21'),
+          createdAt: new Date(),
+        },
+      ];
+
+      mockPrismaService.checkIn.findMany.mockResolvedValue(mockCheckIns);
+
+      const result = await service.getCheckInTrends(userId, trendQuery);
+
+      expect(result.type).toBe(CheckInType.BLOOD_PRESSURE);
+      expect(result.data).toHaveLength(2);
+      expect(result.statistics.avgSystolic).toBe(119);
+      expect(result.statistics.avgDiastolic).toBe(79);
+      expect(result.statistics.maxSystolic).toBe(120);
+      expect(result.statistics.minSystolic).toBe(118);
+    });
+
+    it('应该成功计算血糖趋势统计数据', async () => {
+      const userId = 'user-123';
+      const trendQuery = {
+        type: CheckInType.BLOOD_SUGAR,
+        startDate: '2025-12-01',
+        endDate: '2025-12-22',
+      };
+
+      const mockCheckIns = [
+        {
+          id: 'checkin-1',
+          userId,
+          type: CheckInType.BLOOD_SUGAR,
+          data: { value: 5.6, timing: 'fasting' },
+          pointsEarned: 10,
+          checkInDate: new Date('2025-12-20'),
+          createdAt: new Date(),
+        },
+        {
+          id: 'checkin-2',
+          userId,
+          type: CheckInType.BLOOD_SUGAR,
+          data: { value: 6.2, timing: 'after_meal' },
+          pointsEarned: 10,
+          checkInDate: new Date('2025-12-21'),
+          createdAt: new Date(),
+        },
+      ];
+
+      mockPrismaService.checkIn.findMany.mockResolvedValue(mockCheckIns);
+
+      const result = await service.getCheckInTrends(userId, trendQuery);
+
+      expect(result.type).toBe(CheckInType.BLOOD_SUGAR);
+      expect(result.statistics.avgBloodSugar).toBe(5.9);
+      expect(result.statistics.maxBloodSugar).toBe(6.2);
+      expect(result.statistics.minBloodSugar).toBe(5.6);
+    });
+
+    it('应该处理空数据的情况', async () => {
+      const userId = 'user-123';
+      const trendQuery = {
+        type: CheckInType.BLOOD_PRESSURE,
+        startDate: '2025-12-01',
+        endDate: '2025-12-22',
+      };
+
+      mockPrismaService.checkIn.findMany.mockResolvedValue([]);
+
+      const result = await service.getCheckInTrends(userId, trendQuery);
+
+      expect(result.data).toHaveLength(0);
+      expect(result.statistics.totalCount).toBe(0);
+    });
+  });
+
+  describe('getCheckInCalendar', () => {
+    it('应该成功生成日历视图数据', async () => {
+      const userId = 'user-123';
+      const calendarQuery = {
+        year: 2025,
+        month: 12,
+      };
+
+      const mockCheckIns = [
+        {
+          id: 'checkin-1',
+          userId,
+          type: CheckInType.BLOOD_PRESSURE,
+          data: { systolic: 120, diastolic: 80 },
+          pointsEarned: 10,
+          checkInDate: new Date('2025-12-01'),
+          createdAt: new Date(),
+        },
+        {
+          id: 'checkin-2',
+          userId,
+          type: CheckInType.MEDICATION,
+          data: { medication: '阿司匹林', dosage: '100mg', taken: true },
+          pointsEarned: 5,
+          checkInDate: new Date('2025-12-01'),
+          createdAt: new Date(),
+        },
+      ];
+
+      mockPrismaService.checkIn.findMany.mockResolvedValue(mockCheckIns);
+
+      const result = await service.getCheckInCalendar(userId, calendarQuery);
+
+      expect(result.year).toBe(2025);
+      expect(result.month).toBe(12);
+      expect(result.calendar).toHaveLength(1);
+      expect(result.calendar[0].date).toBe('2025-12-01');
+      expect(result.calendar[0].checkedTypes).toContain(CheckInType.BLOOD_PRESSURE);
+      expect(result.calendar[0].checkedTypes).toContain(CheckInType.MEDICATION);
+      expect(result.calendar[0].totalPoints).toBe(15);
+      expect(result.monthlyStats.totalCheckIns).toBe(2);
+      expect(result.monthlyStats.totalPoints).toBe(15);
+    });
+
+    it('应该处理空数据的月份', async () => {
+      const userId = 'user-123';
+      const calendarQuery = {
+        year: 2025,
+        month: 1,
+      };
+
+      mockPrismaService.checkIn.findMany.mockResolvedValue([]);
+
+      const result = await service.getCheckInCalendar(userId, calendarQuery);
+
+      expect(result.calendar).toHaveLength(0);
+      expect(result.monthlyStats.totalCheckIns).toBe(0);
+      expect(result.monthlyStats.totalPoints).toBe(0);
+      expect(result.monthlyStats.completionRate).toBe(0);
     });
   });
 });

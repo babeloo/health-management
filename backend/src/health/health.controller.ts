@@ -11,12 +11,28 @@ import {
   UploadedFile,
   BadRequestException,
   PayloadTooLargeException,
+  Query,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiConsumes } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBearerAuth,
+  ApiConsumes,
+  ApiQuery,
+} from '@nestjs/swagger';
 import { HealthService } from './health.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { CreateHealthRecordDto, UpdateHealthRecordDto, HealthDocumentDto } from './dto';
+import {
+  CreateHealthRecordDto,
+  UpdateHealthRecordDto,
+  HealthDocumentDto,
+  CreateCheckInDto,
+  CheckInQueryDto,
+  CheckInTrendQueryDto,
+  CheckInCalendarQueryDto,
+} from './dto';
 
 /**
  * 健康档案控制器
@@ -24,7 +40,7 @@ import { CreateHealthRecordDto, UpdateHealthRecordDto, HealthDocumentDto } from 
  */
 @ApiTags('健康档案')
 @ApiBearerAuth()
-@Controller('api/v1/health')
+@Controller('health')
 @UseGuards(JwtAuthGuard)
 export class HealthController {
   constructor(private readonly healthService: HealthService) {}
@@ -205,6 +221,113 @@ export class HealthController {
     return {
       success: true,
       data: latestDocument,
+      timestamp: new Date().toISOString(),
+    };
+  }
+
+  // ==================== 打卡功能 ====================
+
+  /**
+   * 创建打卡记录
+   * POST /api/v1/health/check-ins
+   */
+  @Post('check-ins')
+  @ApiOperation({ summary: '创建打卡记录' })
+  @ApiResponse({
+    status: 201,
+    description: '打卡成功',
+  })
+  @ApiResponse({
+    status: 400,
+    description: '请求参数验证失败或数据格式错误',
+  })
+  @ApiResponse({
+    status: 409,
+    description: '今日已完成该类型打卡',
+  })
+  async createCheckIn(@Request() req: any, @Body() createDto: CreateCheckInDto) {
+    const { userId } = req.user;
+    const checkIn = await this.healthService.createCheckIn(userId, createDto);
+
+    return {
+      success: true,
+      data: checkIn,
+      timestamp: new Date().toISOString(),
+    };
+  }
+
+  /**
+   * 查询打卡记录列表
+   * GET /api/v1/health/check-ins/:userId
+   */
+  @Get('check-ins/:userId')
+  @ApiOperation({ summary: '查询打卡记录列表' })
+  @ApiQuery({ name: 'type', required: false, description: '打卡类型' })
+  @ApiQuery({ name: 'startDate', required: false, description: '开始日期（YYYY-MM-DD）' })
+  @ApiQuery({ name: 'endDate', required: false, description: '结束日期（YYYY-MM-DD）' })
+  @ApiQuery({ name: 'page', required: false, description: '页码', type: Number })
+  @ApiQuery({ name: 'limit', required: false, description: '每页数量', type: Number })
+  @ApiResponse({
+    status: 200,
+    description: '查询成功',
+  })
+  async getCheckIns(@Param('userId') userId: string, @Query() query: CheckInQueryDto) {
+    const result = await this.healthService.getCheckIns(userId, query);
+
+    return {
+      success: true,
+      data: result,
+      timestamp: new Date().toISOString(),
+    };
+  }
+
+  /**
+   * 趋势分析
+   * GET /api/v1/health/check-ins/:userId/trends
+   */
+  @Get('check-ins/:userId/trends')
+  @ApiOperation({ summary: '打卡趋势分析' })
+  @ApiQuery({ name: 'type', required: true, description: '打卡类型' })
+  @ApiQuery({ name: 'startDate', required: true, description: '开始日期（YYYY-MM-DD）' })
+  @ApiQuery({ name: 'endDate', required: true, description: '结束日期（YYYY-MM-DD）' })
+  @ApiResponse({
+    status: 200,
+    description: '分析成功',
+  })
+  async getCheckInTrends(
+    @Param('userId') userId: string,
+    @Query() trendQuery: CheckInTrendQueryDto,
+  ) {
+    const result = await this.healthService.getCheckInTrends(userId, trendQuery);
+
+    return {
+      success: true,
+      data: result,
+      timestamp: new Date().toISOString(),
+    };
+  }
+
+  /**
+   * 日历视图
+   * GET /api/v1/health/check-ins/:userId/calendar
+   */
+  @Get('check-ins/:userId/calendar')
+  @ApiOperation({ summary: '打卡日历视图' })
+  @ApiQuery({ name: 'year', required: true, description: '年份', type: Number })
+  @ApiQuery({ name: 'month', required: true, description: '月份（1-12）', type: Number })
+  @ApiResponse({
+    status: 200,
+    description: '查询成功',
+  })
+  async getCheckInCalendar(
+    @Param('userId') userId: string,
+    @Query() calendarQuery: CheckInCalendarQueryDto,
+  ) {
+    const result = await this.healthService.getCheckInCalendar(userId, calendarQuery);
+
+    return {
+      success: true,
+      data: result,
       timestamp: new Date().toISOString(),
     };
   }
