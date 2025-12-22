@@ -8,6 +8,7 @@ import { LoggerMiddleware } from './common/middlewares/logger.middleware';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { PrismaModule } from './common/prisma/prisma.module';
+import { InfluxModule } from './common/influx/influx.module';
 import { HealthModule } from './health/health.module';
 
 @Module({
@@ -29,6 +30,9 @@ import { HealthModule } from './health/health.module';
 
     // Prisma 数据库模块
     PrismaModule,
+
+    // InfluxDB 时序数据库模块
+    InfluxModule,
 
     // 认证授权模块
     AuthModule,

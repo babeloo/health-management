@@ -33,6 +33,10 @@ out/
 .DS_Store
 Thumbs.db
 
+# Windows 产生的 nul 文件（Git Bash 中使用 2>nul 会创建此文件）
+nul
+**/nul
+
 # Docker
 docker-compose.override.yml
 

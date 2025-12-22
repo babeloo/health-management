@@ -4,10 +4,12 @@ import {
   NotFoundException,
   BadRequestException,
   ConflictException,
+  Logger,
 } from '@nestjs/common';
 import { HealthRecord, UserRole, CheckIn, CheckInType } from '../generated/prisma/client';
 import { PrismaService } from '../common/prisma/prisma.service';
 import { FileStorageService } from '../common/storage/file-storage.service';
+import { InfluxService } from '../common/influx/influx.service';
 import { CreateHealthRecordDto } from './dto/create-health-record.dto';
 import { UpdateHealthRecordDto } from './dto/update-health-record.dto';
 import { CreateCheckInDto } from './dto/create-check-in.dto';
@@ -23,6 +25,12 @@ import {
   CalendarDayDto,
   MonthlyStatsDto,
 } from './dto/check-in-calendar.dto';
+import {
+  GetHealthTrendDto,
+  HealthTrendResponseDto,
+  BloodPressureTrendDto,
+  BloodSugarTrendDto,
+} from './dto/health-trend.dto';
 
 /**
  * 健康档案服务
@@ -30,9 +38,12 @@ import {
  */
 @Injectable()
 export class HealthService {
+  private readonly logger = new Logger(HealthService.name);
+
   constructor(
     private readonly prisma: PrismaService,
     private readonly fileStorageService: FileStorageService,
+    private readonly influxService: InfluxService,
   ) {}
 
   /**
@@ -296,6 +307,25 @@ export class HealthService {
       },
     });
 
+    // 同步到 InfluxDB（降级处理）
+    try {
+      if (createDto.type === CheckInType.BLOOD_PRESSURE) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        await this.influxService.writeBloodPressure(userId, checkIn.id, createDto.data as any);
+      } else if (createDto.type === CheckInType.BLOOD_SUGAR) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        await this.influxService.writeBloodSugar(userId, checkIn.id, createDto.data as any);
+      }
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      const errorStack = error instanceof Error ? error.stack : undefined;
+      this.logger.error(
+        `InfluxDB 写入失败，但打卡主流程成功: userId=${userId}, checkInId=${checkIn.id}, error=${errorMessage}`,
+        errorStack,
+      );
+      // 不影响打卡主流程
+    }
+
     // TODO: 第二阶段集成积分系统时，创建 PointsTransaction 记录
     // TODO: 实现连续打卡奖励逻辑
 
@@ -315,6 +345,7 @@ export class HealthService {
     const { type, startDate, endDate, page = 1, limit = 20 } = query;
 
     // 构建查询条件
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const where: any = { userId };
 
     if (type) {
@@ -452,6 +483,7 @@ export class HealthService {
    * @param type 打卡类型
    * @param data 打卡数据
    */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private validateCheckInData(type: CheckInType, data: any): void {
     switch (type) {
       case CheckInType.BLOOD_PRESSURE:
@@ -535,9 +567,12 @@ export class HealthService {
 
     switch (type) {
       case CheckInType.BLOOD_PRESSURE: {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const systolicValues = checkIns.map((c) => (c.data as any).systolic);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const diastolicValues = checkIns.map((c) => (c.data as any).diastolic);
         const pulseValues = checkIns
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           .map((c) => (c.data as any).pulse)
           .filter((p) => p !== undefined);
 
@@ -553,6 +588,7 @@ export class HealthService {
       }
 
       case CheckInType.BLOOD_SUGAR: {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const bloodSugarValues = checkIns.map((c) => (c.data as any).value);
         statistics.avgBloodSugar = this.average(bloodSugarValues);
         statistics.maxBloodSugar = Math.max(...bloodSugarValues);
@@ -561,6 +597,7 @@ export class HealthService {
       }
 
       case CheckInType.EXERCISE: {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const durationValues = checkIns.map((c) => (c.data as any).duration);
         statistics.totalExerciseDuration = durationValues.reduce((sum, d) => sum + d, 0);
         statistics.avgExerciseDuration = this.average(durationValues);
@@ -628,5 +665,51 @@ export class HealthService {
     if (values.length === 0) return 0;
     const sum = values.reduce((a, b) => a + b, 0);
     return Math.round((sum / values.length) * 100) / 100;
+  }
+
+  // ==================== InfluxDB 时序数据查询 ====================
+
+  /**
+   * 获取健康趋势（基于 InfluxDB 时序数据）
+   * @param userId 用户 ID
+   * @param trendQuery 趋势查询条件
+   * @returns 健康趋势数据
+   */
+  async getHealthTrend(
+    userId: string,
+    trendQuery: GetHealthTrendDto,
+  ): Promise<HealthTrendResponseDto> {
+    const { type, days } = trendQuery;
+
+    // 计算时间范围
+    const endTime = new Date();
+    const startTime = new Date(endTime.getTime() - days * 24 * 60 * 60 * 1000);
+
+    let data: BloodPressureTrendDto[] | BloodSugarTrendDto[] = [];
+
+    // 根据类型查询 InfluxDB
+    if (type === 'BLOOD_PRESSURE') {
+      const influxData = await this.influxService.queryBloodPressure(userId, startTime, endTime);
+      data = influxData.map((item) => ({
+        timestamp: item.timestamp.toISOString(),
+        systolic: item.systolic,
+        diastolic: item.diastolic,
+        pulse: item.pulse,
+      }));
+    } else if (type === 'BLOOD_SUGAR') {
+      const influxData = await this.influxService.queryBloodSugar(userId, startTime, endTime);
+      data = influxData.map((item) => ({
+        timestamp: item.timestamp.toISOString(),
+        value: item.value,
+        timing: item.timing,
+      }));
+    }
+
+    return {
+      type,
+      days,
+      data,
+      totalCount: data.length,
+    };
   }
 }

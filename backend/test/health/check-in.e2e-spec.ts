@@ -255,6 +255,7 @@ describe('Health Check-In (e2e)', () => {
         .expect(200)
         .expect((res) => {
           expect(
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             res.body.data.items.every((item: any) => item.type === CheckInType.BLOOD_PRESSURE),
           ).toBe(true);
         });

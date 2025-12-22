@@ -9,6 +9,7 @@ import { CheckInType } from '../generated/prisma/client';
 import { HealthService } from './health.service';
 import { PrismaService } from '../common/prisma/prisma.service';
 import { FileStorageService } from '../common/storage/file-storage.service';
+import { InfluxService } from '../common/influx/influx.service';
 import { CreateHealthRecordDto } from './dto/create-health-record.dto';
 import { UpdateHealthRecordDto } from './dto/update-health-record.dto';
 import { CreateCheckInDto } from './dto/create-check-in.dto';
@@ -28,6 +29,7 @@ describe('HealthService', () => {
     checkIn: {
       create: jest.fn(),
       findUnique: jest.fn(),
+      findFirst: jest.fn(),
       findMany: jest.fn(),
       count: jest.fn(),
     },
@@ -35,6 +37,13 @@ describe('HealthService', () => {
 
   const mockFileStorageService = {
     uploadHealthDocument: jest.fn(),
+  };
+
+  const mockInfluxService = {
+    writeBloodPressure: jest.fn().mockResolvedValue(undefined),
+    writeBloodSugar: jest.fn().mockResolvedValue(undefined),
+    queryBloodPressure: jest.fn().mockResolvedValue([]),
+    queryBloodSugar: jest.fn().mockResolvedValue([]),
   };
 
   beforeEach(async () => {
@@ -48,6 +57,10 @@ describe('HealthService', () => {
         {
           provide: FileStorageService,
           useValue: mockFileStorageService,
+        },
+        {
+          provide: InfluxService,
+          useValue: mockInfluxService,
         },
       ],
     }).compile();
@@ -512,7 +525,7 @@ describe('HealthService', () => {
         createdAt: new Date(),
       };
 
-      mockPrismaService.checkIn.findUnique.mockResolvedValue(null);
+      mockPrismaService.checkIn.findFirst.mockResolvedValue(null);
       mockPrismaService.checkIn.create.mockResolvedValue(expectedCheckIn);
 
       const result = await service.createCheckIn(userId, createDto);
@@ -543,7 +556,7 @@ describe('HealthService', () => {
         createdAt: new Date(),
       };
 
-      mockPrismaService.checkIn.findUnique.mockResolvedValue(null);
+      mockPrismaService.checkIn.findFirst.mockResolvedValue(null);
       mockPrismaService.checkIn.create.mockResolvedValue(expectedCheckIn);
 
       const result = await service.createCheckIn(userId, createDto);
@@ -555,7 +568,7 @@ describe('HealthService', () => {
     it('应该拒绝打卡未来日期', async () => {
       const userId = 'user-123';
       const futureDate = new Date();
-      futureDate.setDate(futureDate.getDate() + 1);
+      futureDate.setDate(futureDate.getDate() + 2); // 确保是未来日期
 
       const createDto: CreateCheckInDto = {
         type: CheckInType.BLOOD_PRESSURE,
@@ -590,7 +603,7 @@ describe('HealthService', () => {
         createdAt: new Date(),
       };
 
-      mockPrismaService.checkIn.findUnique.mockResolvedValue(existingCheckIn);
+      mockPrismaService.checkIn.findFirst.mockResolvedValue(existingCheckIn);
 
       await expect(service.createCheckIn(userId, createDto)).rejects.toThrow(ConflictException);
       expect(mockPrismaService.checkIn.create).not.toHaveBeenCalled();

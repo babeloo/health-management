@@ -152,6 +152,7 @@ export class CreateCheckInDto {
     example: { systolic: 120, diastolic: 80, pulse: 72 },
   })
   @IsObject()
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   data: Record<string, any>;
 
   @ApiProperty({ description: '备注', example: '今日状态良好', required: false })

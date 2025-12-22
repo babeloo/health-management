@@ -22,6 +22,7 @@ import {
   ApiConsumes,
   ApiQuery,
 } from '@nestjs/swagger';
+import { UserRole } from '../generated/prisma/client';
 import { HealthService } from './health.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import {
@@ -32,7 +33,24 @@ import {
   CheckInQueryDto,
   CheckInTrendQueryDto,
   CheckInCalendarQueryDto,
+  GetHealthTrendDto,
 } from './dto';
+
+/**
+ * 请求用户接口（来自 JWT payload）
+ */
+interface RequestUser {
+  id: string;
+  userId: string;
+  role: UserRole;
+}
+
+/**
+ * 扩展的请求接口
+ */
+interface RequestWithUser extends Request {
+  user: RequestUser;
+}
 
 /**
  * 健康档案控制器
@@ -63,7 +81,10 @@ export class HealthController {
     status: 401,
     description: '未授权',
   })
-  async createHealthRecord(@Request() req: any, @Body() createDto: CreateHealthRecordDto) {
+  async createHealthRecord(
+    @Request() req: RequestWithUser,
+    @Body() createDto: CreateHealthRecordDto,
+  ) {
     const { userId } = req.user;
     const record = await this.healthService.createHealthRecord(userId, createDto);
 
@@ -92,7 +113,7 @@ export class HealthController {
     status: 404,
     description: '健康档案不存在',
   })
-  async getHealthRecord(@Param('userId') userId: string, @Request() req: any) {
+  async getHealthRecord(@Param('userId') userId: string, @Request() req: RequestWithUser) {
     const currentUserId = req.user.id; // 修复：CurrentUser 使用 id
     const currentUserRole = req.user.role;
 
@@ -130,7 +151,7 @@ export class HealthController {
   async updateHealthRecord(
     @Param('userId') userId: string,
     @Body() updateDto: UpdateHealthRecordDto,
-    @Request() req: any,
+    @Request() req: RequestWithUser,
   ) {
     const currentUserId = req.user.id; // 修复：CurrentUser 使用 id
     const currentUserRole = req.user.role;
@@ -181,7 +202,7 @@ export class HealthController {
   async uploadDocument(
     @Param('userId') userId: string,
     @UploadedFile() file: Express.Multer.File,
-    @Request() req: any,
+    @Request() req: RequestWithUser,
   ) {
     // 验证文件是否上传
     if (!file) {
@@ -245,7 +266,7 @@ export class HealthController {
     status: 409,
     description: '今日已完成该类型打卡',
   })
-  async createCheckIn(@Request() req: any, @Body() createDto: CreateCheckInDto) {
+  async createCheckIn(@Request() req: RequestWithUser, @Body() createDto: CreateCheckInDto) {
     const userId = req.user.id; // 修复：CurrentUser 使用 id 而不是 userId
     const checkIn = await this.healthService.createCheckIn(userId, createDto);
 
@@ -324,6 +345,41 @@ export class HealthController {
     @Query() calendarQuery: CheckInCalendarQueryDto,
   ) {
     const result = await this.healthService.getCheckInCalendar(userId, calendarQuery);
+
+    return {
+      success: true,
+      data: result,
+      timestamp: new Date().toISOString(),
+    };
+  }
+
+  // ==================== InfluxDB 时序数据查询 ====================
+
+  /**
+   * 健康趋势查询（基于 InfluxDB 时序数据）
+   * GET /api/v1/health/:userId/health-trends
+   */
+  @Get(':userId/health-trends')
+  @ApiOperation({ summary: '健康趋势查询（时序数据）' })
+  @ApiQuery({
+    name: 'type',
+    required: true,
+    description: '数据类型',
+    enum: ['BLOOD_PRESSURE', 'BLOOD_SUGAR'],
+  })
+  @ApiQuery({
+    name: 'days',
+    required: false,
+    description: '查询天数（1-90）',
+    type: Number,
+    example: 7,
+  })
+  @ApiResponse({
+    status: 200,
+    description: '查询成功',
+  })
+  async getHealthTrend(@Param('userId') userId: string, @Query() query: GetHealthTrendDto) {
+    const result = await this.healthService.getHealthTrend(userId, query);
 
     return {
       success: true,

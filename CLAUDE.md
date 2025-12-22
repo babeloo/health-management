@@ -584,6 +584,45 @@ git commit --no-verify -m "commit message"
    - ❌ `git push origin main`
    - ✅ 创建 feature 分支 → 提交 PR → 代码审查 → 合并
 
+## Windows 开发环境注意事项
+
+⚠️ 如果使用 Windows 环境开发，请注意以下常见问题：
+
+### 1. 避免产生 nul 文件
+
+**问题**：在 Git Bash 中使用 Windows 风格的命令会创建 `nul` 文件
+
+```bash
+# ❌ 错误（会创建 nul 文件）
+rmdir /s /q dist 2>nul
+command 2>nul
+
+# ✅ 正确（使用 Unix 风格）
+rm -rf dist 2>/dev/null
+command 2>/dev/null || true
+```
+
+### 2. 端口权限问题
+
+某些端口（如 3000）在 Windows 上可能被保留，导致权限错误：
+
+```typescript
+// 使用非保留端口，明确指定 IPv4
+const port = process.env.PORT || 5000;
+await app.listen(port, '127.0.0.1');
+```
+
+### 3. 推荐开发环境
+
+优先级（从高到低）：
+
+1. **WSL2 Ubuntu**（最推荐）- 完整 Linux 环境
+2. **Git Bash**（推荐）- 基本 Unix 命令
+3. **PowerShell 7+**（可接受）
+4. **CMD**（不推荐）
+
+**详细文档**：查看 `docs/development/WINDOWS.md` 了解更多问题和解决方案
+
 ## 项目里程碑（12 周计划）
 
 | 周次    | 里程碑               | 关键交付物                          |
