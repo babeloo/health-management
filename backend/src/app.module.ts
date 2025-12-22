@@ -10,6 +10,7 @@ import { UserModule } from './user/user.module';
 import { PrismaModule } from './common/prisma/prisma.module';
 import { InfluxModule } from './common/influx/influx.module';
 import { HealthModule } from './health/health.module';
+import { PointsModule } from './points/points.module';
 
 @Module({
   imports: [
@@ -42,6 +43,9 @@ import { HealthModule } from './health/health.module';
 
     // 健康档案模块
     HealthModule,
+
+    // 积分管理模块
+    PointsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
