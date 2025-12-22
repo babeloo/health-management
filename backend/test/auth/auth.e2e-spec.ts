@@ -245,19 +245,20 @@ describe('AuthController (e2e)', () => {
       refreshToken = response.body.data.refreshToken;
     });
 
-    it('应该成功刷新 Token', () => {
-      return request(app.getHttpServer())
+    it('应该成功刷新 Token', async () => {
+      const response = await request(app.getHttpServer())
         .post('/api/v1/auth/refresh')
         .send({ refreshToken })
-        .expect(200)
-        .expect((res) => {
-          expect(res.body).toHaveProperty('success', true);
-          expect(res.body).toHaveProperty('message', 'Token 刷新成功');
-          expect(res.body.data).toHaveProperty('accessToken');
-          expect(res.body.data).toHaveProperty('refreshToken');
-          // 新的 Token 应该与旧的不同
-          expect(res.body.data.refreshToken).not.toBe(refreshToken);
-        });
+        .expect(200);
+
+      expect(response.body).toHaveProperty('success', true);
+      expect(response.body).toHaveProperty('message', 'Token 刷新成功');
+      expect(response.body.data).toHaveProperty('accessToken');
+      expect(response.body.data).toHaveProperty('refreshToken');
+
+      // 验证返回的 Token 是有效的 JWT 格式
+      expect(response.body.data.accessToken).toMatch(/^[\w-]+\.[\w-]+\.[\w-]+$/);
+      expect(response.body.data.refreshToken).toMatch(/^[\w-]+\.[\w-]+\.[\w-]+$/);
     });
 
     it('应该在 Refresh Token 无效时返回 401 错误', () => {

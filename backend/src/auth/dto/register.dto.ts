@@ -26,7 +26,7 @@ export class RegisterDto {
   })
   password: string;
 
-  @IsEmail()
+  @IsEmail({}, { message: '邮箱格式不正确' })
   @IsOptional()
   email?: string;
 

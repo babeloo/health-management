@@ -31,7 +31,13 @@ export class AllExceptionsFilter implements ExceptionFilter {
 
       if (typeof exceptionResponse === 'object') {
         const responseObj = exceptionResponse as Record<string, unknown>;
-        message = (responseObj.message as string) || exception.message;
+        // 处理 class-validator 返回的数组格式消息
+        const rawMessage = responseObj.message;
+        if (Array.isArray(rawMessage)) {
+          message = rawMessage.join(', ');
+        } else {
+          message = (rawMessage as string) || exception.message;
+        }
         error = (responseObj.error as string) || HttpStatus[status];
       } else {
         message = exception.message;
