@@ -337,6 +337,32 @@ Redis
 
 ## 开发工作流
 
+### 项目管理流程
+
+⚠️ **重要**：本项目遵循严格的 PM 主导开发流程（详见 `.claude/custom_instructions.md`）
+
+**在进行任何编码任务之前，必须遵循以下流程**：
+
+1. **检查任务状态**
+   - 查看 `.claude/specs/chronic-disease-management/tasks.md` 了解当前任务状态
+   - 确认任务是否已分配、是否有依赖关系
+
+2. **验证需求**
+   - 根据 `.claude/specs/chronic-disease-management/requirements.md` 验证需求
+   - 确认验收标准和功能边界
+
+3. **更新变更日志**
+   - 任务完成后，在 `CHANGELOG.md` 中记录变更
+   - 包含功能描述、影响范围、相关需求编号
+
+**流程检查清单**：
+
+- [ ] 已查阅 `tasks.md` 确认任务状态
+- [ ] 已阅读 `requirements.md` 相关需求
+- [ ] 已检查 `design.md` 技术设计
+- [ ] 编码完成后已更新 `CHANGELOG.md`
+- [ ] 已更新 `tasks.md` 任务状态
+
 ### 新功能开发流程
 
 1. **需求分析**（@pm）

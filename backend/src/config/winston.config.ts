@@ -1,12 +1,12 @@
-import { utilities as nestWinstonModuleUtilities, WinstonModule } from 'nest-winston';
+import { utilities as nestWinstonModuleUtilities, WinstonModuleOptions } from 'nest-winston';
 import * as winston from 'winston';
-import * as DailyRotateFile from 'winston-daily-rotate-file';
+import DailyRotateFile = require('winston-daily-rotate-file');
 
 /**
  * Winston 日志配置
  * 支持控制台输出和文件轮转
  */
-export const createWinstonLogger = (env: string = 'development') => {
+export const createWinstonLogger = (env: string = 'development'): WinstonModuleOptions => {
   let logLevel = 'debug';
   if (env === 'production') {
     logLevel = 'warn';
@@ -51,8 +51,8 @@ export const createWinstonLogger = (env: string = 'development') => {
     }),
   ];
 
-  return WinstonModule.createLogger({
+  return {
     level: logLevel,
     transports,
-  });
+  };
 };

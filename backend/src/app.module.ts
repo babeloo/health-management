@@ -5,6 +5,8 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { createWinstonLogger } from './config/winston.config';
 import { LoggerMiddleware } from './common/middlewares/logger.middleware';
+import { AuthModule } from './auth/auth.module';
+import { PrismaModule } from './common/prisma/prisma.module';
 
 @Module({
   imports: [
@@ -22,6 +24,12 @@ import { LoggerMiddleware } from './common/middlewares/logger.middleware';
         return createWinstonLogger(env);
       },
     }),
+
+    // Prisma 数据库模块
+    PrismaModule,
+
+    // 认证授权模块
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],

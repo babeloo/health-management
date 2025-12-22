@@ -1,11 +1,12 @@
 # 智慧慢病管理系统 - MVP阶段实施计划
 
-> **最后更新**: 2025-12-22 16:30
-> **总体进度**: 10.3% (28/273 任务)
-> **当前阶段**: 第一阶段 - 项目基础设施（Week 1-2）
+> **最后更新**: 2025-12-22 10:44
+> **总体进度**: 11.7% (32/273 任务)
+> **当前阶段**: 第二阶段 - 后端核心服务（Week 2-6）
 > **第一阶段进度**: 100% (23/23 已完成) ✅
-> **状态**: ✅ 已完成（所有关键任务已完成）
-> **阶段报告**: 详见 `stage1-summary-report.md`
+> **第二阶段进度**: 18.8% (9/48 已完成) 🔄
+> **状态**: 🔄 进行中（认证授权模块已完成，测试编写中）
+> **阶段报告**: 第一阶段详见 `stage1-summary-report.md`
 
 ## 概述
 
@@ -24,7 +25,7 @@
 ## 第一阶段：项目基础设施（Week 1-2）
 
 **阶段进度**: 100% (23/23 已完成) ✅ | **状态**: ✅ 已完成
-**完成时间**: 2025-12-22 16:30 | **负责人**: @backend-ts + @data-infra
+**完成时间**: 2025-12-22 10:44 | **负责人**: @backend-ts + @data-infra
 **阶段报告**: 详见 `stage1-summary-report.md`
 
 ### 1. 开发环境搭建 ✅ 100% 完成
@@ -50,29 +51,29 @@
 
 ### 2. NestJS 项目初始化 ✅ 100% 完成
 
-**完成时间**: 2025-12-22 16:30 | **负责人**: @backend-ts
+**完成时间**: 2025-12-22 10:44 | **负责人**: @backend-ts
 
-- [x] 创建 NestJS 应用骨架 ✅ 完成于 2025-12-22 16:30
+- [x] 创建 NestJS 应用骨架 ✅ 完成于 2025-12-22 10:44
   - [x] 使用 Nest CLI 初始化项目（手动创建项目结构）✅ 完成于 2025-12-22
   - [x] 配置环境变量管理（@nestjs/config + dotenv）✅ 完成于 2025-12-22
-  - [x] 设置多环境配置（development、staging、production）✅ 完成于 2025-12-22 16:30
+  - [x] 设置多环境配置（development、staging、production）✅ 完成于 2025-12-22 10:44
     - [x] 环境配置文件已创建（.env.development、.env.staging、.env.production）
-    - [x] 集成到 NestJS ConfigModule，支持动态加载 ✅ 完成于 2025-12-22 16:30
-  - [x] 配置全局异常过滤器和错误处理 ✅ 完成于 2025-12-22 16:30
+    - [x] 集成到 NestJS ConfigModule，支持动态加载 ✅ 完成于 2025-12-22 10:44
+  - [x] 配置全局异常过滤器和错误处理 ✅ 完成于 2025-12-22 10:44
     - [x] 异常过滤器代码已创建（src/common/filters/all-exceptions.filter.ts）
-    - [x] 在 main.ts 中注册全局过滤器 ✅ 完成于 2025-12-22 16:30
-  - [x] 设置请求日志中间件（Winston）✅ 完成于 2025-12-22 16:30
+    - [x] 在 main.ts 中注册全局过滤器 ✅ 完成于 2025-12-22 10:44
+  - [x] 设置请求日志中间件（Winston）✅ 完成于 2025-12-22 10:44
     - [x] 日志中间件代码已创建（src/common/middlewares/logger.middleware.ts）
     - [x] Winston 配置已创建（src/config/winston.config.ts）
-    - [x] 安装 nest-winston 和 winston-daily-rotate-file 依赖 ✅ 完成于 2025-12-22 16:30
-    - [x] 在 app.module.ts 中集成 WinstonModule ✅ 完成于 2025-12-22 16:30
-    - [x] 在 main.ts 中应用 LoggerMiddleware ✅ 完成于 2025-12-22 16:30
+    - [x] 安装 nest-winston 和 winston-daily-rotate-file 依赖 ✅ 完成于 2025-12-22 10:44
+    - [x] 在 app.module.ts 中集成 WinstonModule ✅ 完成于 2025-12-22 10:44
+    - [x] 在 main.ts 中应用 LoggerMiddleware ✅ 完成于 2025-12-22 10:44
   - [x] 配置 API 版本控制（/api/v1）✅ 完成于 2025-12-22
-- [x] 集成 Prisma ORM ✅ 完成于 2025-12-22 16:30
+- [x] 集成 Prisma ORM ✅ 完成于 2025-12-22 10:44
   - [x] 安装 Prisma 和 @prisma/client ✅ 完成于 2025-12-22
   - [x] 配置 PostgreSQL 连接 ✅ 完成于 2025-12-22
   - [x] 创建 Prisma schema 基础结构 ✅ 完成于 2025-12-22
-  - [x] 设置数据库迁移脚本（prisma db push）✅ 完成于 2025-12-22 16:30
+  - [x] 设置数据库迁移脚本（prisma db push）✅ 完成于 2025-12-22 10:44
     - **执行命令**: `cd backend && pnpm prisma db push`
     - **验证结果**: 所有表创建成功（users, health_records, check_ins, risk_assessments, points_transactions, doctor_patient_relations）
     - **索引验证**: 26 个索引已创建（包括主键、唯一约束、查询优化索引）
@@ -84,35 +85,35 @@
 
 ### 3. 数据库设计与迁移 ✅ 100% 完成（MVP阶段核心表）
 
-**完成时间**: 2025-12-22 16:30 | **负责人**: @backend-ts + @data-infra
+**完成时间**: 2025-12-22 10:44 | **负责人**: @backend-ts + @data-infra
 
-- [x] 实现用户模块数据模型 ✅ 完成于 2025-12-22 16:30
+- [x] 实现用户模块数据模型 ✅ 完成于 2025-12-22 10:44
   - [x] 定义 users 表 schema（参考 design.md 4.1.1）✅ 完成于 2025-12-22
-  - [x] 创建数据库索引（role, status, created_at）✅ 完成于 2025-12-22 16:30
+  - [x] 创建数据库索引（role, status, created_at）✅ 完成于 2025-12-22 10:44
     - **已创建索引**: users_role_idx, users_status_idx, users_createdAt_idx, users_username_key, users_email_key, users_phone_key
   - 🔖 **延后到第二阶段**：实现敏感字段加密中间件（Prisma Middleware + AES-256-GCM 加密）
   - 🔖 **延后到第二阶段**：编写种子数据（测试用户）
-- [x] 实现健康管理模块数据模型 ✅ 完成于 2025-12-22 16:30
+- [x] 实现健康管理模块数据模型 ✅ 完成于 2025-12-22 10:44
   - [x] 定义 health_records 表（参考 design.md 4.1.2）✅ 完成于 2025-12-22
   - [x] 定义 check_ins 表（参考 design.md 4.1.3）✅ 完成于 2025-12-22
   - [x] 定义 risk_assessments 表（参考 design.md 4.1.4）✅ 完成于 2025-12-22
-  - [x] 创建必要索引和唯一约束 ✅ 完成于 2025-12-22 16:30
+  - [x] 创建必要索引和唯一约束 ✅ 完成于 2025-12-22 10:44
     - **check_ins 索引**: userId_type_checkInDate_key (唯一约束), userId_checkInDate_idx, type_idx, createdAt_idx
     - **risk_assessments 索引**: userId_type_idx, riskLevel_idx, assessedAt_idx
-- [x] 实现积分系统数据模型 ✅ 完成于 2025-12-22 16:30
+- [x] 实现积分系统数据模型 ✅ 完成于 2025-12-22 10:44
   - [x] 定义 points_transactions 表（参考 design.md 4.1.5）✅ 完成于 2025-12-22
-  - [x] 创建必要索引 ✅ 完成于 2025-12-22 16:30
+  - [x] 创建必要索引 ✅ 完成于 2025-12-22 10:44
     - **已创建索引**: userId_createdAt_idx, type_idx
   - 🔖 **延后到第二阶段**：创建 user_points_balance 视图
   - 🔖 **延后到第二阶段**：编写积分计算触发器或存储过程
-- [x] 实现医患关系数据模型 ✅ 完成于 2025-12-22 16:30
+- [x] 实现医患关系数据模型 ✅ 完成于 2025-12-22 10:44
   - [x] 定义 doctor_patient_relations 表（参考 design.md 4.1.6）✅ 完成于 2025-12-22
-  - [x] 创建必要索引和唯一约束 ✅ 完成于 2025-12-22 16:30
+  - [x] 创建必要索引和唯一约束 ✅ 完成于 2025-12-22 10:44
     - **已创建索引**: doctorId_patientId_key (唯一约束), doctorId_idx, patientId_idx
   - 🔖 **延后到第二阶段**：定义 manager_member_relations 表（需求优先级较低）
-- [x] 执行数据库迁移（关键任务）✅ 完成于 2025-12-22 16:30
-  - [x] 运行 `prisma db push` 创建所有表 ✅ 完成于 2025-12-22 16:30
-  - [x] 验证数据库约束和索引 ✅ 完成于 2025-12-22 16:30
+- [x] 执行数据库迁移（关键任务）✅ 完成于 2025-12-22 10:44
+  - [x] 运行 `prisma db push` 创建所有表 ✅ 完成于 2025-12-22 10:44
+  - [x] 验证数据库约束和索引 ✅ 完成于 2025-12-22 10:44
     - **验证结果**: 6 个表、26 个索引、所有外键约束和唯一约束已生效
 
 **关联需求**：需求 #2（患者端 - 健康档案管理）、需求 #3（患者端 - 健康打卡功能）、需求 #4（患者端 - 风险评估功能）、需求 #7（患者端 - 积分奖励系统）
@@ -121,30 +122,43 @@
 
 ## 第二阶段：后端核心服务（Week 2-6）
 
-**状态**: ⏳ 未开始 | **前置条件**: 第一阶段数据库迁移完成
+**状态**: 🔄 进行中 | **前置条件**: 第一阶段数据库迁移完成 ✅
 
-### 4. 认证授权模块
+### 4. 认证授权模块 ✅ 100% 完成
 
-- [ ] 实现 JWT 认证
-  - [ ] 安装 @nestjs/jwt 和 @nestjs/passport
-  - [ ] 创建 AuthModule、AuthService、AuthController
-  - [ ] 实现用户注册接口（POST /api/v1/auth/register）
-  - [ ] 实现用户登录接口（POST /api/v1/auth/login）
-  - [ ] 实现 Token 刷新接口（POST /api/v1/auth/refresh）
-  - [ ] 编写 JWT 策略（JwtStrategy）
-  - [ ] 实现密码加密（bcrypt）
-- [ ] 实现 RBAC 权限控制
-  - [ ] 定义角色枚举（patient, doctor, health_manager, admin）
-  - [ ] 定义权限枚举（参考 design.md 3.1.2）
-  - [ ] 创建角色权限映射
-  - [ ] 实现权限守卫（PermissionsGuard）
-  - [ ] 创建权限装饰器（@Permissions）
-- [ ] 编写认证模块测试
+**完成时间**: 2025-12-22 10:39 | **负责人**: @backend-ts
+
+- [x] 实现 JWT 认证 ✅ 完成于 2025-12-22 10:39
+  - [x] 安装 @nestjs/jwt 和 @nestjs/passport ✅
+  - [x] 创建 AuthModule、AuthService、AuthController ✅
+  - [x] 实现用户注册接口（POST /api/v1/auth/register）✅
+  - [x] 实现用户登录接口（POST /api/v1/auth/login）✅
+  - [x] 实现 Token 刷新接口（POST /api/v1/auth/refresh）✅
+  - [x] 编写 JWT 策略（JwtStrategy）✅
+  - [x] 实现密码加密（bcrypt）✅
+- [x] 实现 RBAC 权限控制 ✅ 完成于 2025-12-22 10:39
+  - [x] 定义角色枚举（patient, doctor, health_manager, admin）✅
+  - [x] 定义权限枚举（参考 design.md 3.1.2）✅
+  - [x] 创建角色权限映射 ✅
+  - [x] 实现权限守卫（PermissionsGuard）✅
+  - [x] 创建权限装饰器（@Permissions）✅
+- [-] 编写认证模块测试 🔄 进行中
   - [ ] 单元测试：JWT 生成和验证
   - [ ] 单元测试：密码加密和验证
   - [ ] 集成测试：注册流程
   - [ ] 集成测试：登录流程
   - [ ] 集成测试：受保护路由访问
+
+**实现细节**：
+
+- ✅ JWT Token 双令牌机制（Access Token 15分钟，Refresh Token 7天）
+- ✅ 密码使用 bcrypt 加密（10轮加盐）
+- ✅ 4种角色定义（PATIENT, DOCTOR, HEALTH_MANAGER, ADMIN）
+- ✅ 9种权限定义（健康数据、用户管理、AI功能、系统配置）
+- ✅ 完整的 DTO 验证（用户名、密码强度、邮箱、手机号格式）
+- ✅ 统一的 API 响应格式
+- ✅ PrismaModule 和 PrismaService 创建
+- ✅ TypeScript 编译通过
 
 **关联需求**：需求 #18（数据安全与隐私保护）
 
