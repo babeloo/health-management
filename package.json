@@ -12,10 +12,10 @@
     "docker:up": "docker-compose up -d",
     "docker:down": "docker-compose down",
     "docker:logs": "docker-compose logs -f",
-    "lint": "pnpm -r lint",
-    "format": "pnpm -r format",
+    "lint": "pnpm -r --parallel lint",
+    "format": "pnpm -r --parallel format",
     "test": "pnpm -r test",
-    "test:unit": "pnpm -r test:unit",
+    "test:unit": "pnpm -r --parallel test:unit",
     "test:e2e": "pnpm -r test:e2e"
   },
   "engines": {

@@ -10,6 +10,7 @@ color: pink
 ## 核心技术栈与强制规范
 
 ### 后端开发 (NestJS)
+
 1. **DTO 规范（强制执行）**：
    - 所有 API 端点必须定义对应的 DTO
    - 使用 `class-validator` 进行数据验证
@@ -32,7 +33,13 @@ color: pink
    - 使用 Prisma Migrate 管理 schema 变更
    - 适当使用 `include` 和 `select` 优化查询性能
 
+4. **测试要求（强制执行）**：
+   - 所有 Service 必须配套单元测试（Vitest）
+   - 所有 Controller 必须配套集成测试（Supertest）
+   - 测试覆盖率目标 > 70%
+
 ### 前端开发 (React + TypeScript)
+
 1. **状态管理（Zustand 优先）**：
    - 全局状态优先使用 Zustand
    - Store 设计遵循单一职责原则
@@ -44,30 +51,46 @@ color: pink
    - 使用函数组件和 Hooks
    - Props 必须定义 TypeScript 接口
    - 合理拆分组件，保持单一职责
+   - 组件逻辑与 UI 尽量分离以便测试
    - 使用 React.memo 优化性能（必要时）
    - 表单处理使用 react-hook-form
 
-## 开发工作流
+## 开发工作流 (TDD 模式)
 
 1. **需求分析**：
    - 明确功能边界和数据流
    - 识别需要的 API 端点
    - 设计数据库 schema
+   - 明确接口契约与数据模型
 
-2. **后端开发顺序**：
+2. **测试先行（Red Phase）**：
+   - 创建 `*.spec.ts` 文件
+   - 编写失败的测试用例
+   - 定义预期行为和边界条件
+
+3. **后端开发顺序（Green Phase）**：
    - 编写/更新 Prisma Schema
    - 运行 migration
    - 创建 DTO 并配置验证规则
    - 实现 Service 业务逻辑
    - 创建 Controller 端点
-   - 编写单元测试（关键业务逻辑）
+   - 运行测试，确保通过
 
-3. **前端开发顺序**：
+4. **前端开发顺序**：
    - 定义 TypeScript 类型/接口
    - 创建 Zustand store（如需要）
    - 实现 API 调用函数
    - 开发 UI 组件
    - 集成状态管理和数据获取
+
+5. **重构（Refactor Phase）**：
+   - 优化代码，保持测试通过
+   - 消除重复代码
+   - 提升可读性和可维护性
+
+6. **集成验证**：
+   - 运行 `pnpm test:unit` 确保提交前无报错
+   - 验证端到端功能
 
 ## 代码质量标准
 
@@ -87,6 +110,7 @@ color: pink
    - 使用 barrel exports (index.ts) 简化导入
 
 ## 工具链要求
+
 - 使用 **pnpm** 作为 Node.js 包管理器
 - 遵循项目的 ESLint 和 Prettier 配置
 - 编写清晰的 commit message
@@ -98,12 +122,14 @@ color: pink
 - 发现状态管理混乱时，建议重构为 Zustand
 - 遇到类型不安全的代码，提供类型安全的替代方案
 - 对于复杂业务逻辑，主动建议添加单元测试
+- 发现缺少测试覆盖时，主动提供测试用例示例
 
 ## 输出规范
 
 - 所有响应和代码注释使用简体中文
 - 代码变量和函数命名使用英文（遵循 camelCase/PascalCase）
 - 提供完整可运行的代码示例
+- **必须包含对应的测试代码块**
 - 解释关键设计决策和最佳实践理由
 - 当需要多个文件时，清晰标注文件路径
 

@@ -75,7 +75,7 @@ export class UserService {
       where: { id },
       data: {
         fullName: updateUserDto.fullName,
-        gender: updateUserDto.gender as any, // 类型转换以匹配 Prisma Gender 枚举
+        gender: updateUserDto.gender as 'MALE' | 'FEMALE' | 'OTHER' | undefined,
         birthDate: updateUserDto.birthDate ? new Date(updateUserDto.birthDate) : undefined,
         avatarUrl: updateUserDto.avatarUrl,
         updatedAt: new Date(),
@@ -111,7 +111,7 @@ export class UserService {
     const skip = (page - 1) * limit;
 
     // 构建查询条件
-    const where: any = {};
+    const where: Record<string, unknown> = {};
 
     if (role) {
       where.role = role;

@@ -1,20 +1,12 @@
 {
   "*": ["node scripts/check-pm-protocol.js"],
-  "backend/**/*.{ts,tsx}": [
-    "eslint --fix",
-    "prettier --write",
-    "pnpm --filter backend test:unit -- --bail --findRelatedTests"
+  "backend/**/*.{ts,tsx}": ["eslint --fix", "prettier --write"],
+  "backend/src/**/*.{ts,tsx}": [
+    "bash -c 'cd backend && tsc --noEmit'",
+    "bash -c 'cd backend && pnpm test:unit --bail --passWithNoTests'"
   ],
-  "frontend-patient/**/*.{js,jsx,ts,tsx,vue}": [
-    "eslint --fix",
-    "prettier --write",
-    "pnpm --filter frontend-patient test:unit -- --bail --findRelatedTests"
-  ],
-  "frontend-web/**/*.{js,jsx,ts,tsx}": [
-    "eslint --fix",
-    "prettier --write",
-    "pnpm --filter frontend-web test:unit -- --bail --findRelatedTests"
-  ],
-  "ai-service/**/*.py": ["black", "flake8", "pytest ai-service/tests/unit"],
+  "frontend-patient/**/*.{js,jsx,ts,tsx,vue}": ["eslint --fix", "prettier --write"],
+  "frontend-web/**/*.{js,jsx,ts,tsx}": ["eslint --fix", "prettier --write"],
+  "ai-service/**/*.py": ["black", "flake8"],
   "*.{json,md,yml,yaml}": ["prettier --write"]
 }

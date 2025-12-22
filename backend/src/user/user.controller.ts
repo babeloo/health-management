@@ -13,7 +13,6 @@ import {
   UseInterceptors,
   ParseFilePipe,
   MaxFileSizeValidator,
-  FileTypeValidator,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { UserService } from './user.service';
@@ -22,6 +21,7 @@ import { JwtAuthGuard } from '../auth/guards';
 import { CurrentUser } from '../auth/decorators';
 import { CurrentUser as CurrentUserType } from '../auth/interfaces/user.interface';
 import { FileStorageService } from '../common/storage/file-storage.service';
+import { ImageFileTypeValidator } from '../common/validators/image-file-type.validator';
 
 /**
  * 用户控制器
@@ -98,7 +98,7 @@ export class UserController {
       new ParseFilePipe({
         validators: [
           new MaxFileSizeValidator({ maxSize: 5 * 1024 * 1024 }), // 5MB
-          new FileTypeValidator({ fileType: /(jpg|jpeg|png|gif)$/ }),
+          new ImageFileTypeValidator({}),
         ],
       }),
     )

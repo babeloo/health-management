@@ -1,15 +1,18 @@
 import { IsOptional, IsString, IsEnum, IsInt, Min } from 'class-validator';
+import { Type } from 'class-transformer';
 
 /**
  * 用户列表查询 DTO
  */
 export class QueryUsersDto {
   @IsOptional()
+  @Type(() => Number)
   @IsInt()
   @Min(1)
   page?: number = 1;
 
   @IsOptional()
+  @Type(() => Number)
   @IsInt()
   @Min(1)
   limit?: number = 20;

@@ -222,19 +222,20 @@ describe('FileStorageService', () => {
       mockMinioClient.putObject.mockResolvedValue({} as any);
       mockMinioClient.presignedGetObject.mockResolvedValue('https://example.com/url');
 
-      // 使用 Promise.all 替代循环
-      await Promise.all(
-        testCases.map(async ({ ext, expected }) => {
-          await service.uploadHealthDocument(Buffer.from('test'), 'user-123', `test${ext}`);
+      // 串行执行测试以确保 mock 调用顺序正确
+      // eslint-disable-next-line no-restricted-syntax
+      for (const { ext, expected } of testCases) {
+        mockMinioClient.putObject.mockClear();
 
-          const putObjectCall =
-            mockMinioClient.putObject.mock.calls[mockMinioClient.putObject.mock.calls.length - 1];
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          const metadata = putObjectCall[4] as Record<string, any>;
+        // eslint-disable-next-line no-await-in-loop
+        await service.uploadHealthDocument(Buffer.from('test'), 'user-123', `test${ext}`);
 
-          expect(metadata['Content-Type']).toBe(expected);
-        }),
-      );
+        const putObjectCall = mockMinioClient.putObject.mock.calls[0];
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const metadata = putObjectCall[4] as Record<string, any>;
+
+        expect(metadata['Content-Type']).toBe(expected);
+      }
     });
 
     it('应该为未知文件类型返回默认 Content-Type', async () => {
