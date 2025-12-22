@@ -59,6 +59,13 @@ export class FileStorageService implements OnModuleInit {
       }
       this.bucketInitialized = true;
     } catch (error) {
+      // 特殊处理：如果 bucket 已存在，不视为错误
+      if (error.message && error.message.includes('already own it')) {
+        this.logger.log(`Bucket "${this.bucketName}" already exists (concurrent creation)`);
+        this.bucketInitialized = true;
+        return;
+      }
+
       this.logger.error(`Failed to ensure bucket exists: ${error.message}`);
       // 在测试环境中，不抛出错误，允许应用继续启动
       if (process.env.NODE_ENV !== 'test') {
