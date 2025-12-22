@@ -2,7 +2,11 @@ name: CI
 
 on:
   push:
-    branches: [master, main, develop]
+    branches:
+      - master
+      - main
+      - develop
+      - 'fix/**'
   pull_request:
     branches: [master, main, develop]
 
@@ -43,6 +47,22 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Start MinIO
+        run: |
+          docker run -d \
+            --name minio \
+            -p 9000:9000 \
+            -p 9001:9001 \
+            -e MINIO_ROOT_USER=admin \
+            -e MINIO_ROOT_PASSWORD=minio123 \
+            minio/minio:latest server /data --console-address ":9001"
+
+          # 等待 MinIO 启动
+          sleep 5
+
+          # 验证 MinIO 是否启动成功
+          curl -f http://localhost:9000/minio/health/live || exit 1
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v2
