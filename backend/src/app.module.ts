@@ -6,6 +6,7 @@ import { AppService } from './app.service';
 import { createWinstonLogger } from './config/winston.config';
 import { LoggerMiddleware } from './common/middlewares/logger.middleware';
 import { AuthModule } from './auth/auth.module';
+import { UserModule } from './user/user.module';
 import { PrismaModule } from './common/prisma/prisma.module';
 
 @Module({
@@ -30,6 +31,9 @@ import { PrismaModule } from './common/prisma/prisma.module';
 
     // 认证授权模块
     AuthModule,
+
+    // 用户管理模块
+    UserModule,
   ],
   controllers: [AppController],
   providers: [AppService],
