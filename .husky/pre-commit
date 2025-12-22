@@ -16,7 +16,7 @@ echo "${BLUE}${DIVIDER}${NC}"
 echo "${BLUE}${BOLD}[PM Protocol] 正在验证任务进度...${NC}"
 
 STAGED_FILES=$(git diff --cached --name-only)
-CODE_CHANGES=$(echo "$STAGED_FILES" | grep -E "^src/|^app/|.*\.ts$|.*\.js$|.*\.py$|.*\.vue$")
+CODE_CHANGES=$(echo "$STAGED_FILES" | grep -E "^(backend|frontend-patient|frontend-web|ai-service)/.*\.(ts|tsx|js|jsx|py|vue)$")
 
 if [ -n "$CODE_CHANGES" ] && ! echo "$STAGED_FILES" | grep -q "tasks.md"; then
     echo "${RED}${BOLD}❌ 验证失败: 发现代码变动但未更新 tasks.md${NC}"
@@ -29,7 +29,7 @@ echo "${GREEN}✅ 进度验证通过${NC}"
 
 # 2. 执行 lint-staged
 echo "${BLUE}${BOLD}[Lint] 正在运行代码规范检查...${NC}"
-npx lint-staged
+pnpm exec lint-staged
 
 # 检查 lint-staged 的退出状态
 if [ $? -ne 0 ]; then
