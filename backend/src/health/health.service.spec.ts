@@ -5,14 +5,23 @@ import {
   BadRequestException,
   ConflictException,
 } from '@nestjs/common';
-import { CheckInType } from '../generated/prisma/client';
+import { CheckInType, RiskLevel as PrismaRiskLevel } from '../generated/prisma/client';
 import { HealthService } from './health.service';
 import { PrismaService } from '../common/prisma/prisma.service';
 import { FileStorageService } from '../common/storage/file-storage.service';
 import { InfluxService } from '../common/influx/influx.service';
+import { RiskCalculationService } from './services/risk-calculation.service';
 import { CreateHealthRecordDto } from './dto/create-health-record.dto';
 import { UpdateHealthRecordDto } from './dto/update-health-record.dto';
 import { CreateCheckInDto } from './dto/create-check-in.dto';
+import {
+  CreateRiskAssessmentDto,
+  RiskAssessmentType,
+  ExerciseFrequency,
+  FamilyHistory,
+  Gender,
+  RiskLevel,
+} from './dto/risk-assessment.dto';
 
 describe('HealthService', () => {
   let service: HealthService;
@@ -33,6 +42,14 @@ describe('HealthService', () => {
       findMany: jest.fn(),
       count: jest.fn(),
     },
+    user: {
+      findUnique: jest.fn(),
+    },
+    riskAssessment: {
+      create: jest.fn(),
+      findMany: jest.fn(),
+      count: jest.fn(),
+    },
   };
 
   const mockFileStorageService = {
@@ -44,6 +61,11 @@ describe('HealthService', () => {
     writeBloodSugar: jest.fn().mockResolvedValue(undefined),
     queryBloodPressure: jest.fn().mockResolvedValue([]),
     queryBloodSugar: jest.fn().mockResolvedValue([]),
+  };
+
+  const mockRiskCalculationService = {
+    calculateDiabetesRisk: jest.fn(),
+    calculateStrokeRisk: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -61,6 +83,10 @@ describe('HealthService', () => {
         {
           provide: InfluxService,
           useValue: mockInfluxService,
+        },
+        {
+          provide: RiskCalculationService,
+          useValue: mockRiskCalculationService,
         },
       ],
     }).compile();
@@ -901,6 +927,551 @@ describe('HealthService', () => {
       expect(result.monthlyStats.totalCheckIns).toBe(0);
       expect(result.monthlyStats.totalPoints).toBe(0);
       expect(result.monthlyStats.completionRate).toBe(0);
+    });
+  });
+
+  // ==================== 风险评估功能测试 ====================
+
+  describe('createRiskAssessment', () => {
+    it('应该成功创建糖尿病风险评估', async () => {
+      const userId = 'user-123';
+      const createDto: CreateRiskAssessmentDto = {
+        user_id: 'user-123',
+        assessment_type: RiskAssessmentType.DIABETES,
+        diabetes_questionnaire: {
+          age: 45,
+          bmi: 26.5,
+          waist_circumference: 95,
+          exercise_frequency: ExerciseFrequency.RARELY,
+          high_sugar_diet: true,
+          hypertension: true,
+          blood_glucose_history: false,
+          family_history: FamilyHistory.FIRST,
+        },
+        include_device_data: false,
+      };
+
+      const riskCalculationResult = {
+        score: 75,
+        level: RiskLevel.HIGH,
+        recommendations: ['建议定期检查血糖', '增加运动量'],
+        details: {
+          age: { score: 2, description: '45岁' },
+          bmi: { score: 1, description: 'BMI 26.5' },
+        },
+      };
+
+      const expectedAssessment = {
+        id: 'assessment-123',
+        userId,
+        type: RiskAssessmentType.DIABETES,
+        riskLevel: PrismaRiskLevel.HIGH, // 数据库使用大写枚举
+        riskScore: 75,
+        questionnaireData: createDto.diabetes_questionnaire,
+        deviceData: null,
+        resultDetails: riskCalculationResult.details,
+        aiRecommendations: '建议定期检查血糖\n增加运动量',
+        assessedAt: expect.any(Date),
+      };
+
+      mockPrismaService.user.findUnique.mockResolvedValue({ id: userId });
+      mockRiskCalculationService.calculateDiabetesRisk.mockReturnValue(riskCalculationResult);
+      mockPrismaService.riskAssessment.create.mockResolvedValue(expectedAssessment);
+
+      const result = await service.createRiskAssessment(createDto);
+
+      expect(result).toEqual(expectedAssessment);
+      expect(mockPrismaService.user.findUnique).toHaveBeenCalledWith({ where: { id: 'user-123' } });
+      expect(mockRiskCalculationService.calculateDiabetesRisk).toHaveBeenCalledWith(
+        createDto.diabetes_questionnaire,
+      );
+      expect(mockPrismaService.riskAssessment.create).toHaveBeenCalledWith({
+        data: {
+          userId: 'user-123',
+          type: RiskAssessmentType.DIABETES,
+          riskLevel: PrismaRiskLevel.HIGH,
+          riskScore: 75,
+          questionnaireData: createDto.diabetes_questionnaire,
+          deviceData: undefined,
+          resultDetails: riskCalculationResult.details,
+          aiRecommendations: '建议定期检查血糖\n增加运动量',
+        },
+      });
+    });
+
+    it('应该成功创建卒中风险评估', async () => {
+      const userId = 'user-456';
+      const createDto: CreateRiskAssessmentDto = {
+        user_id: 'user-456',
+        assessment_type: RiskAssessmentType.STROKE,
+        stroke_questionnaire: {
+          age: 60,
+          gender: Gender.FEMALE,
+          systolic_bp: 145,
+          has_diabetes: true,
+          smoking: true,
+          cvd_history: false,
+          atrial_fibrillation: false,
+        },
+        include_device_data: false,
+      };
+
+      const riskCalculationResult = {
+        score: 85,
+        level: RiskLevel.HIGH,
+        recommendations: ['立即戒烟', '控制血压'],
+        details: {
+          smoking: { score: 3, description: '当前吸烟' },
+          systolicBP: { score: 2, description: '收缩压 145 mmHg' },
+        },
+      };
+
+      const expectedAssessment = {
+        id: 'assessment-456',
+        userId,
+        type: RiskAssessmentType.STROKE,
+        riskLevel: PrismaRiskLevel.HIGH,
+        riskScore: 85,
+        questionnaireData: createDto.stroke_questionnaire,
+        deviceData: null,
+        resultDetails: riskCalculationResult.details,
+        aiRecommendations: '立即戒烟\n控制血压',
+        assessedAt: expect.any(Date),
+      };
+
+      mockPrismaService.user.findUnique.mockResolvedValue({ id: userId });
+      mockRiskCalculationService.calculateStrokeRisk.mockReturnValue(riskCalculationResult);
+      mockPrismaService.riskAssessment.create.mockResolvedValue(expectedAssessment);
+
+      const result = await service.createRiskAssessment(createDto);
+
+      expect(result).toEqual(expectedAssessment);
+      expect(mockRiskCalculationService.calculateStrokeRisk).toHaveBeenCalledWith(
+        createDto.stroke_questionnaire,
+      );
+    });
+
+    it('应该在用户不存在时抛出 NotFoundException', async () => {
+      const createDto: CreateRiskAssessmentDto = {
+        user_id: 'non-existing-user-999',
+        assessment_type: RiskAssessmentType.DIABETES,
+        diabetes_questionnaire: {
+          age: 45,
+          bmi: 26.5,
+          waist_circumference: 95,
+          exercise_frequency: ExerciseFrequency.WEEKLY,
+          high_sugar_diet: false,
+          hypertension: false,
+          blood_glucose_history: false,
+          family_history: FamilyHistory.NONE,
+        },
+      };
+
+      mockPrismaService.user.findUnique.mockResolvedValue(null);
+
+      await expect(service.createRiskAssessment(createDto)).rejects.toThrow(NotFoundException);
+      expect(mockPrismaService.riskAssessment.create).not.toHaveBeenCalled();
+    });
+
+    it('应该在缺少问卷数据时抛出 BadRequestException', async () => {
+      const createDto: CreateRiskAssessmentDto = {
+        user_id: 'user-123',
+        assessment_type: RiskAssessmentType.DIABETES,
+        // 缺少 diabetes_questionnaire
+      };
+
+      mockPrismaService.user.findUnique.mockResolvedValue({ id: 'user-123' });
+
+      await expect(service.createRiskAssessment(createDto)).rejects.toThrow(BadRequestException);
+    });
+
+    it('应该包含设备数据（includeDeviceData=true）', async () => {
+      const userId = 'user-789';
+      const createDto: CreateRiskAssessmentDto = {
+        user_id: 'user-789',
+        assessment_type: RiskAssessmentType.DIABETES,
+        diabetes_questionnaire: {
+          age: 50,
+          bmi: 28.0,
+          waist_circumference: 100,
+          exercise_frequency: ExerciseFrequency.RARELY,
+          high_sugar_diet: true,
+          hypertension: true,
+          blood_glucose_history: true,
+          family_history: FamilyHistory.FIRST,
+        },
+        include_device_data: true,
+      };
+
+      const deviceDataFromInflux = {
+        bloodPressure: [
+          { systolic: 140, diastolic: 90, timestamp: '2025-12-20' },
+          { systolic: 142, diastolic: 92, timestamp: '2025-12-21' },
+        ],
+        bloodSugar: [
+          { value: 6.5, timing: 'fasting', timestamp: '2025-12-20' },
+          { value: 7.2, timing: 'after_meal', timestamp: '2025-12-21' },
+        ],
+      };
+
+      const riskCalculationResult = {
+        score: 80,
+        level: RiskLevel.HIGH,
+        recommendations: ['建议定期检查血糖', '控制饮食'],
+        details: {
+          bmi: { score: 2, description: 'BMI 28.0' },
+        },
+      };
+
+      mockPrismaService.user.findUnique.mockResolvedValue({ id: userId });
+      mockInfluxService.queryBloodPressure.mockResolvedValue(deviceDataFromInflux.bloodPressure);
+      mockInfluxService.queryBloodSugar.mockResolvedValue(deviceDataFromInflux.bloodSugar);
+      mockRiskCalculationService.calculateDiabetesRisk.mockReturnValue(riskCalculationResult);
+      mockPrismaService.riskAssessment.create.mockResolvedValue({
+        id: 'assessment-789',
+        userId,
+        type: RiskAssessmentType.DIABETES,
+        riskLevel: PrismaRiskLevel.HIGH,
+        riskScore: 80,
+        deviceData: deviceDataFromInflux,
+        resultDetails: riskCalculationResult.details,
+        aiRecommendations: '建议定期检查血糖\n控制饮食',
+        assessedAt: expect.any(Date),
+      });
+
+      const result = await service.createRiskAssessment(createDto);
+
+      expect(result.deviceData).toEqual(deviceDataFromInflux);
+      expect(mockInfluxService.queryBloodSugar).toHaveBeenCalled();
+    });
+  });
+
+  describe('getRiskAssessments', () => {
+    it('应该成功查询评估列表（无筛选条件）', async () => {
+      const userId = 'user-123';
+      const query = {
+        page: 1,
+        limit: 20,
+      };
+
+      const mockAssessments = [
+        {
+          id: 'assessment-1',
+          userId,
+          type: RiskAssessmentType.DIABETES,
+          riskLevel: PrismaRiskLevel.MEDIUM,
+          riskScore: 60,
+          assessedAt: new Date('2025-12-20'),
+          createdAt: new Date(),
+        },
+        {
+          id: 'assessment-2',
+          userId,
+          type: RiskAssessmentType.STROKE,
+          riskLevel: PrismaRiskLevel.LOW,
+          riskScore: 30,
+          assessedAt: new Date('2025-12-15'),
+          createdAt: new Date(),
+        },
+      ];
+
+      mockPrismaService.riskAssessment.count.mockResolvedValue(2);
+      mockPrismaService.riskAssessment.findMany.mockResolvedValue(mockAssessments);
+
+      const result = await service.getRiskAssessments(userId, query);
+
+      expect(result.items).toEqual(mockAssessments);
+      expect(result.total).toBe(2);
+      expect(result.page).toBe(1);
+      expect(result.limit).toBe(20);
+    });
+
+    it('应该按评估类型筛选', async () => {
+      const userId = 'user-123';
+      const query = {
+        assessment_type: RiskAssessmentType.DIABETES,
+        page: 1,
+        limit: 20,
+      };
+
+      const mockAssessments = [
+        {
+          id: 'assessment-1',
+          userId,
+          type: RiskAssessmentType.DIABETES,
+          riskLevel: PrismaRiskLevel.HIGH,
+          riskScore: 75,
+          assessedAt: new Date(),
+        },
+      ];
+
+      mockPrismaService.riskAssessment.count.mockResolvedValue(1);
+      mockPrismaService.riskAssessment.findMany.mockResolvedValue(mockAssessments);
+
+      const result = await service.getRiskAssessments(userId, query);
+
+      expect(result.items).toHaveLength(1);
+      expect(mockPrismaService.riskAssessment.findMany).toHaveBeenCalledWith({
+        where: {
+          userId,
+          type: RiskAssessmentType.DIABETES,
+        },
+        orderBy: { assessedAt: 'desc' },
+        skip: 0,
+        take: 20,
+      });
+    });
+
+    it('应该按风险等级筛选', async () => {
+      const userId = 'user-123';
+      const query = {
+        risk_level: RiskLevel.HIGH,
+        page: 1,
+        limit: 20,
+      };
+
+      mockPrismaService.riskAssessment.count.mockResolvedValue(0);
+      mockPrismaService.riskAssessment.findMany.mockResolvedValue([]);
+
+      await service.getRiskAssessments(userId, query);
+
+      expect(mockPrismaService.riskAssessment.findMany).toHaveBeenCalledWith({
+        where: {
+          userId,
+          riskLevel: RiskLevel.HIGH,
+        },
+        orderBy: { assessedAt: 'desc' },
+        skip: 0,
+        take: 20,
+      });
+    });
+
+    it('应该按日期范围筛选', async () => {
+      const userId = 'user-123';
+      const query = {
+        start_date: '2025-12-01',
+        end_date: '2025-12-31',
+        page: 1,
+        limit: 20,
+      };
+
+      mockPrismaService.riskAssessment.count.mockResolvedValue(0);
+      mockPrismaService.riskAssessment.findMany.mockResolvedValue([]);
+
+      await service.getRiskAssessments(userId, query);
+
+      expect(mockPrismaService.riskAssessment.findMany).toHaveBeenCalledWith({
+        where: {
+          userId,
+          assessedAt: {
+            gte: new Date('2025-12-01'),
+            lte: new Date('2025-12-31'),
+          },
+        },
+        orderBy: { assessedAt: 'desc' },
+        skip: 0,
+        take: 20,
+      });
+    });
+
+    it('应该正确处理分页', async () => {
+      const userId = 'user-123';
+      const query = {
+        page: 2,
+        limit: 10,
+      };
+
+      mockPrismaService.riskAssessment.count.mockResolvedValue(25);
+      mockPrismaService.riskAssessment.findMany.mockResolvedValue([]);
+
+      const result = await service.getRiskAssessments(userId, query);
+
+      expect(result.page).toBe(2);
+      expect(result.limit).toBe(10);
+      expect(mockPrismaService.riskAssessment.findMany).toHaveBeenCalledWith({
+        where: { userId },
+        orderBy: { assessedAt: 'desc' },
+        skip: 10,
+        take: 10,
+      });
+    });
+
+    it('应该在用户无评估时返回空列表', async () => {
+      const userId = 'user-without-assessment';
+      const query = { page: 1, limit: 20 };
+
+      mockPrismaService.riskAssessment.count.mockResolvedValue(0);
+      mockPrismaService.riskAssessment.findMany.mockResolvedValue([]);
+
+      const result = await service.getRiskAssessments(userId, query);
+
+      expect(result.items).toEqual([]);
+      expect(result.total).toBe(0);
+    });
+  });
+
+  describe('compareRiskAssessments', () => {
+    it('应该成功对比多次评估', async () => {
+      const userId = 'user-123';
+      const dto = {
+        assessment_type: RiskAssessmentType.DIABETES,
+        count: 3,
+      };
+
+      const mockAssessments = [
+        {
+          id: 'assessment-3',
+          assessedAt: new Date('2025-12-22'),
+          riskLevel: PrismaRiskLevel.HIGH,
+          riskScore: 80,
+        },
+        {
+          id: 'assessment-2',
+          assessedAt: new Date('2025-12-15'),
+          riskLevel: PrismaRiskLevel.MEDIUM,
+          riskScore: 60,
+        },
+        {
+          id: 'assessment-1',
+          assessedAt: new Date('2025-12-01'),
+          riskLevel: PrismaRiskLevel.LOW,
+          riskScore: 40,
+        },
+      ];
+
+      mockPrismaService.riskAssessment.findMany.mockResolvedValue(mockAssessments);
+
+      const result = await service.compareRiskAssessments(userId, dto);
+
+      expect(result.assessmentType).toBe(RiskAssessmentType.DIABETES);
+      expect(result.comparisons).toHaveLength(3);
+      expect(result.trend).toBe('increased');
+      expect(result.avgScore).toBe(60);
+      expect(result.maxScore).toBe(80);
+      expect(result.minScore).toBe(40);
+    });
+
+    it('应该正确计算趋势（decreased）', async () => {
+      const userId = 'user-123';
+      const dto = {
+        assessment_type: RiskAssessmentType.STROKE,
+        count: 3,
+      };
+
+      const mockAssessments = [
+        {
+          id: '1',
+          assessedAt: new Date('2025-12-22'),
+          riskLevel: PrismaRiskLevel.LOW,
+          riskScore: 30,
+        },
+        {
+          id: '2',
+          assessedAt: new Date('2025-12-15'),
+          riskLevel: PrismaRiskLevel.MEDIUM,
+          riskScore: 55,
+        },
+        {
+          id: '3',
+          assessedAt: new Date('2025-12-01'),
+          riskLevel: PrismaRiskLevel.HIGH,
+          riskScore: 75,
+        },
+      ];
+
+      mockPrismaService.riskAssessment.findMany.mockResolvedValue(mockAssessments);
+
+      const result = await service.compareRiskAssessments(userId, dto);
+
+      expect(result.trend).toBe('decreased');
+    });
+
+    it('应该正确计算趋势（stable）', async () => {
+      const userId = 'user-123';
+      const dto = {
+        assessment_type: RiskAssessmentType.DIABETES,
+        count: 3,
+      };
+
+      const mockAssessments = [
+        {
+          id: '1',
+          assessedAt: new Date('2025-12-22'),
+          riskLevel: PrismaRiskLevel.MEDIUM,
+          riskScore: 60,
+        },
+        {
+          id: '2',
+          assessedAt: new Date('2025-12-15'),
+          riskLevel: PrismaRiskLevel.MEDIUM,
+          riskScore: 62,
+        },
+        {
+          id: '3',
+          assessedAt: new Date('2025-12-01'),
+          riskLevel: PrismaRiskLevel.MEDIUM,
+          riskScore: 58,
+        },
+      ];
+
+      mockPrismaService.riskAssessment.findMany.mockResolvedValue(mockAssessments);
+
+      const result = await service.compareRiskAssessments(userId, dto);
+
+      expect(result.trend).toBe('stable');
+    });
+
+    it('应该正确计算统计信息', async () => {
+      const userId = 'user-123';
+      const dto = {
+        assessment_type: RiskAssessmentType.DIABETES,
+        count: 4,
+      };
+
+      const mockAssessments = [
+        { id: '1', assessedAt: new Date(), riskLevel: PrismaRiskLevel.HIGH, riskScore: 80 },
+        { id: '2', assessedAt: new Date(), riskLevel: PrismaRiskLevel.HIGH, riskScore: 70 },
+        { id: '3', assessedAt: new Date(), riskLevel: PrismaRiskLevel.MEDIUM, riskScore: 50 },
+        { id: '4', assessedAt: new Date(), riskLevel: PrismaRiskLevel.LOW, riskScore: 20 },
+      ];
+
+      mockPrismaService.riskAssessment.findMany.mockResolvedValue(mockAssessments);
+
+      const result = await service.compareRiskAssessments(userId, dto);
+
+      expect(result.avgScore).toBe(55);
+      expect(result.maxScore).toBe(80);
+      expect(result.minScore).toBe(20);
+    });
+
+    it('应该在评估不足 2 次时抛出 BadRequestException', async () => {
+      const userId = 'user-123';
+      const dto = {
+        assessment_type: RiskAssessmentType.DIABETES,
+        count: 3,
+      };
+
+      mockPrismaService.riskAssessment.findMany.mockResolvedValue([
+        { id: '1', assessedAt: new Date(), riskLevel: PrismaRiskLevel.MEDIUM, riskScore: 60 },
+      ]);
+
+      await expect(service.compareRiskAssessments(userId, dto)).rejects.toThrow(
+        BadRequestException,
+      );
+    });
+
+    it('应该在用户无评估时抛出 BadRequestException', async () => {
+      const userId = 'user-without-assessment';
+      const dto = {
+        assessment_type: RiskAssessmentType.DIABETES,
+        count: 3,
+      };
+
+      mockPrismaService.riskAssessment.findMany.mockResolvedValue([]);
+
+      await expect(service.compareRiskAssessments(userId, dto)).rejects.toThrow(
+        BadRequestException,
+      );
     });
   });
 });

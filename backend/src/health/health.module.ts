@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { HealthController } from './health.controller';
 import { HealthService } from './health.service';
+import { RiskCalculationService } from './services/risk-calculation.service';
 import { PrismaModule } from '../common/prisma/prisma.module';
 import { StorageModule } from '../common/storage/storage.module';
 import { InfluxModule } from '../common/influx/influx.module';
@@ -12,7 +13,7 @@ import { InfluxModule } from '../common/influx/influx.module';
 @Module({
   imports: [PrismaModule, StorageModule, InfluxModule],
   controllers: [HealthController],
-  providers: [HealthService],
+  providers: [HealthService, RiskCalculationService],
   exports: [HealthService],
 })
 export class HealthModule {}

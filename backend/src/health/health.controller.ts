@@ -11,6 +11,7 @@ import {
   UploadedFile,
   BadRequestException,
   PayloadTooLargeException,
+  ForbiddenException,
   Query,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -34,6 +35,9 @@ import {
   CheckInTrendQueryDto,
   CheckInCalendarQueryDto,
   GetHealthTrendDto,
+  CreateRiskAssessmentDto,
+  QueryRiskAssessmentsDto,
+  CompareRiskAssessmentsDto,
 } from './dto';
 
 /**
@@ -380,6 +384,197 @@ export class HealthController {
   })
   async getHealthTrend(@Param('userId') userId: string, @Query() query: GetHealthTrendDto) {
     const result = await this.healthService.getHealthTrend(userId, query);
+
+    return {
+      success: true,
+      data: result,
+      timestamp: new Date().toISOString(),
+    };
+  }
+
+  // ==================== 风险评估功能 ====================
+
+  /**
+   * 创建风险评估
+   * POST /api/v1/health/assessments
+   */
+  @Post('assessments')
+  @ApiOperation({ summary: '创建风险评估' })
+  @ApiResponse({
+    status: 201,
+    description: '评估创建成功',
+  })
+  @ApiResponse({
+    status: 400,
+    description: '请求参数错误',
+  })
+  @ApiResponse({
+    status: 401,
+    description: '未授权',
+  })
+  @ApiResponse({
+    status: 403,
+    description: '无权限',
+  })
+  async createRiskAssessment(
+    @Request() req: RequestWithUser,
+    @Body() createDto: CreateRiskAssessmentDto,
+  ) {
+    const currentUserId = req.user.id;
+    const currentUserRole = req.user.role;
+    const targetUserId = createDto.user_id; // user_id 现在已经是字符串类型
+
+    // 权限验证：患者只能创建自己的评估
+    if (currentUserRole === UserRole.PATIENT && currentUserId !== targetUserId) {
+      throw new ForbiddenException('患者只能创建自己的风险评估');
+    }
+
+    // 医生/健康管理师/管理员可以为患者创建评估
+    const allowedRoles: UserRole[] = [UserRole.DOCTOR, UserRole.HEALTH_MANAGER, UserRole.ADMIN];
+    if (currentUserId !== targetUserId && !allowedRoles.includes(currentUserRole)) {
+      throw new ForbiddenException('无权创建该用户的风险评估');
+    }
+
+    const result = await this.healthService.createRiskAssessment(createDto);
+
+    return {
+      success: true,
+      data: result,
+      timestamp: new Date().toISOString(),
+    };
+  }
+
+  /**
+   * 查询风险评估历史
+   * GET /api/v1/health/assessments/:userId
+   */
+  @Get('assessments/:userId')
+  @ApiOperation({ summary: '查询风险评估历史' })
+  @ApiQuery({
+    name: 'assessment_type',
+    required: false,
+    description: '评估类型筛选',
+    enum: ['diabetes', 'stroke', 'vascular_age', 'heart_disease'],
+  })
+  @ApiQuery({
+    name: 'risk_level',
+    required: false,
+    description: '风险等级筛选',
+    enum: ['low', 'medium', 'high'],
+  })
+  @ApiQuery({
+    name: 'start_date',
+    required: false,
+    description: '开始日期（ISO 8601 格式）',
+    example: '2025-01-01T00:00:00.000Z',
+  })
+  @ApiQuery({
+    name: 'end_date',
+    required: false,
+    description: '结束日期（ISO 8601 格式）',
+    example: '2025-12-31T23:59:59.999Z',
+  })
+  @ApiQuery({
+    name: 'page',
+    required: false,
+    description: '页码',
+    type: Number,
+    example: 1,
+  })
+  @ApiQuery({
+    name: 'limit',
+    required: false,
+    description: '每页数量',
+    type: Number,
+    example: 20,
+  })
+  @ApiResponse({
+    status: 200,
+    description: '查询成功',
+  })
+  @ApiResponse({
+    status: 403,
+    description: '无权访问该用户的评估数据',
+  })
+  async getRiskAssessments(
+    @Param('userId') userId: string,
+    @Query() query: QueryRiskAssessmentsDto,
+    @Request() req: RequestWithUser,
+  ) {
+    const currentUserId = req.user.id;
+    const currentUserRole = req.user.role;
+
+    // 权限验证：患者只能查看自己的评估
+    if (currentUserRole === UserRole.PATIENT && currentUserId !== userId) {
+      throw new ForbiddenException('无权访问其他用户的评估数据');
+    }
+
+    // 医生/健康管理师/管理员可以查看患者评估
+    const allowedRoles: UserRole[] = [UserRole.DOCTOR, UserRole.HEALTH_MANAGER, UserRole.ADMIN];
+    if (currentUserId !== userId && !allowedRoles.includes(currentUserRole)) {
+      throw new ForbiddenException('无权访问该用户的评估数据');
+    }
+
+    const result = await this.healthService.getRiskAssessments(userId, query);
+
+    return {
+      success: true,
+      data: result,
+      timestamp: new Date().toISOString(),
+    };
+  }
+
+  /**
+   * 评估结果对比
+   * GET /api/v1/health/assessments/:userId/compare
+   */
+  @Get('assessments/:userId/compare')
+  @ApiOperation({ summary: '评估结果对比' })
+  @ApiQuery({
+    name: 'assessment_type',
+    required: true,
+    description: '评估类型',
+    enum: ['diabetes', 'stroke', 'vascular_age', 'heart_disease'],
+  })
+  @ApiQuery({
+    name: 'count',
+    required: false,
+    description: '对比数量（最近 N 次评估，2-10）',
+    type: Number,
+    example: 5,
+  })
+  @ApiResponse({
+    status: 200,
+    description: '对比成功',
+  })
+  @ApiResponse({
+    status: 400,
+    description: '请求参数错误或评估记录不足',
+  })
+  @ApiResponse({
+    status: 403,
+    description: '无权访问该用户的评估数据',
+  })
+  async compareRiskAssessments(
+    @Param('userId') userId: string,
+    @Query() compareDto: CompareRiskAssessmentsDto,
+    @Request() req: RequestWithUser,
+  ) {
+    const currentUserId = req.user.id;
+    const currentUserRole = req.user.role;
+
+    // 权限验证：患者只能对比自己的评估
+    if (currentUserRole === UserRole.PATIENT && currentUserId !== userId) {
+      throw new ForbiddenException('无权访问其他用户的评估数据');
+    }
+
+    // 医生/健康管理师/管理员可以对比患者评估
+    const allowedRoles: UserRole[] = [UserRole.DOCTOR, UserRole.HEALTH_MANAGER, UserRole.ADMIN];
+    if (currentUserId !== userId && !allowedRoles.includes(currentUserRole)) {
+      throw new ForbiddenException('无权访问该用户的评估数据');
+    }
+
+    const result = await this.healthService.compareRiskAssessments(userId, compareDto);
 
     return {
       success: true,

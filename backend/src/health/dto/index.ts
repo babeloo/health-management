@@ -6,3 +6,4 @@ export * from './check-in-query.dto';
 export * from './check-in-trend.dto';
 export * from './check-in-calendar.dto';
 export * from './health-trend.dto';
+export * from './risk-assessment.dto';

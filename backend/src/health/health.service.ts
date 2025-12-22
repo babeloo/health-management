@@ -5,11 +5,20 @@ import {
   BadRequestException,
   ConflictException,
   Logger,
+  InternalServerErrorException,
 } from '@nestjs/common';
-import { HealthRecord, UserRole, CheckIn, CheckInType } from '../generated/prisma/client';
+import {
+  HealthRecord,
+  UserRole,
+  CheckIn,
+  CheckInType,
+  RiskAssessment,
+  RiskLevel,
+} from '../generated/prisma/client';
 import { PrismaService } from '../common/prisma/prisma.service';
 import { FileStorageService } from '../common/storage/file-storage.service';
 import { InfluxService } from '../common/influx/influx.service';
+import { RiskCalculationService } from './services/risk-calculation.service';
 import { CreateHealthRecordDto } from './dto/create-health-record.dto';
 import { UpdateHealthRecordDto } from './dto/update-health-record.dto';
 import { CreateCheckInDto } from './dto/create-check-in.dto';
@@ -31,6 +40,12 @@ import {
   BloodPressureTrendDto,
   BloodSugarTrendDto,
 } from './dto/health-trend.dto';
+import {
+  CreateRiskAssessmentDto,
+  QueryRiskAssessmentsDto,
+  CompareRiskAssessmentsDto,
+  RiskAssessmentType,
+} from './dto/risk-assessment.dto';
 
 /**
  * 健康档案服务
@@ -44,6 +59,7 @@ export class HealthService {
     private readonly prisma: PrismaService,
     private readonly fileStorageService: FileStorageService,
     private readonly influxService: InfluxService,
+    private readonly riskCalculationService: RiskCalculationService,
   ) {}
 
   /**
@@ -711,5 +727,398 @@ export class HealthService {
       data,
       totalCount: data.length,
     };
+  }
+
+  // ==================== 风险评估功能 ====================
+
+  /**
+   * 创建风险评估
+   * @param dto 创建风险评估 DTO
+   * @returns 创建的风险评估记录
+   */
+  async createRiskAssessment(dto: CreateRiskAssessmentDto): Promise<RiskAssessment> {
+    try {
+      // 1. 验证用户是否存在
+      const user = await this.prisma.user.findUnique({
+        where: { id: dto.user_id },
+      });
+
+      if (!user) {
+        throw new NotFoundException(`用户 ID ${dto.user_id} 不存在`);
+      }
+
+      const userId = dto.user_id;
+
+      // 2. 可选：从 InfluxDB 获取设备数据
+      let deviceData = null;
+      if (dto.include_device_data) {
+        deviceData = await this.getDeviceDataFromInfluxDB(userId, dto.assessment_type);
+      }
+
+      // 3. 调用 RiskCalculationService 计算风险
+      let calculationResult;
+      let questionnaireData;
+
+      if (dto.assessment_type === RiskAssessmentType.DIABETES) {
+        if (!dto.diabetes_questionnaire) {
+          throw new BadRequestException('糖尿病风险评估需要提供问卷数据');
+        }
+        questionnaireData = dto.diabetes_questionnaire;
+        calculationResult = this.riskCalculationService.calculateDiabetesRisk(
+          dto.diabetes_questionnaire,
+        );
+      } else if (dto.assessment_type === RiskAssessmentType.STROKE) {
+        if (!dto.stroke_questionnaire) {
+          throw new BadRequestException('卒中风险评估需要提供问卷数据');
+        }
+        questionnaireData = dto.stroke_questionnaire;
+        calculationResult = this.riskCalculationService.calculateStrokeRisk(
+          dto.stroke_questionnaire,
+        );
+      } else {
+        throw new BadRequestException(
+          `暂不支持的评估类型: ${dto.assessment_type}，目前仅支持 diabetes 和 stroke`,
+        );
+      }
+
+      const { score, level, recommendations, details } = calculationResult;
+
+      // 转换 DTO 枚举到 Prisma 枚举（low -> LOW, medium -> MEDIUM, high -> HIGH）
+      const prismaRiskLevel = level.toUpperCase() as RiskLevel;
+
+      // 4. 保存评估结果到数据库
+      const riskAssessment = await this.prisma.riskAssessment.create({
+        data: {
+          userId,
+          type: dto.assessment_type,
+          questionnaireData: questionnaireData as object,
+          deviceData: deviceData ?? undefined, // null 转换为 undefined
+          riskLevel: prismaRiskLevel,
+          riskScore: score,
+          resultDetails: details as object,
+          aiRecommendations: recommendations.join('\n'),
+        },
+      });
+
+      // 5. 检查风险等级变化（预留通知接口）
+      await this.checkRiskLevelChange(userId, dto.assessment_type, prismaRiskLevel);
+
+      return riskAssessment;
+    } catch (error) {
+      if (
+        error instanceof NotFoundException ||
+        error instanceof BadRequestException ||
+        error instanceof ForbiddenException
+      ) {
+        throw error;
+      }
+
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      const errorStack = error instanceof Error ? error.stack : undefined;
+      this.logger.error(`创建风险评估失败: ${errorMessage}`, errorStack);
+      throw new InternalServerErrorException('创建风险评估失败，请稍后重试');
+    }
+  }
+
+  /* eslint-disable camelcase */
+  /**
+   * 查询风险评估列表
+   * @param userId 用户 ID
+   * @param query 查询条件
+   * @returns 风险评估列表和分页信息
+   */
+  async getRiskAssessments(
+    userId: string,
+    query: QueryRiskAssessmentsDto,
+  ): Promise<{ items: RiskAssessment[]; total: number; page: number; limit: number }> {
+    try {
+      // eslint-disable-next-line camelcase
+
+      const { assessment_type, risk_level, start_date, end_date, page = 1, limit = 20 } = query;
+
+      // 构建查询条件
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const where: any = { userId };
+
+      // eslint-disable-next-line camelcase
+
+      if (assessment_type) {
+        // eslint-disable-next-line camelcase
+
+        where.type = assessment_type;
+      }
+
+      // eslint-disable-next-line camelcase
+
+      if (risk_level) {
+        // eslint-disable-next-line camelcase
+
+        where.riskLevel = risk_level;
+      }
+
+      // eslint-disable-next-line camelcase
+
+      if (start_date || end_date) {
+        where.assessedAt = {};
+
+        // eslint-disable-next-line camelcase
+
+        if (start_date) {
+          // eslint-disable-next-line camelcase
+
+          where.assessedAt.gte = new Date(start_date);
+        }
+
+        // eslint-disable-next-line camelcase
+
+        if (end_date) {
+          // eslint-disable-next-line camelcase
+
+          where.assessedAt.lte = new Date(end_date);
+        }
+      }
+
+      // 查询总数
+      const total = await this.prisma.riskAssessment.count({ where });
+
+      // 查询数据（按评估时间倒序）
+      const items = await this.prisma.riskAssessment.findMany({
+        where,
+        orderBy: { assessedAt: 'desc' },
+        skip: (page - 1) * limit,
+        take: limit,
+      });
+
+      return { items, total, page, limit };
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      const errorStack = error instanceof Error ? error.stack : undefined;
+      this.logger.error(`查询风险评估列表失败: ${errorMessage}`, errorStack);
+      throw new InternalServerErrorException('查询风险评估列表失败，请稍后重试');
+    }
+  }
+
+  /* eslint-disable camelcase */
+  /**
+   * 对比风险评估
+   * @param userId 用户 ID
+   * @param dto 对比条件
+   * @returns 对比结果
+   */
+  async compareRiskAssessments(
+    userId: string,
+    dto: CompareRiskAssessmentsDto,
+  ): Promise<{
+    assessmentType: RiskAssessmentType;
+    comparisons: Array<{
+      id: string;
+      assessedAt: Date;
+      riskLevel: RiskLevel;
+      riskScore: number | null;
+    }>;
+    trend: 'increased' | 'decreased' | 'stable';
+    avgScore: number;
+    maxScore: number;
+    minScore: number;
+  }> {
+    try {
+      // eslint-disable-next-line camelcase
+
+      const { assessment_type, count = 5 } = dto;
+
+      // 查询指定类型的最近 N 次评估
+      const assessments = await this.prisma.riskAssessment.findMany({
+        where: {
+          userId,
+          type: assessment_type,
+        },
+        orderBy: { assessedAt: 'desc' },
+        take: count,
+        select: {
+          id: true,
+          assessedAt: true,
+          riskLevel: true,
+          riskScore: true,
+        },
+      });
+
+      // 至少需要 2 次评估才能对比
+      if (assessments.length < 2) {
+        throw new BadRequestException(
+          `对比评估需要至少 2 次评估记录，当前仅有 ${assessments.length} 次`,
+        );
+      }
+
+      // 计算趋势（基于风险评分）
+      const scores = assessments.map((a) => a.riskScore || 0).reverse(); // 按时间正序
+      let trend: 'increased' | 'decreased' | 'stable' = 'stable';
+
+      if (scores.length >= 2) {
+        const firstScore = scores[0];
+        const lastScore = scores[scores.length - 1];
+        const diff = lastScore - firstScore;
+
+        if (diff > 2) {
+          trend = 'increased'; // 风险增加
+        } else if (diff < -2) {
+          trend = 'decreased'; // 风险降低
+        } else {
+          trend = 'stable'; // 风险稳定
+        }
+      }
+
+      // 计算统计信息
+      const avgScore = this.average(scores);
+      const maxScore = Math.max(...scores);
+      const minScore = Math.min(...scores);
+
+      return {
+        // eslint-disable-next-line camelcase
+
+        assessmentType: assessment_type,
+        comparisons: assessments,
+        trend,
+        avgScore,
+        maxScore,
+        minScore,
+      };
+    } catch (error) {
+      if (error instanceof BadRequestException) {
+        throw error;
+      }
+
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      const errorStack = error instanceof Error ? error.stack : undefined;
+      this.logger.error(`对比风险评估失败: ${errorMessage}`, errorStack);
+      throw new InternalServerErrorException('对比风险评估失败，请稍后重试');
+    }
+  }
+
+  /**
+   * 从 InfluxDB 获取设备数据（血压或血糖）
+   * @param userId 用户 ID
+   * @param type 评估类型
+   * @returns 设备数据对象或 null
+   */
+  private async getDeviceDataFromInfluxDB(
+    userId: string,
+    type: RiskAssessmentType,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  ): Promise<any> {
+    try {
+      // 计算最近 30 天的时间范围
+      const endTime = new Date();
+      const startTime = new Date(endTime.getTime() - 30 * 24 * 60 * 60 * 1000);
+
+      if (type === RiskAssessmentType.DIABETES) {
+        // 糖尿病评估：获取最近 30 天的血糖数据
+        const bloodSugarData = await this.influxService.queryBloodSugar(userId, startTime, endTime);
+
+        if (bloodSugarData.length === 0) {
+          return null;
+        }
+
+        // 计算平均血糖值
+        const avgBloodSugar = this.average(bloodSugarData.map((d) => d.value));
+
+        return {
+          avgBloodSugar,
+          dataCount: bloodSugarData.length,
+          timeRange: {
+            start: startTime.toISOString(),
+            end: endTime.toISOString(),
+          },
+        };
+      }
+      if (type === RiskAssessmentType.STROKE) {
+        // 卒中评估：获取最近 30 天的血压数据
+        const bloodPressureData = await this.influxService.queryBloodPressure(
+          userId,
+          startTime,
+          endTime,
+        );
+
+        if (bloodPressureData.length === 0) {
+          return null;
+        }
+
+        // 计算平均血压值
+        const avgSystolic = this.average(bloodPressureData.map((d) => d.systolic));
+        const avgDiastolic = this.average(bloodPressureData.map((d) => d.diastolic));
+
+        return {
+          avgSystolic,
+          avgDiastolic,
+          dataCount: bloodPressureData.length,
+          timeRange: {
+            start: startTime.toISOString(),
+            end: endTime.toISOString(),
+          },
+        };
+      }
+
+      return null;
+    } catch (error) {
+      // InfluxDB 查询失败不应影响主流程，返回 null
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      this.logger.warn(
+        `从 InfluxDB 获取设备数据失败: userId=${userId}, type=${type}, error=${errorMessage}`,
+      );
+      return null;
+    }
+  }
+
+  /**
+   * 检查风险等级变化
+   * @param userId 用户 ID
+   * @param type 评估类型
+   * @param newLevel 新的风险等级
+   */
+  private async checkRiskLevelChange(
+    userId: string,
+    type: RiskAssessmentType,
+    newLevel: RiskLevel,
+  ): Promise<void> {
+    try {
+      // 查询上一次同类型评估的风险等级
+      const lastAssessment = await this.prisma.riskAssessment.findFirst({
+        where: {
+          userId,
+          type,
+        },
+        orderBy: { assessedAt: 'desc' },
+        skip: 1, // 跳过刚创建的这条记录
+        take: 1,
+        select: {
+          riskLevel: true,
+        },
+      });
+
+      if (!lastAssessment) {
+        // 首次评估，无需对比
+        return;
+      }
+
+      const oldLevel = lastAssessment.riskLevel;
+
+      // 如果风险等级变化
+      if (oldLevel !== newLevel) {
+        this.logger.log(`用户 ${userId} 的 ${type} 风险等级从 ${oldLevel} 变为 ${newLevel}`);
+
+        // 如果风险等级变为 high，记录警告日志
+        if (newLevel === RiskLevel.HIGH) {
+          this.logger.warn(`⚠️ 用户 ${userId} 的 ${type} 风险等级升高至 HIGH，建议及时关注`);
+
+          // TODO: 未来集成通知模块
+          // await this.notificationService.sendRiskAlert(userId, type, newLevel);
+        }
+      }
+    } catch (error) {
+      // 检查风险等级变化失败不应影响主流程
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      this.logger.error(
+        `检查风险等级变化失败: userId=${userId}, type=${type}, error=${errorMessage}`,
+      );
+    }
   }
 }
