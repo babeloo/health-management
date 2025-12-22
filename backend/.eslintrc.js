@@ -41,6 +41,21 @@ module.exports = {
     // 安全规则
     'no-console': ['warn', { allow: ['warn', 'error'] }],
     'no-param-reassign': ['error', { props: false }],
+
+    // 允许从 devDependencies 导入测试和文档相关的包
+    'import/no-extraneous-dependencies': [
+      'error',
+      {
+        devDependencies: [
+          '**/*.spec.ts',
+          '**/*.test.ts',
+          '**/test/**',
+          '**/dto/**',
+          '**/*-dto.ts',
+          '**/*.controller.ts',
+        ],
+      },
+    ],
   },
   settings: {
     'import/resolver': {

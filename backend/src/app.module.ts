@@ -8,6 +8,7 @@ import { LoggerMiddleware } from './common/middlewares/logger.middleware';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { PrismaModule } from './common/prisma/prisma.module';
+import { HealthModule } from './health/health.module';
 
 @Module({
   imports: [
@@ -34,6 +35,9 @@ import { PrismaModule } from './common/prisma/prisma.module';
 
     // 用户管理模块
     UserModule,
+
+    // 健康档案模块
+    HealthModule,
   ],
   controllers: [AppController],
   providers: [AppService],

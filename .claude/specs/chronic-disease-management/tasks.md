@@ -1,11 +1,11 @@
 # 智慧慢病管理系统 - MVP阶段实施计划
 
-> **最后更新**: 2025-12-22 16:00
-> **总体进度**: 15.8% (43/273 任务)
+> **最后更新**: 2025-12-22 17:00
+> **总体进度**: 17.2% (47/273 任务)
 > **当前阶段**: 第二阶段 - 后端核心服务（Week 2-6）
 > **第一阶段进度**: 100% (23/23 已完成) ✅
-> **第二阶段进度**: 41.7% (20/48 已完成) 🔄
-> **状态**: 🔄 进行中（用户管理模块已完成，E2E 测试和 CI 配置已修复）
+> **第二阶段进度**: 50.0% (24/48 已完成) 🔄
+> **状态**: 🔄 进行中（用户管理模块已完成，健康档案接口已完成，E2E 测试和 CI 配置已修复）
 > **阶段报告**: 第一阶段详见 `stage1-summary-report.md`
 
 ## 概述
@@ -273,12 +273,38 @@
 
 ### 8. 健康管理模块
 
-- [ ] 实现健康档案接口
-  - [ ] 创建 HealthModule、HealthService、HealthController
-  - [ ] 实现创建健康档案接口（POST /api/v1/health/records）
-  - [ ] 实现获取健康档案接口（GET /api/v1/health/records/:userId）
-  - [ ] 实现更新健康档案接口（PUT /api/v1/health/records/:userId）
-  - [ ] 实现上传医疗文档接口（POST /api/v1/health/records/:userId/documents）
+- [x] 实现健康档案接口 ✅ 完成于 2025-12-22 17:00
+  - [x] 创建 HealthModule、HealthService、HealthController ✅
+  - [x] 实现创建健康档案接口（POST /api/v1/health/records）✅
+  - [x] 实现获取健康档案接口（GET /api/v1/health/records/:userId）✅
+  - [x] 实现更新健康档案接口（PUT /api/v1/health/records/:userId）✅
+  - [x] 实现上传医疗文档接口（POST /api/v1/health/records/:userId/documents）✅
+
+**实现细节**：
+
+- ✅ HealthModule 已创建并注册到 AppModule
+- ✅ HealthService 实现了完整的 CRUD 操作
+- ✅ HealthController 实现了 4 个 RESTful API 端点
+- ✅ 权限控制：患者只能操作自己的档案，医生可查看其管理的患者档案，管理员有全局访问权限
+- ✅ 数据验证：身高（50-250cm）、体重（20-300kg）、血型枚举（A/B/AB/O/Unknown）
+- ✅ 文件上传验证：类型限制（PDF/JPG/PNG）、大小限制（≤10MB）
+- ✅ 集成 FileStorageService 上传到 MinIO
+- ✅ 统一的 API 响应格式（符合 ErrorResponse 规范）
+- ✅ 单元测试覆盖率 90.47%（12个测试用例全部通过）
+- ✅ TypeScript 编译通过（Strict Mode）
+- ✅ ESLint 检查通过（0 errors）
+
+**文件清单**：
+
+- backend/src/health/health.module.ts
+- backend/src/health/health.controller.ts
+- backend/src/health/health.service.ts
+- backend/src/health/dto/create-health-record.dto.ts
+- backend/src/health/dto/update-health-record.dto.ts
+- backend/src/health/dto/health-document.dto.ts
+- backend/src/health/dto/index.ts
+- backend/src/health/health.service.spec.ts
+
 - [ ] 实现健康打卡接口
   - [ ] 实现创建打卡记录接口（POST /api/v1/health/check-ins）
   - [ ] 实现打卡记录查询接口（GET /api/v1/health/check-ins/:userId）
