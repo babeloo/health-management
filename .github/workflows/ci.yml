@@ -58,11 +58,22 @@ jobs:
             -e MINIO_ROOT_PASSWORD=minio123 \
             minio/minio:latest server /data --console-address ":9001"
 
-          # 等待 MinIO 启动
-          sleep 5
+          # 等待 MinIO 启动（增加等待时间）
+          echo "Waiting for MinIO to start..."
+          sleep 10
 
-          # 验证 MinIO 是否启动成功
-          curl -f http://localhost:9000/minio/health/live || exit 1
+          # 验证 MinIO 是否启动成功（重试机制）
+          for i in {1..10}; do
+            if curl -f http://localhost:9000/minio/health/live; then
+              echo "MinIO is ready!"
+              break
+            fi
+            echo "Waiting for MinIO... (attempt $i/10)"
+            sleep 2
+          done
+
+          # 最终验证
+          curl -f http://localhost:9000/minio/health/live || (echo "MinIO failed to start" && exit 1)
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v2
