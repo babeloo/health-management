@@ -1,5 +1,11 @@
 {
   "permissions": {
-    "allow": ["Bash(docker exec:*)", "Bash(pnpm add:*)", "Bash(pnpm build:*)", "Bash(pnpm test:*)"]
+    "allow": [
+      "Bash(docker exec:*)",
+      "Bash(pnpm add:*)",
+      "Bash(pnpm build:*)",
+      "Bash(pnpm test:*)",
+      "Bash(pnpm lint:*)"
+    ]
   }
 }

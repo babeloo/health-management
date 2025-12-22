@@ -21,6 +21,7 @@ import { UpdateUserDto, QueryUsersDto } from './dto';
 import { JwtAuthGuard } from '../auth/guards';
 import { CurrentUser } from '../auth/decorators';
 import { CurrentUser as CurrentUserType } from '../auth/interfaces/user.interface';
+import { FileStorageService } from '../common/storage/file-storage.service';
 
 /**
  * 用户控制器
@@ -29,7 +30,10 @@ import { CurrentUser as CurrentUserType } from '../auth/interfaces/user.interfac
 @Controller('users')
 @UseGuards(JwtAuthGuard)
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(
+    private readonly userService: UserService,
+    private readonly fileStorageService: FileStorageService,
+  ) {}
 
   /**
    * 获取用户信息
@@ -101,10 +105,14 @@ export class UserController {
     file: Express.Multer.File,
     @CurrentUser() currentUser: CurrentUserType,
   ) {
-    // TODO: 实现文件上传到 MinIO
-    // 暂时返回本地文件路径
-    const avatarUrl = `/uploads/avatars/${id}/${file.originalname}`;
+    // 上传文件到 MinIO
+    const avatarUrl = await this.fileStorageService.uploadHealthDocument(
+      file.buffer,
+      id,
+      file.originalname,
+    );
 
+    // 更新用户头像 URL
     const user = await this.userService.updateAvatar(
       id,
       avatarUrl,
