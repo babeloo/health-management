@@ -1,0 +1,71 @@
+name: Dependency Update
+
+on:
+  schedule:
+    # 每周一早上 9 点运行
+    - cron: '0 1 * * 1'
+  workflow_dispatch: # 允许手动触发
+
+jobs:
+  update-dependencies:
+    name: Update Dependencies
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          cache: 'pnpm'
+
+      - name: Check for outdated dependencies
+        run: |
+          echo "📦 Checking for outdated dependencies..."
+          pnpm outdated || true
+
+      - name: Update dependencies
+        run: |
+          echo "⬆️ Updating dependencies..."
+          pnpm update --latest --recursive
+
+      - name: Run tests
+        run: |
+          pnpm install
+          pnpm test:unit
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: 'chore: update dependencies'
+          title: '⬆️ Update dependencies'
+          body: |
+            ## 依赖更新
+
+            此 PR 由自动化工作流创建，更新了项目的依赖包。
+
+            ### 变更内容
+            - 更新了所有可更新的依赖包
+            - 所有单元测试已通过
+
+            ### 检查清单
+            - [ ] 检查 CHANGELOG 是否有破坏性变更
+            - [ ] 运行完整的测试套件
+            - [ ] 在本地环境测试
+            - [ ] 检查是否有安全漏洞修复
+
+            ---
+            🤖 此 PR 由 GitHub Actions 自动创建
+          branch: chore/update-dependencies
+          delete-branch: true
+          labels: |
+            dependencies
+            automated

@@ -1,0 +1,166 @@
+name: Code Quality
+
+on:
+  pull_request:
+    branches: [master, main, develop]
+
+jobs:
+  code-quality:
+    name: Code Quality Check
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # 获取完整历史以便进行差异分析
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run ESLint
+        run: pnpm lint
+        continue-on-error: true
+
+      - name: Run Prettier check
+        run: pnpm format:check || true
+        continue-on-error: true
+
+      - name: Check for console.log
+        run: |
+          echo "Checking for console.log statements..."
+          if grep -r "console\.log" backend/src --exclude-dir=node_modules; then
+            echo "⚠️ Warning: Found console.log statements"
+            exit 0
+          else
+            echo "✅ No console.log statements found"
+          fi
+
+      - name: Check for TODO comments
+        run: |
+          echo "Checking for TODO comments..."
+          if grep -r "TODO\|FIXME\|XXX" backend/src ai-service --exclude-dir=node_modules; then
+            echo "⚠️ Warning: Found TODO/FIXME comments"
+            exit 0
+          else
+            echo "✅ No TODO/FIXME comments found"
+          fi
+
+      - name: Check bundle size
+        run: |
+          cd backend
+          pnpm build
+          echo "📦 Checking bundle size..."
+          du -sh dist/
+
+      - name: Security audit
+        run: |
+          echo "🔒 Running security audit..."
+          pnpm audit --audit-level=moderate || true
+
+      - name: Check dependencies
+        run: |
+          echo "📦 Checking for outdated dependencies..."
+          pnpm outdated || true
+
+  test-coverage:
+    name: Test Coverage
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_USER: admin
+          POSTGRES_PASSWORD: admin123
+          POSTGRES_DB: health_mgmt
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Setup environment
+        run: |
+          cd backend
+          cp .env.example .env
+          echo "DATABASE_URL=postgresql://admin:admin123@localhost:5432/health_mgmt?schema=public" >> .env
+
+      - name: Generate Prisma Client
+        run: |
+          cd backend
+          pnpm prisma generate
+
+      - name: Run migrations
+        run: |
+          cd backend
+          pnpm prisma migrate deploy
+
+      - name: Run tests with coverage
+        run: |
+          cd backend
+          pnpm test:cov
+
+      - name: Check coverage threshold
+        run: |
+          cd backend
+          echo "📊 Checking test coverage..."
+          # 检查覆盖率是否达到 70%
+          COVERAGE=$(cat coverage/coverage-summary.json | jq '.total.lines.pct')
+          echo "Current coverage: $COVERAGE%"
+          if (( $(echo "$COVERAGE < 70" | bc -l) )); then
+            echo "❌ Coverage is below 70%"
+            exit 1
+          else
+            echo "✅ Coverage meets threshold (≥70%)"
+          fi
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          files: ./backend/coverage/lcov.info
+          flags: backend
+          name: backend-coverage
+
+      - name: Comment PR with coverage
+        uses: romeovs/lcov-reporter-action@v0.3.1
+        if: github.event_name == 'pull_request'
+        with:
+          lcov-file: ./backend/coverage/lcov.info
+          github-token: ${{ secrets.GITHUB_TOKEN }}
