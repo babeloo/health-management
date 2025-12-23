@@ -2,6 +2,8 @@ import { Module } from '@nestjs/common';
 import { PointsService } from './points.service';
 import { PointsController } from './points.controller';
 import { PrismaModule } from '../common/prisma/prisma.module';
+import { PointsRulesService } from './services/points-rules.service';
+import { StreakCalculationService } from './services/streak-calculation.service';
 
 /**
  * 积分模块
@@ -10,7 +12,7 @@ import { PrismaModule } from '../common/prisma/prisma.module';
 @Module({
   imports: [PrismaModule],
   controllers: [PointsController],
-  providers: [PointsService],
-  exports: [PointsService], // 导出供其他模块使用（如打卡模块自动发放积分）
+  providers: [PointsService, PointsRulesService, StreakCalculationService],
+  exports: [PointsService, PointsRulesService, StreakCalculationService], // 导出供其他模块使用
 })
 export class PointsModule {}

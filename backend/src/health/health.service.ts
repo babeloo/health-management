@@ -19,6 +19,9 @@ import { PrismaService } from '../common/prisma/prisma.service';
 import { FileStorageService } from '../common/storage/file-storage.service';
 import { InfluxService } from '../common/influx/influx.service';
 import { RiskCalculationService } from './services/risk-calculation.service';
+import { PointsRulesService } from '../points/services/points-rules.service';
+import { StreakCalculationService } from '../points/services/streak-calculation.service';
+import { PointsService } from '../points/points.service';
 import { CreateHealthRecordDto } from './dto/create-health-record.dto';
 import { UpdateHealthRecordDto } from './dto/update-health-record.dto';
 import { CreateCheckInDto } from './dto/create-check-in.dto';
@@ -60,6 +63,9 @@ export class HealthService {
     private readonly fileStorageService: FileStorageService,
     private readonly influxService: InfluxService,
     private readonly riskCalculationService: RiskCalculationService,
+    private readonly pointsRulesService: PointsRulesService,
+    private readonly streakCalculationService: StreakCalculationService,
+    private readonly pointsService: PointsService,
   ) {}
 
   /**
@@ -261,24 +267,15 @@ export class HealthService {
   // ==================== 打卡功能 ====================
 
   /**
-   * 积分规则配置
-   */
-  private readonly POINTS_RULES: Record<CheckInType, number> = {
-    BLOOD_PRESSURE: 10,
-    BLOOD_SUGAR: 10,
-    MEDICATION: 5,
-    EXERCISE: 8,
-    DIET: 5,
-    THERAPY: 10,
-  };
-
-  /**
    * 创建打卡记录
    * @param userId 用户 ID
    * @param createDto 创建 DTO
-   * @returns 创建的打卡记录
+   * @returns 创建的打卡记录及积分信息
    */
-  async createCheckIn(userId: string, createDto: CreateCheckInDto): Promise<CheckIn> {
+  async createCheckIn(
+    userId: string,
+    createDto: CreateCheckInDto,
+  ): Promise<CheckIn & { bonusPoints?: number; totalPoints?: number; streakDays?: number }> {
     // 解析打卡日期（默认今天）
     const checkInDate = createDto.checkInDate ? new Date(createDto.checkInDate) : new Date();
 
@@ -308,10 +305,10 @@ export class HealthService {
       throw new ConflictException('今日已完成该类型打卡，请勿重复打卡');
     }
 
-    // 计算积分
-    const pointsEarned = this.POINTS_RULES[createDto.type];
+    // 1. 使用规则引擎计算基础积分
+    const pointsEarned = this.pointsRulesService.calculateCheckInPoints(createDto.type);
 
-    // 创建打卡记录
+    // 2. 创建打卡记录
     const checkIn = await this.prisma.checkIn.create({
       data: {
         userId,
@@ -323,7 +320,7 @@ export class HealthService {
       },
     });
 
-    // 同步到 InfluxDB（降级处理）
+    // 3. 同步到 InfluxDB（降级处理）
     try {
       if (createDto.type === CheckInType.BLOOD_PRESSURE) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -342,10 +339,66 @@ export class HealthService {
       // 不影响打卡主流程
     }
 
-    // TODO: 第二阶段集成积分系统时，创建 PointsTransaction 记录
-    // TODO: 实现连续打卡奖励逻辑
+    // 4. 发放基础积分并计算连续奖励
+    let bonusPoints = 0;
+    let streakDays = 0;
 
-    return checkIn;
+    try {
+      // 发放基础积分
+      await this.pointsService.earnPoints({
+        userId,
+        points: pointsEarned,
+        source: 'check_in',
+        sourceId: checkIn.id,
+        description: `${createDto.type} 打卡`,
+      });
+
+      // 5. 计算连续打卡天数
+      streakDays = await this.streakCalculationService.calculateStreakDays(userId);
+
+      // 6. 检查并发放连续奖励
+      const streakBonusPoints = this.pointsRulesService.calculateStreakBonus(streakDays);
+      if (streakBonusPoints > 0) {
+        const hasBonusToday = await this.streakCalculationService.hasTodayBonusTriggered(
+          userId,
+          streakDays,
+        );
+
+        if (!hasBonusToday) {
+          await this.pointsService.earnPoints({
+            userId,
+            points: streakBonusPoints,
+            source: 'continuous_streak',
+            sourceId: checkIn.id,
+            description: `连续打卡 ${streakDays} 天奖励`,
+          });
+
+          await this.streakCalculationService.recordStreakBonus(
+            userId,
+            streakDays,
+            streakBonusPoints,
+          );
+
+          bonusPoints = streakBonusPoints;
+        }
+      }
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      const errorStack = error instanceof Error ? error.stack : undefined;
+      this.logger.error(
+        `积分发放失败，但打卡主流程成功: userId=${userId}, checkInId=${checkIn.id}, error=${errorMessage}`,
+        errorStack,
+      );
+      // 不影响打卡主流程
+    }
+
+    // 7. 返回结果，添加积分信息
+    return {
+      ...checkIn,
+      bonusPoints,
+      totalPoints: pointsEarned + bonusPoints,
+      streakDays,
+    };
   }
 
   /**

@@ -39,10 +39,11 @@ model User {
   lastLoginAt DateTime?
 
   // 关系
-  healthRecords         HealthRecord[]
-  checkIns              CheckIn[]
-  riskAssessments       RiskAssessment[]
-  pointsTransactions    PointsTransaction[]
+  healthRecords          HealthRecord[]
+  checkIns               CheckIn[]
+  riskAssessments        RiskAssessment[]
+  pointsTransactions     PointsTransaction[]
+  streakBonusRecords     StreakBonusRecord[]
   doctorPatientRelations DoctorPatientRelation[] @relation("PatientRelations")
   doctorRelations        DoctorPatientRelation[] @relation("DoctorRelations")
 
@@ -140,6 +141,21 @@ model PointsTransaction {
   @@index([userId, createdAt])
   @@index([type])
   @@map("points_transactions")
+}
+
+// 连续打卡奖励记录表
+model StreakBonusRecord {
+  id            String   @id @default(uuid())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  streakDays    Int      // 连续天数（7、30、90等）
+  pointsAwarded Int      // 奖励积分
+  awardedAt     DateTime @default(now())
+
+  @@index([userId, awardedAt])
+  @@index([streakDays])
+  @@map("streak_bonus_records")
 }
 
 // 医患关系表
