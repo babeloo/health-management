@@ -6,6 +6,18 @@
 
 ---
 
+## [Unreleased]
+
+### Fixed
+
+- **修复 Redis 连接认证问题** - 2025-12-24 @backend-ts
+  - 修复 `CacheService` 中 Redis 密码配置逻辑，避免空字符串触发 AUTH 错误
+  - 更新 `docker-compose.yml` 中 Redis 健康检查命令，添加密码认证参数
+  - 解决未设置 Redis 密码时（如 CI 环境）连接失败的问题
+  - 影响文件：`backend/src/common/cache/cache.service.ts`, `docker-compose.yml`
+
+---
+
 ## [0.3.0] - 2025-12-23
 
 ### ✨ 积分规则引擎和连续打卡奖励系统
