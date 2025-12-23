@@ -28,13 +28,30 @@ async function bootstrap() {
   // API前缀
   app.setGlobalPrefix('api/v1');
 
-  const port = process.env.PORT || 3000;
-  await app.listen(port);
+  // 只在非生产环境启用 Swagger
+  if (process.env.NODE_ENV !== 'production') {
+    // eslint-disable-next-line import/no-extraneous-dependencies
+    const { DocumentBuilder, SwaggerModule } = await import('@nestjs/swagger');
+    const config = new DocumentBuilder()
+      .setTitle('智慧慢病管理系统 API')
+      .setDescription('智慧慢病管理系统后端 API 文档')
+      .setVersion('0.1.0')
+      .addBearerAuth()
+      .build();
+    const document = SwaggerModule.createDocument(app, config);
+    SwaggerModule.setup('api', app, document);
+  }
+
+  const port = Number(process.env.PORT) || 5000;
+  const host = process.env.HOST || '0.0.0.0';
+  await app.listen(port, host);
 
   // eslint-disable-next-line no-console
   console.log(`🚀 Backend service is running on: http://localhost:${port}`);
-  // eslint-disable-next-line no-console
-  console.log(`📚 API documentation: http://localhost:${port}/api/v1`);
+  if (process.env.NODE_ENV !== 'production') {
+    // eslint-disable-next-line no-console
+    console.log(`📚 Swagger UI: http://localhost:${port}/api`);
+  }
 }
 
 bootstrap();

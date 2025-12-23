@@ -137,7 +137,7 @@ node -e "console.log(require('path').join('src', 'common', 'influx'))"
 
 ### 问题描述
 
-某些端口（如 3000）在 Windows 上可能被系统保留，导致 `EACCES: permission denied` 错误。
+某些端口（如 5000）在 Windows 上可能被系统保留，导致 `EACCES: permission denied` 错误。
 
 ### 解决方案
 
@@ -146,17 +146,19 @@ node -e "console.log(require('path').join('src', 'common', 'influx'))"
 ```typescript
 // 开发环境使用非保留端口
 const port = process.env.PORT || 5000; // 改为 5000 或其他端口
-await app.listen(port, '127.0.0.1'); // 明确指定 IPv4
+// 如需强制仅本机访问或明确 IPv4，可设置 HOST=127.0.0.1
+const host = process.env.HOST || '0.0.0.0';
+await app.listen(port, host);
 ```
 
 **检查端口占用**：
 
 ```bash
 # Windows
-netstat -ano | findstr :3000
+netstat -ano | findstr :5000
 
 # 或使用 PowerShell
-Get-NetTCPConnection -LocalPort 3000
+Get-NetTCPConnection -LocalPort 5000
 ```
 
 **使用管理员权限**（不推荐）：

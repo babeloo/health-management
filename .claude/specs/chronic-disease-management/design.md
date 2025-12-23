@@ -20,9 +20,11 @@
 本系统采用**渐进式演进架构**，分为两个阶段：
 
 #### 阶段一：MVP快速上线方案（3-4个月）
+
 目标：快速验证市场需求，低成本获取早期用户反馈
 
 #### 阶段二：企业级升级方案（6-8个月）
+
 目标：服务大型医疗机构，支持高并发、高可用
 
 ---
@@ -30,6 +32,7 @@
 ### 1.3.1 MVP阶段技术栈（第一阶段）
 
 **前端技术栈**：
+
 - **患者端**：Uni-app（Vue 3语法）
   - 编译目标：微信小程序（主要）+ H5 + iOS/Android App
   - UI框架：uni-ui / uView
@@ -40,6 +43,7 @@
   - 图表：ECharts
 
 **后端技术栈**：
+
 - **主框架**：Node.js 18 + NestJS（TypeScript）
   - 单体架构（模块化设计，预留微服务拆分接口）
 - **API标准**：RESTful API
@@ -55,6 +59,7 @@
 - **文件存储**：MinIO（私有化）/ 阿里云OSS
 
 **AI服务**（独立微服务）：
+
 - **框架**：Python 3.11 + FastAPI
 - **大模型**：DeepSeek API
 - **AI框架**：LangChain + LlamaIndex
@@ -62,10 +67,12 @@
 - **部署**：独立容器，通过HTTP与主后端通信
 
 **物联网设备接入**：
+
 - **协议**：MQTT
 - **Broker**：EMQX（开源版）
 
 **部署方案**：
+
 - **容器化**：Docker + Docker Compose
 - **服务器**：单台阿里云ECS（4核8G起步）
 - **CI/CD**：GitHub Actions
@@ -76,12 +83,14 @@
 ### 1.3.2 企业级阶段技术栈（第二阶段）
 
 **前端技术栈**（复用MVP代码）：
+
 - **患者端**：Uni-app（不变）
 - **医生端/管理端**：React（增强）
   - 增加离线缓存、性能优化
   - 引入微前端架构（qiankun）支持多机构定制
 
 **后端技术栈**（架构升级）：
+
 - **核心选型**：Java 17 + Spring Cloud Alibaba
   - 微服务架构（从NestJS平滑迁移）
 - **服务注册/配置**：Nacos
@@ -97,14 +106,17 @@
 - **文件存储**：对象存储（阿里云OSS / 私有MinIO集群）
 
 **AI服务**（保持不变）：
+
 - Python FastAPI（核心代码复用）
 - 增加模型微调能力
 - 支持私有化部署DeepSeek模型
 
 **物联网设备**（保持）：
+
 - MQTT + EMQX（升级为企业版）
 
 **部署方案**：
+
 - **编排**：Kubernetes（K8s）
 - **服务器**：多台服务器集群（高可用）
 - **监控**：Prometheus + Grafana
@@ -116,19 +128,20 @@
 
 ### 1.3.3 架构演进路径对比
 
-| 维度 | MVP阶段 | 企业级阶段 | 迁移策略 |
-|------|---------|------------|----------|
-| **前端** | Uni-app + React | 同左（复用代码） | ✅ 无需迁移 |
+| 维度         | MVP阶段            | 企业级阶段        | 迁移策略                |
+| ------------ | ------------------ | ----------------- | ----------------------- |
+| **前端**     | Uni-app + React    | 同左（复用代码）  | ✅ 无需迁移             |
 | **后端语言** | Node.js/TypeScript | Java/Spring Cloud | 🔄 重写（接口定义复用） |
-| **AI服务** | Python FastAPI | 同左（增强） | ✅ 代码复用 |
-| **数据库** | PostgreSQL | MySQL | 🔄 数据迁移 |
-| **时序库** | InfluxDB | 同左 | ✅ 无需迁移 |
-| **向量库** | Qdrant | Milvus | 🔄 数据迁移 |
-| **缓存** | Redis单机 | Redis Cluster | 🔄 配置升级 |
-| **部署** | Docker Compose | Kubernetes | 🔄 重新编排 |
-| **物联网** | MQTT/EMQX | 同左（企业版） | ✅ 配置升级 |
+| **AI服务**   | Python FastAPI     | 同左（增强）      | ✅ 代码复用             |
+| **数据库**   | PostgreSQL         | MySQL             | 🔄 数据迁移             |
+| **时序库**   | InfluxDB           | 同左              | ✅ 无需迁移             |
+| **向量库**   | Qdrant             | Milvus            | 🔄 数据迁移             |
+| **缓存**     | Redis单机          | Redis Cluster     | 🔄 配置升级             |
+| **部署**     | Docker Compose     | Kubernetes        | 🔄 重新编排             |
+| **物联网**   | MQTT/EMQX          | 同左（企业版）    | ✅ 配置升级             |
 
 **关键迁移点**：
+
 - ✅ 绿色：可直接复用，无需修改
 - 🔄 黄色：需要迁移，但有工具支持
 - ⚠️ 红色：需要重写（无）
@@ -138,6 +151,7 @@
 ### 1.3.4 为什么这样设计？
 
 #### MVP阶段选择Node.js的理由：
+
 1. **开发速度快**：前后端统一语言，团队协作成本低
 2. **生态丰富**：npm包丰富，快速集成第三方服务
 3. **成本低**：单台服务器即可运行，节省初期成本
@@ -145,6 +159,7 @@
 5. **模块化设计**：NestJS天然支持模块化，为微服务拆分做准备
 
 #### 企业级阶段切换Java的理由：
+
 1. **医疗行业标准**：大型医院HIS系统多为Java，对接容易
 2. **稳定性验证**：经过大量金融、医疗项目验证
 3. **等保合规**：符合等保三级要求，安全方案成熟
@@ -152,6 +167,7 @@
 5. **生态成熟**：Spring Cloud全家桶，微服务治理完善
 
 #### AI服务始终使用Python的理由：
+
 1. **AI生态无可替代**：LangChain、Transformers等框架只有Python版本成熟
 2. **DeepSeek集成**：官方SDK、模型微调工具都是Python优先
 3. **独立演进**：AI算法迭代快，Python灵活性更适合快速实验
@@ -164,6 +180,7 @@
 为确保从MVP到企业级的平滑过渡，设计时遵循以下原则：
 
 #### 1. 接口标准化
+
 ```typescript
 // MVP阶段（Node.js）定义的接口
 interface HealthCheckInRequest {
@@ -182,6 +199,7 @@ interface HealthCheckInRequest {
 ```
 
 #### 2. 数据库设计前瞻性
+
 ```sql
 -- MVP阶段建表时就考虑分库分表
 CREATE TABLE check_ins (
@@ -199,6 +217,7 @@ CREATE TABLE check_ins (
 ```
 
 #### 3. AI服务独立部署
+
 ```yaml
 # AI服务通过独立域名访问
 MVP阶段:  http://ai-service:8000
@@ -210,14 +229,15 @@ POST /ai/health-advice
 ```
 
 #### 4. 配置外部化
+
 ```yaml
 # config/database.yml
 # MVP和企业版使用相同配置结构，只改连接串
 production:
   primary:
-    url: ${DATABASE_URL}  # MVP: PostgreSQL / 企业版: MySQL
+    url: ${DATABASE_URL} # MVP: PostgreSQL / 企业版: MySQL
   timeseries:
-    url: ${INFLUXDB_URL}  # 两阶段不变
+    url: ${INFLUXDB_URL} # 两阶段不变
 ```
 
 ---
@@ -225,6 +245,7 @@ production:
 ### 1.3.6 数据安全（两阶段通用）
 
 无论MVP还是企业级，都必须满足：
+
 - **加密**：AES-256（数据加密）+ TLS 1.3（传输加密）
 - **敏感数据**：身份证、病历等字段级加密存储
 - **审计日志**：所有健康数据访问记录
@@ -403,20 +424,21 @@ production:
 
 ### 2.3 架构演进对比总结
 
-| 对比维度 | MVP阶段 | 企业级阶段 |
-|---------|---------|-----------|
-| **并发能力** | 支持1000人同时在线 | 支持10万+人同时在线 |
-| **可用性** | 单点故障风险 | 99.9%可用性保证 |
-| **数据容量** | 支持10万条记录 | 支持亿级记录，分库分表 |
-| **开发周期** | 3-4个月上线 | 6-8个月完成迁移 |
-| **月成本** | ¥800-1000 | ¥7500-8500 |
-| **团队规模** | 5人 | 11人 |
-| **扩展性** | 垂直扩展（升级服务器） | 水平扩展（增加节点） |
-| **合规性** | 基础安全 | 等保三级认证 |
+| 对比维度     | MVP阶段                | 企业级阶段             |
+| ------------ | ---------------------- | ---------------------- |
+| **并发能力** | 支持1000人同时在线     | 支持10万+人同时在线    |
+| **可用性**   | 单点故障风险           | 99.9%可用性保证        |
+| **数据容量** | 支持10万条记录         | 支持亿级记录，分库分表 |
+| **开发周期** | 3-4个月上线            | 6-8个月完成迁移        |
+| **月成本**   | ¥800-1000              | ¥7500-8500             |
+| **团队规模** | 5人                    | 11人                   |
+| **扩展性**   | 垂直扩展（升级服务器） | 水平扩展（增加节点）   |
+| **合规性**   | 基础安全               | 等保三级认证           |
 
 ### 2.2 微服务划分
 
 #### 2.2.1 用户服务（User Service）
+
 - **职责**：用户认证、授权、角色管理、个人信息管理
 - **端口**：3001
 - **数据库**：PostgreSQL（users, roles, permissions表）
@@ -427,6 +449,7 @@ production:
   - `PUT /users/:id` - 更新用户信息
 
 #### 2.2.2 健康服务（Health Service）
+
 - **职责**：健康档案、打卡记录、风险评估、健康数据分析
 - **端口**：3002
 - **数据库**：PostgreSQL（health_records, check_ins, assessments表）
@@ -438,6 +461,7 @@ production:
   - `GET /health/check-ins/:userId/trends` - 获取打卡趋势
 
 #### 2.2.3 AI服务（AI Service）
+
 - **职责**：AI模型集成、健康科普、智能对话、辅助诊断
 - **端口**：3003
 - **数据库**：MongoDB（ai_conversations, ai_logs表）+ Qdrant（向量检索）
@@ -449,6 +473,7 @@ production:
   - `POST /ai/config` - 配置AI模型参数
 
 #### 2.2.4 通讯服务（Communication Service）
+
 - **职责**：即时通讯、医患沟通、师患沟通、消息通知
 - **端口**：3004
 - **数据库**：MongoDB（messages表）+ Redis（在线状态）
@@ -460,6 +485,7 @@ production:
   - `GET /conversations/:userId` - 获取会话列表
 
 #### 2.2.5 积分服务（Points Service）
+
 - **职责**：积分计算、积分交易、礼品兑换、排行榜
 - **端口**：3005
 - **数据库**：PostgreSQL（points_transactions, gifts表）+ Redis（排行榜缓存）
@@ -470,6 +496,7 @@ production:
   - `GET /points/leaderboard` - 获取排行榜
 
 #### 2.2.6 通知服务（Notification Service）
+
 - **职责**：推送通知、短信提醒、邮件提醒、任务调度
 - **端口**：3006
 - **数据库**：PostgreSQL（notifications表）+ Redis（任务队列）
@@ -481,6 +508,7 @@ production:
   - `PUT /notifications/:id/read` - 标记已读
 
 #### 2.2.7 数据分析服务（Analytics Service）
+
 - **职责**：数据统计、可视化、报表生成
 - **端口**：3007
 - **数据库**：PostgreSQL（读副本）+ Redis（缓存）
@@ -492,6 +520,7 @@ production:
 ### 2.3 数据流架构
 
 #### 2.3.1 用户打卡流程
+
 ```
 患者App → API网关 → 健康服务 → PostgreSQL
                   ↓
@@ -501,6 +530,7 @@ production:
 ```
 
 #### 2.3.2 AI对话流程
+
 ```
 患者端 → API网关 → AI服务 → DeepSeek API
                           ↓
@@ -512,6 +542,7 @@ production:
 ```
 
 #### 2.3.3 风险评估与预警流程
+
 ```
 定时任务 → 健康服务读取患者数据
               ↓
@@ -529,6 +560,7 @@ production:
 ### 3.1 认证授权组件
 
 #### 3.1.1 JWT认证流程
+
 ```typescript
 // 登录流程
 1. 用户提交账号密码
@@ -550,13 +582,14 @@ production:
 ```
 
 #### 3.1.2 RBAC权限模型
+
 ```typescript
 // 角色定义
 enum Role {
-  PATIENT = 'patient',           // 患者
-  DOCTOR = 'doctor',             // 医生
+  PATIENT = 'patient', // 患者
+  DOCTOR = 'doctor', // 医生
   HEALTH_MANAGER = 'health_manager', // 健康管理师
-  ADMIN = 'admin'                // 管理员
+  ADMIN = 'admin', // 管理员
 }
 
 // 权限定义
@@ -576,33 +609,30 @@ enum Permission {
 
   // 系统配置
   CONFIGURE_SYSTEM = 'configure:system',
-  VIEW_ANALYTICS = 'view:analytics'
+  VIEW_ANALYTICS = 'view:analytics',
 }
 
 // 角色权限映射
 const rolePermissions = {
-  [Role.PATIENT]: [
-    Permission.READ_OWN_HEALTH,
-    Permission.WRITE_OWN_HEALTH,
-    Permission.USE_AI_CHAT
-  ],
+  [Role.PATIENT]: [Permission.READ_OWN_HEALTH, Permission.WRITE_OWN_HEALTH, Permission.USE_AI_CHAT],
   [Role.DOCTOR]: [
     Permission.READ_PATIENT_HEALTH,
     Permission.MANAGE_PATIENTS,
-    Permission.ACCESS_AI_DIAGNOSIS
+    Permission.ACCESS_AI_DIAGNOSIS,
   ],
   [Role.HEALTH_MANAGER]: [
     Permission.READ_PATIENT_HEALTH,
     Permission.MANAGE_PATIENTS,
-    Permission.USE_AI_CHAT
+    Permission.USE_AI_CHAT,
   ],
-  [Role.ADMIN]: Object.values(Permission) // 所有权限
-}
+  [Role.ADMIN]: Object.values(Permission), // 所有权限
+};
 ```
 
 ### 3.2 AI集成组件
 
 #### 3.2.1 AI服务适配器模式
+
 ```typescript
 // AI Provider抽象接口
 interface AIProvider {
@@ -617,18 +647,22 @@ class DeepSeekProvider implements AIProvider {
   private baseURL: string;
 
   async chat(messages: Message[], options?: ChatOptions): Promise<ChatResponse> {
-    const response = await axios.post(`${this.baseURL}/chat/completions`, {
-      model: options?.model || 'deepseek-chat',
-      messages,
-      temperature: options?.temperature || 0.7,
-      max_tokens: options?.maxTokens || 2000
-    }, {
-      headers: { 'Authorization': `Bearer ${this.apiKey}` }
-    });
+    const response = await axios.post(
+      `${this.baseURL}/chat/completions`,
+      {
+        model: options?.model || 'deepseek-chat',
+        messages,
+        temperature: options?.temperature || 0.7,
+        max_tokens: options?.maxTokens || 2000,
+      },
+      {
+        headers: { Authorization: `Bearer ${this.apiKey}` },
+      },
+    );
 
     return {
       content: response.data.choices[0].message.content,
-      usage: response.data.usage
+      usage: response.data.usage,
     };
   }
 
@@ -655,6 +689,7 @@ class AIModelManager {
 ```
 
 #### 3.2.2 RAG（检索增强生成）架构
+
 ```typescript
 // 知识库检索组件
 class HealthKnowledgeBase {
@@ -671,8 +706,8 @@ class HealthKnowledgeBase {
         title: doc.title,
         content: doc.content,
         category: doc.category,
-        tags: doc.tags
-      }
+        tags: doc.tags,
+      },
     });
   }
 
@@ -681,10 +716,10 @@ class HealthKnowledgeBase {
     const queryEmbedding = await aiProvider.embeddings(query);
     const results = await this.vectorDB.search(this.collectionName, {
       vector: queryEmbedding,
-      limit
+      limit,
     });
 
-    return results.map(r => r.payload as HealthDocument);
+    return results.map((r) => r.payload as HealthDocument);
   }
 }
 
@@ -695,7 +730,7 @@ class HealthEducationService {
     const relevantDocs = await knowledgeBase.search(question);
 
     // 2. 构建增强提示词
-    const context = relevantDocs.map(d => d.content).join('\n\n');
+    const context = relevantDocs.map((d) => d.content).join('\n\n');
     const prompt = `
       基于以下医学知识回答患者问题：
 
@@ -712,7 +747,7 @@ class HealthEducationService {
     // 3. 调用AI生成回答
     const response = await aiProvider.chat([
       { role: 'system', content: '你是一个专业的健康科普助手' },
-      { role: 'user', content: prompt }
+      { role: 'user', content: prompt },
     ]);
 
     return response.content;
@@ -721,6 +756,7 @@ class HealthEducationService {
 ```
 
 #### 3.2.3 AI Agent对话管理
+
 ```typescript
 // 对话状态管理
 interface ConversationState {
@@ -782,10 +818,13 @@ class AIAgentController {
       用户消息：${message}
     `;
 
-    const response = await aiProvider.chat([
-      { role: 'system', content: '你是意图识别助手' },
-      { role: 'user', content: prompt }
-    ], { temperature: 0.1 });
+    const response = await aiProvider.chat(
+      [
+        { role: 'system', content: '你是意图识别助手' },
+        { role: 'user', content: prompt },
+      ],
+      { temperature: 0.1 },
+    );
 
     return JSON.parse(response.content);
   }
@@ -801,7 +840,7 @@ class AIAgentController {
       userId: conversation.userId,
       type: 'blood_pressure',
       value: data.bloodPressure,
-      timestamp: new Date()
+      timestamp: new Date(),
     });
 
     return '血压打卡成功！您获得了10积分。请问还需要记录其他健康数据吗？';
@@ -812,6 +851,7 @@ class AIAgentController {
 ### 3.3 实时通信组件
 
 #### 3.3.1 WebSocket架构
+
 ```typescript
 // Socket.io服务端
 class ChatSocketServer {
@@ -820,7 +860,7 @@ class ChatSocketServer {
   initialize(httpServer: HttpServer) {
     this.io = new Server(httpServer, {
       cors: { origin: '*' },
-      transports: ['websocket', 'polling']
+      transports: ['websocket', 'polling'],
     });
 
     // 认证中间件
@@ -871,7 +911,7 @@ class ChatSocketServer {
       recipientId,
       content,
       type,
-      timestamp: new Date()
+      timestamp: new Date(),
     });
 
     // 实时推送给接收者
@@ -881,7 +921,7 @@ class ChatSocketServer {
     await notificationService.pushNotification(recipientId, {
       title: '新消息',
       body: content,
-      data: { messageId: message.id }
+      data: { messageId: message.id },
     });
   }
 }
@@ -890,16 +930,13 @@ class ChatSocketServer {
 ### 3.4 文件存储组件
 
 #### 3.4.1 OSS存储服务
+
 ```typescript
 class FileStorageService {
   private ossClient: OSS;
   private bucketName = 'health-mgmt';
 
-  async uploadHealthDocument(
-    file: Buffer,
-    userId: string,
-    fileName: string
-  ): Promise<string> {
+  async uploadHealthDocument(file: Buffer, userId: string, fileName: string): Promise<string> {
     // 生成唯一文件名
     const fileExt = path.extname(fileName);
     const uniqueName = `health_docs/${userId}/${Date.now()}${fileExt}`;
@@ -908,13 +945,13 @@ class FileStorageService {
     await this.ossClient.put(uniqueName, file, {
       headers: {
         'Content-Type': this.getContentType(fileExt),
-        'x-oss-object-acl': 'private' // 私有访问
-      }
+        'x-oss-object-acl': 'private', // 私有访问
+      },
     });
 
     // 返回访问URL（带签名，1小时过期）
     const url = this.ossClient.signatureUrl(uniqueName, {
-      expires: 3600
+      expires: 3600,
     });
 
     return url;
@@ -933,6 +970,7 @@ class FileStorageService {
 ### 4.1 核心数据表设计
 
 #### 4.1.1 用户表（users）
+
 ```sql
 CREATE TABLE users (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -967,6 +1005,7 @@ CREATE TABLE users (
 ```
 
 #### 4.1.2 健康档案表（health_records）
+
 ```sql
 CREATE TABLE health_records (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -995,6 +1034,7 @@ CREATE TABLE health_records (
 ```
 
 #### 4.1.3 打卡记录表（check_ins）
+
 ```sql
 CREATE TABLE check_ins (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -1033,6 +1073,7 @@ CREATE TABLE check_ins (
 ```
 
 #### 4.1.4 风险评估表（risk_assessments）
+
 ```sql
 CREATE TABLE risk_assessments (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -1064,6 +1105,7 @@ CREATE TABLE risk_assessments (
 ```
 
 #### 4.1.5 积分交易表（points_transactions）
+
 ```sql
 CREATE TABLE points_transactions (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -1100,6 +1142,7 @@ GROUP BY user_id;
 ```
 
 #### 4.1.6 医患关系表（doctor_patient_relations）
+
 ```sql
 CREATE TABLE doctor_patient_relations (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -1124,6 +1167,7 @@ CREATE TABLE doctor_patient_relations (
 ```
 
 #### 4.1.7 健康管理师会员关系表（manager_member_relations）
+
 ```sql
 CREATE TABLE manager_member_relations (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -1152,6 +1196,7 @@ CREATE TABLE manager_member_relations (
 ```
 
 #### 4.1.8 消息表（messages - MongoDB）
+
 ```javascript
 // MongoDB集合结构
 {
@@ -1186,6 +1231,7 @@ CREATE TABLE manager_member_relations (
 ```
 
 #### 4.1.9 AI对话历史表（ai_conversations - MongoDB）
+
 ```javascript
 {
   _id: ObjectId,
@@ -1299,7 +1345,7 @@ enum ErrorCode {
   // 4xxx - 系统错误
   DATABASE_ERROR = 4001,
   INTERNAL_SERVER_ERROR = 4002,
-  SERVICE_UNAVAILABLE = 4003
+  SERVICE_UNAVAILABLE = 4003,
 }
 
 // 统一错误响应格式
@@ -1320,7 +1366,7 @@ class AppError extends Error {
     public code: ErrorCode,
     public message: string,
     public statusCode: number = 400,
-    public details?: any
+    public details?: any,
   ) {
     super(message);
   }
@@ -1349,8 +1395,8 @@ export class GlobalExceptionFilter implements ExceptionFilter {
           message: exception.message,
           details: exception.details,
           timestamp: new Date().toISOString(),
-          requestId: request.id
-        }
+          requestId: request.id,
+        },
       };
       response.status(exception.statusCode).json(errorResponse);
     } else if (exception instanceof HttpException) {
@@ -1362,8 +1408,8 @@ export class GlobalExceptionFilter implements ExceptionFilter {
           code: this.mapHttpStatusToErrorCode(status),
           message: exception.message,
           timestamp: new Date().toISOString(),
-          requestId: request.id
-        }
+          requestId: request.id,
+        },
       };
       response.status(status).json(errorResponse);
     } else {
@@ -1375,8 +1421,8 @@ export class GlobalExceptionFilter implements ExceptionFilter {
           code: ErrorCode.INTERNAL_SERVER_ERROR,
           message: '服务器内部错误',
           timestamp: new Date().toISOString(),
-          requestId: request.id
-        }
+          requestId: request.id,
+        },
       };
       response.status(500).json(errorResponse);
     }
@@ -1401,17 +1447,14 @@ function RetryOnFailure(maxRetries = 3, delay = 1000) {
         } catch (error) {
           lastError = error;
           if (i < maxRetries - 1) {
-            await new Promise(resolve => setTimeout(resolve, delay * (i + 1)));
+            await new Promise((resolve) => setTimeout(resolve, delay * (i + 1)));
           }
         }
       }
 
-      throw new AppError(
-        ErrorCode.AI_SERVICE_ERROR,
-        `AI服务调用失败，已重试${maxRetries}次`,
-        503,
-        { originalError: lastError.message }
-      );
+      throw new AppError(ErrorCode.AI_SERVICE_ERROR, `AI服务调用失败，已重试${maxRetries}次`, 503, {
+        originalError: lastError.message,
+      });
     };
 
     return descriptor;
@@ -1427,17 +1470,13 @@ class CircuitBreaker {
 
   constructor(
     private threshold: number = 5, // 失败阈值
-    private timeout: number = 60000 // 熔断超时(ms)
+    private timeout: number = 60000, // 熔断超时(ms)
   ) {}
 
   async execute<T>(fn: () => Promise<T>): Promise<T> {
     if (this.state === 'OPEN') {
       if (Date.now() < this.nextAttempt) {
-        throw new AppError(
-          ErrorCode.SERVICE_UNAVAILABLE,
-          '服务暂时不可用，请稍后重试',
-          503
-        );
+        throw new AppError(ErrorCode.SERVICE_UNAVAILABLE, '服务暂时不可用，请稍后重试', 503);
       }
       this.state = 'HALF_OPEN';
     }
@@ -1512,7 +1551,7 @@ describe('CheckInService', () => {
       const checkInData = {
         type: 'blood_pressure',
         data: { systolic: 120, diastolic: 80 },
-        checkInDate: '2025-01-15'
+        checkInDate: '2025-01-15',
       };
 
       repository.findByUserAndDate.mockResolvedValue(null);
@@ -1524,12 +1563,7 @@ describe('CheckInService', () => {
 
       // Assert
       expect(result.id).toBe('check-in-1');
-      expect(pointsService.earnPoints).toHaveBeenCalledWith(
-        userId,
-        10,
-        'check_in',
-        'check-in-1'
-      );
+      expect(pointsService.earnPoints).toHaveBeenCalledWith(userId, 10, 'check_in', 'check-in-1');
     });
 
     it('应该在重复打卡时抛出异常', async () => {
@@ -1541,8 +1575,8 @@ describe('CheckInService', () => {
         service.createCheckIn('user-123', {
           type: 'blood_pressure',
           data: {},
-          checkInDate: '2025-01-15'
-        })
+          checkInDate: '2025-01-15',
+        }),
       ).rejects.toThrow(AppError);
     });
   });
@@ -1559,7 +1593,7 @@ describe('Health API Integration Tests', () => {
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
-      imports: [AppModule]
+      imports: [AppModule],
     }).compile();
 
     app = moduleRef.createNestApplication();
@@ -1579,7 +1613,7 @@ describe('Health API Integration Tests', () => {
       .send({
         type: 'blood_pressure',
         data: { systolic: 120, diastolic: 80 },
-        checkInDate: '2025-01-15'
+        checkInDate: '2025-01-15',
       })
       .expect(201);
 
@@ -1639,7 +1673,7 @@ describe('AI Health Advice', () => {
   beforeEach(() => {
     mockProvider = {
       chat: jest.fn(),
-      healthAdvice: jest.fn()
+      healthAdvice: jest.fn(),
     } as any;
 
     aiService = new AIService(mockProvider);
@@ -1650,14 +1684,12 @@ describe('AI Health Advice', () => {
     mockProvider.healthAdvice.mockResolvedValue({
       advice: '建议控制饮食，增加运动',
       riskLevel: 'medium',
-      actions: ['减少盐分摄入', '每日步行30分钟']
+      actions: ['减少盐分摄入', '每日步行30分钟'],
     });
 
     const patientData = {
       age: 45,
-      checkIns: [
-        { type: 'blood_pressure', data: { systolic: 145, diastolic: 90 } }
-      ]
+      checkIns: [{ type: 'blood_pressure', data: { systolic: 145, diastolic: 90 } }],
     };
 
     const advice = await aiService.generateHealthAdvice(patientData);
@@ -1677,9 +1709,7 @@ describe('Real AI Integration', () => {
 
   it('应该从DeepSeek获取真实响应', async () => {
     const provider = new DeepSeekProvider(process.env.DEEPSEEK_API_KEY);
-    const response = await provider.chat([
-      { role: 'user', content: '高血压患者应该注意什么？' }
-    ]);
+    const response = await provider.chat([{ role: 'user', content: '高血压患者应该注意什么？' }]);
 
     expect(response.content).toBeTruthy();
     expect(response.content.length).toBeGreaterThan(50);
@@ -1737,9 +1767,7 @@ prisma.$use(async (params, next) => {
   // 加密敏感字段
   if (params.action === 'create' || params.action === 'update') {
     if (params.model === 'User' && params.args.data.idCard) {
-      params.args.data.idCardEncrypted = encryptionService.encrypt(
-        params.args.data.idCard
-      );
+      params.args.data.idCardEncrypted = encryptionService.encrypt(params.args.data.idCard);
       delete params.args.data.idCard;
     }
   }
@@ -1761,7 +1789,7 @@ prisma.$use(async (params, next) => {
 // 使用Prisma ORM，自动防止SQL注入
 // ✅ 安全的查询
 const user = await prisma.user.findUnique({
-  where: { id: userId } // 参数化查询
+  where: { id: userId }, // 参数化查询
 });
 
 // ❌ 避免原始SQL（除非必要）
@@ -1785,7 +1813,7 @@ class InputSanitizer {
     // 移除HTML标签和脚本
     return sanitizeHtml(input, {
       allowedTags: [], // 不允许任何HTML标签
-      allowedAttributes: {}
+      allowedAttributes: {},
     });
   }
 
@@ -1793,7 +1821,7 @@ class InputSanitizer {
     // 允许部分安全的HTML标签（如科普文章）
     return sanitizeHtml(input, {
       allowedTags: ['p', 'br', 'strong', 'em', 'ul', 'ol', 'li'],
-      allowedAttributes: {}
+      allowedAttributes: {},
     });
   }
 }
@@ -1824,7 +1852,7 @@ export class PermissionsGuard implements CanActivate {
   canActivate(context: ExecutionContext): boolean {
     const requiredPermissions = this.reflector.get<Permission[]>(
       'permissions',
-      context.getHandler()
+      context.getHandler(),
     );
 
     if (!requiredPermissions) {
@@ -1836,9 +1864,7 @@ export class PermissionsGuard implements CanActivate {
 
     const userPermissions = rolePermissions[user.role] || [];
 
-    return requiredPermissions.every(permission =>
-      userPermissions.includes(permission)
-    );
+    return requiredPermissions.every((permission) => userPermissions.includes(permission));
   }
 }
 
@@ -2009,7 +2035,7 @@ class CacheService {
     }
 
     const checkIns = await prisma.checkIn.findMany({
-      where: { userId, checkInDate: new Date(date) }
+      where: { userId, checkInDate: new Date(date) },
     });
 
     // 缓存到当天结束
@@ -2025,12 +2051,7 @@ class CacheService {
   }
 
   async getLeaderboard(limit = 100): Promise<LeaderboardEntry[]> {
-    const results = await redis.zrevrange(
-      'leaderboard:points',
-      0,
-      limit - 1,
-      'WITHSCORES'
-    );
+    const results = await redis.zrevrange('leaderboard:points', 0, limit - 1, 'WITHSCORES');
 
     // 批量获取用户信息
     const userIds = results.filter((_, i) => i % 2 === 0);
@@ -2041,7 +2062,7 @@ class CacheService {
       .map((points, index) => ({
         rank: index + 1,
         user: users[index],
-        points: parseInt(points)
+        points: parseInt(points),
       }));
   }
 
@@ -2049,7 +2070,7 @@ class CacheService {
   async cacheConversationContext(
     conversationId: string,
     context: any,
-    ttl = 1800 // 30分钟
+    ttl = 1800, // 30分钟
   ): Promise<void> {
     const key = `ai:context:${conversationId}`;
     await redis.setex(key, ttl, JSON.stringify(context));
@@ -2080,7 +2101,7 @@ export class HealthAnalysisProcessor {
         type: 'ai_prediction',
         riskLevel: prediction.level,
         riskScore: prediction.score,
-        resultDetails: prediction.details
+        resultDetails: prediction.details,
       });
 
       // 4. 如果高风险，发送通知
@@ -2088,7 +2109,7 @@ export class HealthAnalysisProcessor {
         await notificationQueue.add('send-alert', {
           userId,
           type: 'high_risk_warning',
-          message: prediction.warning
+          message: prediction.warning,
         });
       }
 
@@ -2108,9 +2129,9 @@ export class HealthScheduler {
     const activeUsers = await userRepository.findActivePatients();
 
     // 批量添加任务到队列
-    const jobs = activeUsers.map(user => ({
+    const jobs = activeUsers.map((user) => ({
       name: 'risk-prediction',
-      data: { userId: user.id }
+      data: { userId: user.id },
     }));
 
     await healthAnalysisQueue.addBulk(jobs);
@@ -2265,9 +2286,9 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
-      - "5432:5432"
+      - '5432:5432'
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U admin"]
+      test: ['CMD-SHELL', 'pg_isready -U admin']
       interval: 10s
       timeout: 5s
       retries: 5
@@ -2279,7 +2300,7 @@ services:
     volumes:
       - redis_data:/data
     ports:
-      - "6379:6379"
+      - '6379:6379'
 
   # MongoDB
   mongodb:
@@ -2290,7 +2311,7 @@ services:
     volumes:
       - mongo_data:/data/db
     ports:
-      - "27017:27017"
+      - '27017:27017'
 
   # 用户服务
   user-service:
@@ -2307,7 +2328,7 @@ services:
       redis:
         condition: service_started
     ports:
-      - "3001:3000"
+      - '3001:3000'
 
   # 健康服务
   health-service:
@@ -2321,7 +2342,7 @@ services:
       - postgres
       - redis
     ports:
-      - "3002:3000"
+      - '3002:3000'
 
   # AI服务
   ai-service:
@@ -2336,7 +2357,7 @@ services:
       - mongodb
       - qdrant
     ports:
-      - "3003:3000"
+      - '3003:3000'
 
   # 向量数据库
   qdrant:
@@ -2344,7 +2365,7 @@ services:
     volumes:
       - qdrant_data:/qdrant/storage
     ports:
-      - "6333:6333"
+      - '6333:6333'
 
   # Nginx网关
   nginx:
@@ -2353,8 +2374,8 @@ services:
       - ./nginx.conf:/etc/nginx/nginx.conf
       - ./ssl:/etc/nginx/ssl
     ports:
-      - "80:80"
-      - "443:443"
+      - '80:80'
+      - '443:443'
     depends_on:
       - user-service
       - health-service
@@ -2366,7 +2387,7 @@ services:
       context: ./frontend/web
       dockerfile: Dockerfile
     ports:
-      - "3000:80"
+      - '3000:80'
 
 volumes:
   postgres_data:
@@ -2396,40 +2417,40 @@ spec:
         app: health-service
     spec:
       containers:
-      - name: health-service
-        image: health-mgmt/health-service:latest
-        ports:
-        - containerPort: 3000
-        env:
-        - name: DATABASE_URL
-          valueFrom:
-            secretKeyRef:
-              name: db-credentials
-              key: url
-        - name: REDIS_URL
-          valueFrom:
-            secretKeyRef:
-              name: redis-credentials
-              key: url
-        resources:
-          requests:
-            memory: "256Mi"
-            cpu: "250m"
-          limits:
-            memory: "512Mi"
-            cpu: "500m"
-        livenessProbe:
-          httpGet:
-            path: /health
-            port: 3000
-          initialDelaySeconds: 30
-          periodSeconds: 10
-        readinessProbe:
-          httpGet:
-            path: /ready
-            port: 3000
-          initialDelaySeconds: 10
-          periodSeconds: 5
+        - name: health-service
+          image: health-mgmt/health-service:latest
+          ports:
+            - containerPort: 3000
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: db-credentials
+                  key: url
+            - name: REDIS_URL
+              valueFrom:
+                secretKeyRef:
+                  name: redis-credentials
+                  key: url
+          resources:
+            requests:
+              memory: '256Mi'
+              cpu: '250m'
+            limits:
+              memory: '512Mi'
+              cpu: '500m'
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 3000
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: 3000
+            initialDelaySeconds: 10
+            periodSeconds: 5
 
 ---
 apiVersion: v1
@@ -2440,9 +2461,9 @@ spec:
   selector:
     app: health-service
   ports:
-  - protocol: TCP
-    port: 80
-    targetPort: 3000
+    - protocol: TCP
+      port: 80
+      targetPort: 3000
   type: ClusterIP
 
 ---
@@ -2458,12 +2479,12 @@ spec:
   minReplicas: 3
   maxReplicas: 10
   metrics:
-  - type: Resource
-    resource:
-      name: cpu
-      target:
-        type: Utilization
-        averageUtilization: 70
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70
 ```
 
 ### 9.3 CI/CD流程
@@ -2554,19 +2575,16 @@ const logger = winston.createLogger({
   format: winston.format.combine(
     winston.format.timestamp(),
     winston.format.errors({ stack: true }),
-    winston.format.json()
+    winston.format.json(),
   ),
   defaultMeta: {
     service: 'health-service',
-    environment: process.env.NODE_ENV
+    environment: process.env.NODE_ENV,
   },
   transports: [
     // 控制台输出
     new winston.transports.Console({
-      format: winston.format.combine(
-        winston.format.colorize(),
-        winston.format.simple()
-      )
+      format: winston.format.combine(winston.format.colorize(), winston.format.simple()),
     }),
 
     // 按日期轮转的文件日志
@@ -2574,7 +2592,7 @@ const logger = winston.createLogger({
       filename: 'logs/application-%DATE%.log',
       datePattern: 'YYYY-MM-DD',
       maxSize: '100m',
-      maxFiles: '30d'
+      maxFiles: '30d',
     }),
 
     // 错误日志单独存储
@@ -2582,9 +2600,9 @@ const logger = winston.createLogger({
       filename: 'logs/error-%DATE%.log',
       datePattern: 'YYYY-MM-DD',
       level: 'error',
-      maxFiles: '90d'
-    })
-  ]
+      maxFiles: '90d',
+    }),
+  ],
 });
 
 // 结构化日志示例
@@ -2592,7 +2610,7 @@ logger.info('User check-in created', {
   userId: 'user-123',
   checkInType: 'blood_pressure',
   value: { systolic: 120, diastolic: 80 },
-  pointsEarned: 10
+  pointsEarned: 10,
 });
 ```
 
@@ -2609,7 +2627,7 @@ const httpRequestsTotal = new Counter({
   name: 'http_requests_total',
   help: 'Total HTTP requests',
   labelNames: ['method', 'route', 'status'],
-  registers: [register]
+  registers: [register],
 });
 
 // 请求延迟直方图
@@ -2618,7 +2636,7 @@ const httpRequestDuration = new Histogram({
   help: 'HTTP request duration in seconds',
   labelNames: ['method', 'route', 'status'],
   buckets: [0.1, 0.5, 1, 2, 5],
-  registers: [register]
+  registers: [register],
 });
 
 // AI调用计数器
@@ -2626,7 +2644,7 @@ const aiCallsTotal = new Counter({
   name: 'ai_calls_total',
   help: 'Total AI API calls',
   labelNames: ['provider', 'model', 'status'],
-  registers: [register]
+  registers: [register],
 });
 
 // 中间件收集指标
@@ -2640,13 +2658,10 @@ app.use((req, res, next) => {
     httpRequestsTotal.inc({
       method: req.method,
       route,
-      status: res.statusCode
+      status: res.statusCode,
     });
 
-    httpRequestDuration.observe(
-      { method: req.method, route, status: res.statusCode },
-      duration
-    );
+    httpRequestDuration.observe({ method: req.method, route, status: res.statusCode }, duration);
   });
 
   next();
@@ -2669,17 +2684,18 @@ app.get('/metrics', async (req, res) => {
 
 满足以下**任一条件**时，建议启动架构升级：
 
-| 触发条件 | 阈值 | 说明 |
-|---------|------|------|
-| **用户规模** | 注册用户 > 5万 | 单体架构性能瓶颈 |
-| **并发压力** | 同时在线 > 5000人 | 需要负载均衡和集群 |
-| **数据量** | 健康数据 > 500万条 | 需要分库分表 |
-| **企业客户** | 签约大型医院/机构 | 需要高可用性保证 |
-| **合规要求** | 等保三级认证需求 | 必须符合医疗行业标准 |
-| **设备接入** | IoT设备 > 1万台 | MQTT需要集群化 |
-| **营收** | 月营收 > 50万 | 有预算支撑升级成本 |
+| 触发条件     | 阈值               | 说明                 |
+| ------------ | ------------------ | -------------------- |
+| **用户规模** | 注册用户 > 5万     | 单体架构性能瓶颈     |
+| **并发压力** | 同时在线 > 5000人  | 需要负载均衡和集群   |
+| **数据量**   | 健康数据 > 500万条 | 需要分库分表         |
+| **企业客户** | 签约大型医院/机构  | 需要高可用性保证     |
+| **合规要求** | 等保三级认证需求   | 必须符合医疗行业标准 |
+| **设备接入** | IoT设备 > 1万台    | MQTT需要集群化       |
+| **营收**     | 月营收 > 50万      | 有预算支撑升级成本   |
 
 **决策流程**：
+
 ```
 评估当前情况
     │
@@ -2707,6 +2723,7 @@ app.get('/metrics', async (req, res) => {
 **目标**：制定详细迁移计划，降低风险
 
 **关键任务**：
+
 - [ ] 代码审计：评估MVP代码质量，标记需要重构的模块
 - [ ] 数据盘点：统计数据量、增长速度、热点数据
 - [ ] 接口梳理：整理所有API接口文档（OpenAPI规范）
@@ -2715,6 +2732,7 @@ app.get('/metrics', async (req, res) => {
 - [ ] 环境准备：采购服务器、开通K8s集群
 
 **产出物**：
+
 - 迁移项目计划书
 - 接口文档（Swagger/OpenAPI）
 - 数据迁移方案
@@ -2729,6 +2747,7 @@ app.get('/metrics', async (req, res) => {
 **关键任务**：
 
 **1.1 K8s集群搭建**
+
 ```bash
 # 使用阿里云ACK托管集群
 aliyun cs CreateManagedKubernetesCluster \
@@ -2739,6 +2758,7 @@ aliyun cs CreateManagedKubernetesCluster \
 ```
 
 **1.2 数据库迁移**
+
 ```sql
 -- PostgreSQL → MySQL 数据迁移
 -- 使用工具：pgloader
@@ -2751,12 +2771,14 @@ SELECT MD5(GROUP_CONCAT(id ORDER BY id)) FROM users;  -- 对比数据完整性
 ```
 
 **1.3 中间件部署**
+
 - Nacos（服务注册中心）
 - RocketMQ（消息队列）
 - Redis Cluster（缓存集群）
 - EMQX企业版（MQTT Broker）
 
 **产出物**：
+
 - K8s集群运行正常
 - 数据库迁移完成并验证
 - 中间件全部就绪
@@ -2768,6 +2790,7 @@ SELECT MD5(GROUP_CONCAT(id ORDER BY id)) FROM users;  -- 对比数据完整性
 **目标**：优先迁移AI服务（Python代码直接复用）
 
 **为什么先迁移AI？**
+
 - ✅ Python代码100%复用，无需重写
 - ✅ 独立服务，不影响主业务
 - ✅ 验证K8s部署流程
@@ -2775,6 +2798,7 @@ SELECT MD5(GROUP_CONCAT(id ORDER BY id)) FROM users;  -- 对比数据完整性
 **迁移步骤**：
 
 **2.1 容器化AI服务**
+
 ```dockerfile
 # ai-service/Dockerfile
 FROM python:3.11-slim
@@ -2792,6 +2816,7 @@ CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
 ```
 
 **2.2 部署到K8s**
+
 ```yaml
 # k8s/ai-service.yaml
 apiVersion: apps/v1
@@ -2799,7 +2824,7 @@ kind: Deployment
 metadata:
   name: ai-service
 spec:
-  replicas: 2  # 2个Pod实例
+  replicas: 2 # 2个Pod实例
   selector:
     matchLabels:
       app: ai-service
@@ -2809,19 +2834,20 @@ spec:
         app: ai-service
     spec:
       containers:
-      - name: ai-service
-        image: registry.cn-hangzhou.aliyuncs.com/health-mgmt/ai-service:1.0.0
-        ports:
-        - containerPort: 8000
-        env:
-        - name: DEEPSEEK_API_KEY
-          valueFrom:
-            secretKeyRef:
-              name: ai-secrets
-              key: api-key
+        - name: ai-service
+          image: registry.cn-hangzhou.aliyuncs.com/health-mgmt/ai-service:1.0.0
+          ports:
+            - containerPort: 8000
+          env:
+            - name: DEEPSEEK_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: ai-secrets
+                  key: api-key
 ```
 
 **2.3 双环境并行运行**
+
 ```
 旧环境（MVP）：  http://mvp.vakyi.com
 新环境（企业版）：http://ent.vakyi.com
@@ -2830,11 +2856,13 @@ spec:
 ```
 
 **验证指标**：
+
 - ✅ 接口响应时间 < 500ms
 - ✅ 错误率 < 0.1%
 - ✅ AI回答质量（人工抽样对比）
 
 **产出物**：
+
 - AI服务成功迁移到K8s
 - 性能指标达标
 - 向量数据库数据迁移完成
@@ -2848,15 +2876,13 @@ spec:
 **3.1 服务拆分优先级**
 
 **第一批（核心服务）**：
+
 1. **用户服务** - 认证授权最关键
 2. **健康服务** - 核心业务逻辑
 
-**第二批（支撑服务）**：
-3. **积分服务** - 相对独立
-4. **通知服务** - 相对独立
+**第二批（支撑服务）**：3. **积分服务** - 相对独立 4. **通知服务** - 相对独立
 
-**第三批（复杂服务）**：
-5. **通讯服务** - WebSocket需要特殊处理
+**第三批（复杂服务）**：5. **通讯服务** - WebSocket需要特殊处理
 
 **3.2 接口兼容性保证**
 
@@ -2897,6 +2923,7 @@ public interface CheckInMapper extends BaseMapper<CheckIn> {
 ```
 
 **产出物**：
+
 - 5个Java微服务全部开发完成
 - 单元测试覆盖率 > 80%
 - 集成测试通过
@@ -2926,6 +2953,7 @@ public interface CheckInMapper extends BaseMapper<CheckIn> {
 **4.2 流量切换实现**
 
 **方案A：Nginx权重分流**
+
 ```nginx
 upstream backend {
     server old-server:3000 weight=20;  # 旧环境 20%
@@ -2934,6 +2962,7 @@ upstream backend {
 ```
 
 **方案B：基于Header灰度**
+
 ```nginx
 # 特定用户走新环境
 if ($http_x_user_group = "beta") {
@@ -2965,14 +2994,15 @@ public class CheckInService {
 
 **关键监控指标**：
 
-| 指标 | 阈值 | 异常处理 |
-|------|------|---------|
-| 接口响应时间 | P99 < 1s | 自动回滚到旧环境 |
-| 错误率 | < 0.5% | 报警并分析 |
-| 数据一致性 | 100% | 停止灰度，修复问题 |
-| 用户投诉 | 0严重投诉 | 立即回滚 |
+| 指标         | 阈值      | 异常处理           |
+| ------------ | --------- | ------------------ |
+| 接口响应时间 | P99 < 1s  | 自动回滚到旧环境   |
+| 错误率       | < 0.5%    | 报警并分析         |
+| 数据一致性   | 100%      | 停止灰度，修复问题 |
+| 用户投诉     | 0严重投诉 | 立即回滚           |
 
 **产出物**：
+
 - 流量100%切换到新环境
 - 旧环境保留7天作为备份
 - 用户无感知迁移
@@ -3016,6 +3046,7 @@ aliyun ecs StopInstance --instance-id i-xxxxxx
 ```
 
 **成本节省**：
+
 - 释放旧ECS：节省¥200/月
 - 保留K8s集群：新增¥7500/月
 - **净增成本**：约¥7300/月
@@ -3026,23 +3057,25 @@ aliyun ecs StopInstance --instance-id i-xxxxxx
 
 #### 风险识别
 
-| 风险等级 | 风险点 | 概率 | 影响 | 应对策略 |
-|---------|-------|------|------|----------|
-| 🔴 高 | 数据迁移丢失 | 中 | 极高 | 多次验证+备份 |
-| 🔴 高 | 服务中断超过1小时 | 低 | 高 | 灰度发布+快速回滚 |
-| 🟡 中 | 性能下降 | 中 | 中 | 压测+性能调优 |
-| 🟡 中 | 接口不兼容 | 中 | 中 | 自动化测试 |
-| 🟢 低 | 成本超支 | 低 | 低 | 预算预留20% |
+| 风险等级 | 风险点            | 概率 | 影响 | 应对策略          |
+| -------- | ----------------- | ---- | ---- | ----------------- |
+| 🔴 高    | 数据迁移丢失      | 中   | 极高 | 多次验证+备份     |
+| 🔴 高    | 服务中断超过1小时 | 低   | 高   | 灰度发布+快速回滚 |
+| 🟡 中    | 性能下降          | 中   | 中   | 压测+性能调优     |
+| 🟡 中    | 接口不兼容        | 中   | 中   | 自动化测试        |
+| 🟢 低    | 成本超支          | 低   | 低   | 预算预留20%       |
 
 #### 应急回滚方案
 
 **回滚触发条件**（满足任一条即回滚）：
+
 - 错误率 > 1%
 - 接口响应时间 > 3秒
 - 出现数据丢失
 - 严重用户投诉
 
 **回滚操作**（15分钟内完成）：
+
 ```bash
 # 1. 切换DNS或Nginx配置指向旧环境
 nginx -s reload
@@ -3079,30 +3112,31 @@ def data_reconciliation():
 
 #### 一次性成本
 
-| 项目 | 金额 | 说明 |
-|------|------|------|
-| 服务器采购/租赁 | ¥20,000 | 10台ECS首次付费（年付优惠） |
-| K8s集群搭建 | ¥5,000 | 技术服务费 |
-| 数据迁移工具 | ¥3,000 | 专业迁移工具授权 |
-| 人员培训 | ¥10,000 | Java/Spring Cloud培训 |
-| 第三方咨询 | ¥15,000 | 架构咨询、等保咨询 |
-| **合计** | **¥53,000** | |
+| 项目            | 金额        | 说明                        |
+| --------------- | ----------- | --------------------------- |
+| 服务器采购/租赁 | ¥20,000     | 10台ECS首次付费（年付优惠） |
+| K8s集群搭建     | ¥5,000      | 技术服务费                  |
+| 数据迁移工具    | ¥3,000      | 专业迁移工具授权            |
+| 人员培训        | ¥10,000     | Java/Spring Cloud培训       |
+| 第三方咨询      | ¥15,000     | 架构咨询、等保咨询          |
+| **合计**        | **¥53,000** |                             |
 
 #### 月度成本对比
 
-| 项目 | MVP阶段 | 企业级阶段 | 增量 |
-|------|---------|------------|------|
-| 服务器 | ¥200 | ¥2,000 | +¥1,800 |
-| 数据库 | ¥0 | ¥1,500 | +¥1,500 |
-| 缓存 | ¥0 | ¥800 | +¥800 |
-| 对象存储 | ¥50 | ¥300 | +¥250 |
-| K8s托管 | ¥0 | ¥500 | +¥500 |
-| AI调用 | ¥500 | ¥2,000 | +¥1,500 |
-| 监控日志 | ¥0 | ¥500 | +¥500 |
-| 人力成本 | ¥50,000 | ¥100,000 | +¥50,000 |
+| 项目         | MVP阶段     | 企业级阶段   | 增量         |
+| ------------ | ----------- | ------------ | ------------ |
+| 服务器       | ¥200        | ¥2,000       | +¥1,800      |
+| 数据库       | ¥0          | ¥1,500       | +¥1,500      |
+| 缓存         | ¥0          | ¥800         | +¥800        |
+| 对象存储     | ¥50         | ¥300         | +¥250        |
+| K8s托管      | ¥0          | ¥500         | +¥500        |
+| AI调用       | ¥500        | ¥2,000       | +¥1,500      |
+| 监控日志     | ¥0          | ¥500         | +¥500        |
+| 人力成本     | ¥50,000     | ¥100,000     | +¥50,000     |
 | **月度合计** | **¥50,750** | **¥107,600** | **+¥56,850** |
 
 **ROI分析**：
+
 - 企业级客户年费：约¥300,000/家
 - 需签约2家企业级客户即可覆盖升级成本
 - 后续边际成本低，规模效应明显

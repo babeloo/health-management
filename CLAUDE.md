@@ -604,12 +604,14 @@ command 2>/dev/null || true
 
 ### 2. 端口权限问题
 
-某些端口（如 3000）在 Windows 上可能被保留，导致权限错误：
+某些端口（如 5000）在 Windows 上可能被保留，导致权限错误：
 
 ```typescript
 // 使用非保留端口，明确指定 IPv4
 const port = process.env.PORT || 5000;
-await app.listen(port, '127.0.0.1');
+// 如需强制仅本机访问或明确 IPv4，可设置 HOST=127.0.0.1
+const host = process.env.HOST || '0.0.0.0';
+await app.listen(port, host);
 ```
 
 ### 3. 推荐开发环境

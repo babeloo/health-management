@@ -71,7 +71,7 @@ influx query 'from(bucket:"health-data")
 
 ```bash
 # 测试血压趋势查询
-curl -X GET "http://localhost:3000/api/v1/health/:userId/health-trends?type=blood_pressure&days=7"
+curl -X GET "http://localhost:5000/api/v1/health/:userId/health-trends?type=blood_pressure&days=7"
 ```
 
 **测试结果**: ✅ 返回数据包含 average、max、min、dataPoints

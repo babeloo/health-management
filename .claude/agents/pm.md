@@ -258,7 +258,7 @@ color: orange
   - 为每个 DTO 添加 `@ApiProperty()` 描述
   - 为每个接口添加 `@ApiOperation()` 说明
   - 为响应添加 `@ApiResponse()` 示例
-- **访问地址**：确保 Swagger UI 在 `http://localhost:3000/api` 可访问
+- **访问地址**：确保 Swagger UI 在 `http://localhost:5000/api` 可访问
 - **版本控制**：在 `design.md` 中记录 API 版本演进
 
 **design.md 架构演进记录**：

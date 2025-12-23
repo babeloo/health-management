@@ -13,9 +13,9 @@ services:
       - postgres_data:/var/lib/postgresql/data
       - ./scripts/init-db.sql:/docker-entrypoint-initdb.d/init.sql
     ports:
-      - "5432:5432"
+      - '5432:5432'
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U admin -d health_mgmt"]
+      test: ['CMD-SHELL', 'pg_isready -U admin -d health_mgmt']
       interval: 10s
       timeout: 5s
       retries: 5
@@ -30,9 +30,9 @@ services:
     volumes:
       - redis_data:/data
     ports:
-      - "6379:6379"
+      - '6379:6379'
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: ['CMD', 'redis-cli', 'ping']
       interval: 10s
       timeout: 3s
       retries: 5
@@ -53,7 +53,7 @@ services:
     volumes:
       - influxdb_data:/var/lib/influxdb2
     ports:
-      - "8086:8086"
+      - '8086:8086'
     networks:
       - health-mgmt
 
@@ -64,8 +64,8 @@ services:
     volumes:
       - qdrant_data:/qdrant/storage
     ports:
-      - "6333:6333"
-      - "6334:6334"
+      - '6333:6333'
+      - '6334:6334'
     networks:
       - health-mgmt
 
@@ -80,7 +80,7 @@ services:
     volumes:
       - mongo_data:/data/db
     ports:
-      - "27017:27017"
+      - '27017:27017'
     networks:
       - health-mgmt
 
@@ -90,17 +90,17 @@ services:
     container_name: emqx
     environment:
       EMQX_NAME: emqx
-      EMQX_HOST: 127.0.0.1
+      EMQX_HOST: ${EMQX_HOST:-emqx}
       EMQX_DASHBOARD__DEFAULT_USERNAME: admin
       EMQX_DASHBOARD__DEFAULT_PASSWORD: ${EMQX_PASSWORD:-emqx123}
     volumes:
       - emqx_data:/opt/emqx/data
       - emqx_log:/opt/emqx/log
     ports:
-      - "1883:1883"   # MQTT
-      - "8883:8883"   # MQTT/SSL
-      - "8083:8083"   # WebSocket
-      - "18083:18083" # Dashboard
+      - '1883:1883' # MQTT
+      - '8883:8883' # MQTT/SSL
+      - '8083:8083' # WebSocket
+      - '18083:18083' # Dashboard
     networks:
       - health-mgmt
 
@@ -115,10 +115,10 @@ services:
     volumes:
       - minio_data:/data
     ports:
-      - "9000:9000"  # API
-      - "9001:9001"  # Console
+      - '9000:9000' # API
+      - '9001:9001' # Console
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      test: ['CMD', 'curl', '-f', 'http://localhost:9000/minio/health/live']
       interval: 30s
       timeout: 20s
       retries: 3

@@ -191,7 +191,7 @@ from(bucket: "health_data")
 
 ```bash
 # 使用 Apache Bench 或 k6 进行压力测试
-ab -n 100 -c 10 http://localhost:3000/api/health/blood-pressure/trend
+ab -n 100 -c 10 http://localhost:5000/api/health/blood-pressure/trend
 ```
 
 **预期结果**:

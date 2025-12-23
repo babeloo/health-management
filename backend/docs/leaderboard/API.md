@@ -117,21 +117,21 @@
 **查询总榜 Top 100**：
 
 ```bash
-curl -X GET "http://localhost:3000/api/v1/points/leaderboard" \
+curl -X GET "http://localhost:5000/api/v1/points/leaderboard" \
   -H "Authorization: Bearer YOUR_JWT_TOKEN"
 ```
 
 **查询周榜 Top 50**：
 
 ```bash
-curl -X GET "http://localhost:3000/api/v1/points/leaderboard?period=weekly&limit=50" \
+curl -X GET "http://localhost:5000/api/v1/points/leaderboard?period=weekly&limit=50" \
   -H "Authorization: Bearer YOUR_JWT_TOKEN"
 ```
 
 **查询总榜 Top 10（不包含当前用户排名）**：
 
 ```bash
-curl -X GET "http://localhost:3000/api/v1/points/leaderboard?limit=10&includeSelf=false" \
+curl -X GET "http://localhost:5000/api/v1/points/leaderboard?limit=10&includeSelf=false" \
   -H "Authorization: Bearer YOUR_JWT_TOKEN"
 ```
 
@@ -146,7 +146,7 @@ async function getLeaderboard(
   period: 'all-time' | 'weekly' = 'all-time',
   limit: number = 100,
 ) {
-  const response = await axios.get('http://localhost:3000/api/v1/points/leaderboard', {
+  const response = await axios.get('http://localhost:5000/api/v1/points/leaderboard', {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -239,7 +239,7 @@ async function fetchLeaderboard() {
   try {
     const token = uni.getStorageSync('token');
     const res = await uni.request({
-      url: 'http://localhost:3000/api/v1/points/leaderboard',
+      url: 'http://localhost:5000/api/v1/points/leaderboard',
       method: 'GET',
       header: {
         Authorization: `Bearer ${token}`,
@@ -349,7 +349,7 @@ pnpm test points.service.spec.ts
 3. 获取 JWT Token（通过登录接口）
 4. 调用排行榜接口：
    ```bash
-   curl -X GET "http://localhost:3000/api/v1/points/leaderboard" \
+   curl -X GET "http://localhost:5000/api/v1/points/leaderboard" \
      -H "Authorization: Bearer YOUR_JWT_TOKEN"
    ```
 5. 验证返回数据格式正确
