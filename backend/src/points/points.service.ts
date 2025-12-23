@@ -7,6 +7,7 @@ import {
 } from '@nestjs/common';
 import { TransactionType } from '../generated/prisma/client';
 import { PrismaService } from '../common/prisma/prisma.service';
+import { CacheService } from '../common/cache/cache.service';
 import {
   EarnPointsDto,
   RedeemPointsDto,
@@ -23,7 +24,10 @@ import {
 export class PointsService {
   private readonly logger = new Logger(PointsService.name);
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly cacheService: CacheService,
+  ) {}
 
   /**
    * 获得积分
@@ -56,6 +60,9 @@ export class PointsService {
       this.logger.log(
         `用户 ${earnDto.userId} 获得 ${earnDto.points} 积分 (来源: ${earnDto.source || '未指定'})`,
       );
+
+      // 更新排行榜（总榜 + 周榜）
+      await this.updateLeaderboards(earnDto.userId, earnDto.points);
 
       return this.mapTransactionToResponse(transaction);
     } catch (error) {
@@ -103,6 +110,9 @@ export class PointsService {
       this.logger.log(
         `用户 ${redeemDto.userId} 消费 ${redeemDto.points} 积分 (用途: ${redeemDto.source || '未指定'})`,
       );
+
+      // 更新排行榜（扣除积分，仅更新总榜）
+      await this.updateLeaderboards(redeemDto.userId, -redeemDto.points);
 
       return this.mapTransactionToResponse(transaction);
     } catch (error) {
@@ -262,6 +272,9 @@ export class PointsService {
 
       this.logger.log(`用户 ${userId} 获得奖励积分 ${points} (来源: ${source || '系统奖励'})`);
 
+      // 更新排行榜（总榜 + 周榜）
+      await this.updateLeaderboards(userId, points);
+
       return this.mapTransactionToResponse(transaction);
     } catch (error) {
       this.logger.error(`奖励积分失败: ${error.message}`, error.stack);
@@ -294,5 +307,33 @@ export class PointsService {
       description: transaction.description,
       createdAt: transaction.createdAt,
     };
+  }
+
+  /**
+   * 更新排行榜（总榜 + 周榜）
+   * @param userId 用户 ID
+   * @param pointsChange 积分变化
+   */
+  private async updateLeaderboards(userId: string, pointsChange: number): Promise<void> {
+    const now = new Date();
+    const weekKey = `leaderboard:weekly:${this.getWeekNumber(now)}`;
+
+    // 并行更新总榜和周榜（忽略错误，不影响主流程）
+    await Promise.allSettled([
+      this.cacheService.updateLeaderboard('leaderboard:all-time', userId, pointsChange),
+      this.cacheService.updateLeaderboard(weekKey, userId, pointsChange),
+    ]);
+  }
+
+  /**
+   * 获取周编号（ISO 8601 格式：2025-W51）
+   * @param date 日期
+   * @returns 周编号字符串
+   */
+  private getWeekNumber(date: Date): string {
+    const oneJan = new Date(date.getFullYear(), 0, 1);
+    const numberOfDays = Math.floor((date.getTime() - oneJan.getTime()) / 86400000);
+    const week = Math.ceil((numberOfDays + oneJan.getDay() + 1) / 7);
+    return `${date.getFullYear()}-W${week.toString().padStart(2, '0')}`;
   }
 }

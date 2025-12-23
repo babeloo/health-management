@@ -13,12 +13,17 @@ import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiParam } from '@ne
 import { UserRole } from '../generated/prisma/client';
 import { PointsService } from './points.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { CacheService } from '../common/cache/cache.service';
+import { PrismaService } from '../common/prisma/prisma.service';
 import {
   EarnPointsDto,
   RedeemPointsDto,
   PointsTransactionQueryDto,
   PointsBalanceResponseDto,
   PointsTransactionResponseDto,
+  LeaderboardQueryDto,
+  LeaderboardResponseDto,
+  LeaderboardEntryDto,
 } from './dto';
 
 /**
@@ -46,7 +51,11 @@ interface RequestWithUser extends Request {
 @UseGuards(JwtAuthGuard)
 @ApiBearerAuth()
 export class PointsController {
-  constructor(private readonly pointsService: PointsService) {}
+  constructor(
+    private readonly pointsService: PointsService,
+    private readonly cacheService: CacheService,
+    private readonly prisma: PrismaService,
+  ) {}
 
   /**
    * 获得积分
@@ -176,5 +185,139 @@ export class PointsController {
     }
 
     return this.pointsService.getTransactionHistory(userId, queryDto);
+  }
+
+  /**
+   * 获取积分排行榜
+   * GET /api/v1/points/leaderboard
+   */
+  @Get('leaderboard')
+  @ApiOperation({ summary: '获取积分排行榜', description: '查询积分排行榜（总榜或周榜）' })
+  @ApiResponse({
+    status: 200,
+    description: '查询成功',
+    type: LeaderboardResponseDto,
+  })
+  @ApiResponse({ status: 500, description: '服务器内部错误' })
+  async getLeaderboard(
+    @Query() query: LeaderboardQueryDto,
+    @Request() req: RequestWithUser,
+  ): Promise<LeaderboardResponseDto> {
+    const { period = 'all-time', limit = 100, includeSelf = true } = query;
+    const currentUserId = req.user.userId;
+
+    // 构建 Redis key
+    const leaderboardKey = this.getLeaderboardKey(period);
+
+    // 获取 Top N 用户 ID 和积分
+    const topEntries = await this.cacheService.getTopLeaderboard(leaderboardKey, limit);
+
+    // 批量查询用户信息（优化性能，避免 N+1 查询）
+    const userIds = topEntries.map((entry) => entry.userId);
+    const users = await this.prisma.user.findMany({
+      where: { id: { in: userIds } },
+      select: {
+        id: true,
+        username: true,
+        fullName: true,
+        avatarUrl: true,
+      },
+    });
+
+    const userMap = new Map(users.map((user) => [user.id, user]));
+
+    // 组装排行榜数据
+    const leaderboardEntries: LeaderboardEntryDto[] = topEntries.map((entry, index) => ({
+      rank: index + 1,
+      userId: entry.userId,
+      username: userMap.get(entry.userId)?.username || 'Unknown',
+      fullName: userMap.get(entry.userId)?.fullName ?? undefined,
+      avatarUrl: userMap.get(entry.userId)?.avatarUrl ?? undefined,
+      points: entry.points,
+    }));
+
+    // 获取当前用户排名（如果请求）
+    let currentUserEntry: LeaderboardEntryDto | null = null;
+    if (includeSelf) {
+      const rank = await this.cacheService.getUserRank(leaderboardKey, currentUserId);
+      const points = await this.cacheService.getUserScore(leaderboardKey, currentUserId);
+
+      if (rank !== null && points > 0) {
+        const user = await this.prisma.user.findUnique({
+          where: { id: currentUserId },
+          select: {
+            username: true,
+            fullName: true,
+            avatarUrl: true,
+          },
+        });
+
+        if (user) {
+          currentUserEntry = {
+            rank,
+            userId: currentUserId,
+            username: user.username,
+            fullName: user.fullName ?? undefined,
+            avatarUrl: user.avatarUrl ?? undefined,
+            points,
+          };
+        }
+      }
+    }
+
+    // 获取排行榜总人数
+    const totalUsers = await this.cacheService.getLeaderboardSize(leaderboardKey);
+
+    return {
+      period,
+      periodLabel: this.getPeriodLabel(period),
+      topEntries: leaderboardEntries,
+      currentUser: currentUserEntry,
+      totalUsers,
+    };
+  }
+
+  /**
+   * 根据时间维度获取排行榜 Redis key
+   * @param period 时间维度
+   * @returns Redis key
+   */
+  private getLeaderboardKey(period: string): string {
+    const now = new Date();
+    switch (period) {
+      case 'weekly':
+        return `leaderboard:weekly:${this.getWeekNumber(now)}`;
+      default:
+        return 'leaderboard:all-time';
+    }
+  }
+
+  /**
+   * 获取时间维度的中文标签
+   * @param period 时间维度
+   * @returns 中文标签
+   */
+  private getPeriodLabel(period: string): string {
+    const now = new Date();
+    switch (period) {
+      case 'weekly': {
+        const weekNum = this.getWeekNumber(now).split('-W')[1];
+        return `${now.getFullYear()}年第${weekNum}周`;
+      }
+      default:
+        return '总榜';
+    }
+  }
+
+  /**
+   * 获取周编号（ISO 8601 格式：2025-W51）
+   * @param date 日期
+   * @returns 周编号字符串
+   */
+  private getWeekNumber(date: Date): string {
+    const oneJan = new Date(date.getFullYear(), 0, 1);
+    const numberOfDays = Math.floor((date.getTime() - oneJan.getTime()) / 86400000);
+    const week = Math.ceil((numberOfDays + oneJan.getDay() + 1) / 7);
+    return `${date.getFullYear()}-W${week.toString().padStart(2, '0')}`;
   }
 }

@@ -9,6 +9,7 @@ import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { PrismaModule } from './common/prisma/prisma.module';
 import { InfluxModule } from './common/influx/influx.module';
+import { CacheModule } from './common/cache/cache.module';
 import { HealthModule } from './health/health.module';
 import { PointsModule } from './points/points.module';
 
@@ -34,6 +35,9 @@ import { PointsModule } from './points/points.module';
 
     // InfluxDB 时序数据库模块
     InfluxModule,
+
+    // Redis 缓存模块（全局模块）
+    CacheModule,
 
     // 认证授权模块
     AuthModule,

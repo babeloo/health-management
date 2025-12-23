@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundException, BadRequestException } from '@nestjs/common';
 import { PointsService } from './points.service';
 import { PrismaService } from '../common/prisma/prisma.service';
+import { CacheService } from '../common/cache/cache.service';
 import { TransactionType } from '../generated/prisma/client';
 import { EarnPointsDto, RedeemPointsDto, PointsTransactionQueryDto } from './dto';
 
@@ -9,6 +10,8 @@ describe('PointsService', () => {
   let service: PointsService;
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   let prismaService: PrismaService;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  let cacheService: CacheService;
 
   const mockUser = {
     id: 'user-123',
@@ -53,6 +56,10 @@ describe('PointsService', () => {
     },
   };
 
+  const mockCacheService = {
+    updateLeaderboard: jest.fn().mockResolvedValue(undefined),
+  };
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -61,11 +68,16 @@ describe('PointsService', () => {
           provide: PrismaService,
           useValue: mockPrismaService,
         },
+        {
+          provide: CacheService,
+          useValue: mockCacheService,
+        },
       ],
     }).compile();
 
     service = module.get<PointsService>(PointsService);
     prismaService = module.get<PrismaService>(PrismaService);
+    cacheService = module.get<CacheService>(CacheService);
 
     // 重置所有 mock
     jest.clearAllMocks();
