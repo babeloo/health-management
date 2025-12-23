@@ -11,6 +11,9 @@ import { PrismaService } from '../common/prisma/prisma.service';
 import { FileStorageService } from '../common/storage/file-storage.service';
 import { InfluxService } from '../common/influx/influx.service';
 import { RiskCalculationService } from './services/risk-calculation.service';
+import { PointsRulesService } from '../points/services/points-rules.service';
+import { StreakCalculationService } from '../points/services/streak-calculation.service';
+import { PointsService } from '../points/points.service';
 import { CreateHealthRecordDto } from './dto/create-health-record.dto';
 import { UpdateHealthRecordDto } from './dto/update-health-record.dto';
 import { CreateCheckInDto } from './dto/create-check-in.dto';
@@ -49,6 +52,7 @@ describe('HealthService', () => {
       create: jest.fn(),
       findMany: jest.fn(),
       count: jest.fn(),
+      findFirst: jest.fn(),
     },
   };
 
@@ -66,6 +70,21 @@ describe('HealthService', () => {
   const mockRiskCalculationService = {
     calculateDiabetesRisk: jest.fn(),
     calculateStrokeRisk: jest.fn(),
+  };
+
+  const mockPointsRulesService = {
+    calculateCheckInPoints: jest.fn().mockReturnValue(10),
+  };
+
+  const mockStreakCalculationService = {
+    calculateStreakDays: jest.fn().mockResolvedValue(1),
+    hasTodayBonusTriggered: jest.fn().mockResolvedValue(false),
+    recordStreakBonus: jest.fn().mockResolvedValue(undefined),
+  };
+
+  const mockPointsService = {
+    addPoints: jest.fn().mockResolvedValue(undefined),
+    earnPoints: jest.fn().mockResolvedValue(undefined),
   };
 
   beforeEach(async () => {
@@ -87,6 +106,18 @@ describe('HealthService', () => {
         {
           provide: RiskCalculationService,
           useValue: mockRiskCalculationService,
+        },
+        {
+          provide: PointsRulesService,
+          useValue: mockPointsRulesService,
+        },
+        {
+          provide: StreakCalculationService,
+          useValue: mockStreakCalculationService,
+        },
+        {
+          provide: PointsService,
+          useValue: mockPointsService,
         },
       ],
     }).compile();
@@ -508,6 +539,9 @@ describe('HealthService', () => {
         data: createDto.data,
         notes: createDto.notes,
         pointsEarned: 10,
+        bonusPoints: 0,
+        streakDays: 0,
+        totalPoints: 10,
         checkInDate: expect.any(Date),
         createdAt: new Date(),
       };
@@ -547,6 +581,9 @@ describe('HealthService', () => {
         data: createDto.data,
         notes: null,
         pointsEarned: 10,
+        bonusPoints: 0,
+        streakDays: 0,
+        totalPoints: 10,
         checkInDate: expect.any(Date),
         createdAt: new Date(),
       };
@@ -578,6 +615,9 @@ describe('HealthService', () => {
         data: createDto.data,
         notes: null,
         pointsEarned: 5,
+        bonusPoints: 0,
+        streakDays: 0,
+        totalPoints: 10,
         checkInDate: expect.any(Date),
         createdAt: new Date(),
       };
