@@ -20,7 +20,8 @@ export class CacheService implements OnModuleDestroy {
     this.redis = new Redis({
       host: redisHost,
       port: redisPort,
-      password: redisPassword,
+      // ioredis: 传入空字符串会触发 AUTH ""，在未开启 requirepass 的 Redis（如 CI）下会报错
+      password: redisPassword || undefined,
       retryStrategy: (times) => {
         const delay = Math.min(times * 50, 2000);
         return delay;
