@@ -8,6 +8,47 @@
 
 ## [Unreleased]
 
+### Added
+
+- **实时通讯基础模块** - 2025-12-24 @backend-ts
+  - 集成 Socket.io 实现 WebSocket 实时通信
+  - 集成 MongoDB 存储聊天消息
+  - 实现 JWT 认证的 WebSocket 连接
+  - 实现用户在线状态管理（Redis）
+  - 实现消息发送、接收、已读状态管理
+  - 新增 API 端点：
+    - `GET /api/v1/chat/conversations/:userId` - 获取会话列表
+    - `GET /api/v1/chat/messages/:conversationId` - 获取聊天记录
+    - `PUT /api/v1/chat/messages/:id/read` - 标记消息已读
+    - `GET /api/v1/chat/unread-count/:userId` - 获取未读消息数
+  - WebSocket 事件：
+    - `join` - 用户加入房间
+    - `send_message` - 发送消息
+    - `new_message` - 接收新消息
+    - `typing` - 正在输入提示
+  - 新增文件：
+    - `backend/src/chat/chat.module.ts`
+    - `backend/src/chat/chat.gateway.ts`
+    - `backend/src/chat/chat.service.ts`
+    - `backend/src/chat/chat.controller.ts`
+    - `backend/src/chat/schemas/message.schema.ts`
+    - `backend/src/chat/guards/ws-jwt.guard.ts`
+    - `backend/src/chat/dto/send-message.dto.ts`
+  - 依赖安装：
+    - `@nestjs/websockets@10.4.20`
+    - `@nestjs/platform-socket.io@10.4.20`
+    - `socket.io@4.8.1`
+    - `@nestjs/mongoose@11.0.4`
+    - `mongoose@9.0.2`
+  - 关联需求：需求 #10（医生端 - 医患沟通）、需求 #13（健康管理师端 - 师患沟通）
+
+- **CacheService 在线状态管理** - 2025-12-24 @backend-ts
+  - 新增 `setOnlineUser()` - 设置用户在线状态
+  - 新增 `deleteOnlineUser()` - 删除用户在线状态
+  - 新增 `isUserOnline()` - 检查用户是否在线
+  - 新增 `getOnlineUsers()` - 获取所有在线用户
+  - 修改文件：`backend/src/common/cache/cache.service.ts`
+
 ### Fixed
 
 - **修复 Redis 连接认证问题** - 2025-12-24 @backend-ts
@@ -27,7 +68,6 @@
     - 更新测试期望对象（新增 streakDays、bonusPoints、totalPoints 字段）
   - 修复文件：`backend/src/health/health.service.spec.ts`
   - 验证结果：✅ 所有 180 个测试用例通过（100%）
->>>>>>> 0f54f5d (fix: 修复 HealthService 单元测试依赖注入问题)
 
 ---
 

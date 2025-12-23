@@ -1,5 +1,6 @@
 import { Module, MiddlewareConsumer, NestModule } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { MongooseModule } from '@nestjs/mongoose';
 import { WinstonModule } from 'nest-winston';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -12,6 +13,7 @@ import { InfluxModule } from './common/influx/influx.module';
 import { CacheModule } from './common/cache/cache.module';
 import { HealthModule } from './health/health.module';
 import { PointsModule } from './points/points.module';
+import { ChatModule } from './chat/chat.module';
 
 @Module({
   imports: [
@@ -28,6 +30,14 @@ import { PointsModule } from './points/points.module';
         const env = configService.get<string>('NODE_ENV', 'development');
         return createWinstonLogger(env);
       },
+    }),
+
+    // MongoDB 连接
+    MongooseModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        uri: configService.get<string>('MONGO_URL', 'mongodb://localhost:27017/health_mgmt'),
+      }),
     }),
 
     // Prisma 数据库模块
@@ -50,6 +60,9 @@ import { PointsModule } from './points/points.module';
 
     // 积分管理模块
     PointsModule,
+
+    // 实时通讯模块
+    ChatModule,
   ],
   controllers: [AppController],
   providers: [AppService],

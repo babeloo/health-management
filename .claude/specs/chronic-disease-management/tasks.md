@@ -568,29 +568,59 @@
 
 ### 8. 通讯模块（WebSocket）
 
-- [ ] 实现实时通讯基础
-  - [ ] 安装 @nestjs/websockets 和 socket.io
-  - [ ] 创建 ChatGateway
-  - [ ] 实现 WebSocket 认证中间件（验证 JWT）
-  - [ ] 实现连接处理（用户加入房间、更新在线状态）
-  - [ ] 实现断开连接处理（清除在线状态）
-- [ ] 实现消息收发
-  - [ ] 创建 MessageModule、MessageService
-  - [ ] 连接 MongoDB（安装 @nestjs/mongoose）
-  - [ ] 定义消息 Schema（参考 design.md 4.1.8）
-  - [ ] 实现发送消息事件处理（send_message）
-  - [ ] 实现消息持久化（保存到 MongoDB）
-  - [ ] 实现实时消息推送（发送给接收者）
-- [ ] 实现会话管理
-  - [ ] 实现获取会话列表接口（GET /api/v1/conversations/:userId）
-  - [ ] 实现获取聊天记录接口（GET /api/v1/messages/:conversationId）
-  - [ ] 实现标记消息已读接口（PUT /api/v1/messages/:id/read）
-  - [ ] 实现未读消息计数
+- [x] 实现实时通讯基础 ✅ 完成于 2025-12-24
+  - [x] 安装 @nestjs/websockets 和 socket.io ✅
+  - [x] 创建 ChatGateway ✅
+  - [x] 实现 WebSocket 认证中间件（验证 JWT）✅
+  - [x] 实现连接处理（用户加入房间、更新在线状态）✅
+  - [x] 实现断开连接处理（清除在线状态）✅
+- [x] 实现消息收发 ✅ 完成于 2025-12-24
+  - [x] 创建 MessageModule、MessageService ✅
+  - [x] 连接 MongoDB（安装 @nestjs/mongoose）✅
+  - [x] 定义消息 Schema（参考 design.md 4.1.8）✅
+  - [x] 实现发送消息事件处理（send_message）✅
+  - [x] 实现消息持久化（保存到 MongoDB）✅
+  - [x] 实现实时消息推送（发送给接收者）✅
+- [x] 实现会话管理 ✅ 完成于 2025-12-24
+  - [x] 实现获取会话列表接口（GET /api/v1/chat/conversations/:userId）✅
+  - [x] 实现获取聊天记录接口（GET /api/v1/chat/messages/:conversationId）✅
+  - [x] 实现标记消息已读接口（PUT /api/v1/chat/messages/:id/read）✅
+  - [x] 实现未读消息计数 ✅
 - [ ] 编写通讯模块测试
   - [ ] 单元测试：MessageService 消息保存和查询
   - [ ] 集成测试：WebSocket 连接和认证
   - [ ] 集成测试：消息发送和接收
   - [ ] E2E 测试：完整聊天流程（医生发送 → 患者接收 → 标记已读）
+
+**实现细节**：
+
+- ✅ ChatModule 已创建并集成到 AppModule
+- ✅ ChatGateway 实现了 WebSocket 服务端（Socket.io）
+- ✅ WsJwtGuard 实现了 JWT 认证中间件
+- ✅ ChatService 实现了消息 CRUD 操作
+- ✅ ChatController 实现了 4 个 RESTful API 端点
+- ✅ Message Schema 定义（MongoDB）包含 3 个索引
+- ✅ CacheService 新增在线状态管理方法（setOnlineUser、deleteOnlineUser、isUserOnline、getOnlineUsers）
+- ✅ 支持文本、图片、语音、视频、文件 5 种消息类型
+- ✅ 消息状态管理（sent、delivered、read）
+- ✅ 会话 ID 自动生成（确保双向一致性）
+- ✅ 权限控制：用户只能查看自己的会话和消息
+- ✅ TypeScript 编译通过（Strict Mode）
+- 🚧 单元测试待编写（MessageService、ChatGateway）
+- 🚧 E2E 测试待编写（完整聊天流程）
+
+**文件清单**：
+
+- backend/src/chat/chat.module.ts
+- backend/src/chat/chat.gateway.ts
+- backend/src/chat/chat.service.ts
+- backend/src/chat/chat.controller.ts
+- backend/src/chat/schemas/message.schema.ts
+- backend/src/chat/guards/ws-jwt.guard.ts
+- backend/src/chat/dto/send-message.dto.ts
+- backend/src/chat/dto/index.ts
+- backend/src/common/cache/cache.service.ts（新增在线状态管理方法）
+- backend/src/app.module.ts（集成 MongooseModule 和 ChatModule）
 
 **关联需求**：需求 #10（医生端 - 医患沟通）、需求 #13（健康管理师端 - 师患沟通）
 

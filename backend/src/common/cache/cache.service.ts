@@ -210,4 +210,59 @@ export class CacheService implements OnModuleDestroy {
       this.logger.error(`删除缓存失败 (key: ${key})`, error);
     }
   }
+
+  /**
+   * 设置用户在线状态
+   * @param userId - 用户 ID
+   */
+  async setOnlineUser(userId: string): Promise<void> {
+    try {
+      const timestamp = Date.now();
+      await this.redis.hset('online_users', userId, timestamp.toString());
+      this.logger.debug(`用户 ${userId} 上线`);
+    } catch (error) {
+      this.logger.error(`设置用户在线状态失败 (userId: ${userId})`, error);
+    }
+  }
+
+  /**
+   * 删除用户在线状态
+   * @param userId - 用户 ID
+   */
+  async deleteOnlineUser(userId: string): Promise<void> {
+    try {
+      await this.redis.hdel('online_users', userId);
+      this.logger.debug(`用户 ${userId} 下线`);
+    } catch (error) {
+      this.logger.error(`删除用户在线状态失败 (userId: ${userId})`, error);
+    }
+  }
+
+  /**
+   * 检查用户是否在线
+   * @param userId - 用户 ID
+   * @returns 是否在线
+   */
+  async isUserOnline(userId: string): Promise<boolean> {
+    try {
+      const exists = await this.redis.hexists('online_users', userId);
+      return exists === 1;
+    } catch (error) {
+      this.logger.error(`检查用户在线状态失败 (userId: ${userId})`, error);
+      return false;
+    }
+  }
+
+  /**
+   * 获取所有在线用户
+   * @returns 在线用户 ID 列表
+   */
+  async getOnlineUsers(): Promise<string[]> {
+    try {
+      return await this.redis.hkeys('online_users');
+    } catch (error) {
+      this.logger.error('获取在线用户列表失败', error);
+      return [];
+    }
+  }
 }
