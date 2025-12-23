@@ -1,0 +1,54 @@
+{
+  "version": "1.0",
+  "lastUpdated": "2025-12-23",
+  "checkInRules": {
+    "blood_pressure": {
+      "points": 10,
+      "description": "血压打卡"
+    },
+    "blood_sugar": {
+      "points": 10,
+      "description": "血糖打卡"
+    },
+    "medication": {
+      "points": 5,
+      "description": "用药打卡"
+    },
+    "exercise": {
+      "points": 8,
+      "description": "运动打卡"
+    },
+    "diet": {
+      "points": 5,
+      "description": "饮食打卡"
+    },
+    "therapy": {
+      "points": 10,
+      "description": "理疗打卡"
+    }
+  },
+  "streakBonusRules": {
+    "7": {
+      "points": 20,
+      "description": "连续打卡7天奖励"
+    },
+    "30": {
+      "points": 100,
+      "description": "连续打卡30天奖励"
+    },
+    "90": {
+      "points": 500,
+      "description": "连续打卡90天奖励"
+    }
+  },
+  "specialRules": {
+    "first_check_in": {
+      "points": 50,
+      "description": "首次打卡奖励"
+    },
+    "perfect_day": {
+      "points": 30,
+      "description": "全部类型打卡完成奖励"
+    }
+  }
+}
