@@ -77,7 +77,9 @@ describe('HealthService', () => {
   };
 
   const mockStreakCalculationService = {
-    calculateStreak: jest.fn().mockResolvedValue({ currentStreak: 1, longestStreak: 1 }),
+    calculateStreakDays: jest.fn().mockResolvedValue(1),
+    hasTodayBonusTriggered: jest.fn().mockResolvedValue(false),
+    recordStreakBonus: jest.fn().mockResolvedValue(undefined),
   };
 
   const mockPointsService = {
