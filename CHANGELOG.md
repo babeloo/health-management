@@ -16,6 +16,19 @@
   - 解决未设置 Redis 密码时（如 CI 环境）连接失败的问题
   - 影响文件：`backend/src/common/cache/cache.service.ts`, `docker-compose.yml`
 
+- **修复 HealthService 单元测试依赖注入问题** - 2025-12-24 @backend-ts
+  - 问题描述：积分规则引擎集成后，HealthService 测试缺少新增依赖的 mock 配置
+  - 影响范围：44 个测试用例失败（总计 180 个测试）
+  - 修复内容：
+    - 添加 `PointsRulesService` mock 配置（calculateCheckInPoints 方法）
+    - 添加 `StreakCalculationService` mock 配置（calculateStreakDays、hasTodayBonusTriggered、recordStreakBonus 方法）
+    - 添加 `PointsService` mock 配置（bonusPoints 方法）
+    - 补充 `PrismaService` mock 方法（checkIn.findMany、streakBonusRecord.findFirst）
+    - 更新测试期望对象（新增 streakDays、bonusPoints、totalPoints 字段）
+  - 修复文件：`backend/src/health/health.service.spec.ts`
+  - 验证结果：✅ 所有 180 个测试用例通过（100%）
+>>>>>>> 0f54f5d (fix: 修复 HealthService 单元测试依赖注入问题)
+
 ---
 
 ## [0.3.0] - 2025-12-23
