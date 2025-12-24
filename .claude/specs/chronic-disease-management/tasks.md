@@ -5,33 +5,33 @@
 
 ## 阶段进度总览
 
-| 阶段 | 模块数 | 已完成 | 进度 | 状态 |
-|------|--------|--------|------|------|
-| 第一阶段：项目基础设施 | 3 | 3 | 100% | ✅ 已完成 |
-| 第二阶段：后端核心服务 | 11 | 8 | 72.7% | 🔄 进行中 |
-| 第三阶段：AI 服务开发 | 6 | 0 | 0% | ⏸️ 未开始 |
-| 第四阶段：患者端开发 | 9 | 0 | 0% | ⏸️ 未开始 |
-| 第五阶段：医生端和管理端开发 | 8 | 0 | 0% | ⏸️ 未开始 |
-| 第六阶段：IoT 设备接入 | 2 | 0 | 0% | ⏸️ 未开始 |
-| 第七阶段：部署与监控 | 4 | 0 | 0% | ⏸️ 未开始 |
-| 第八阶段：测试与上线 | 5 | 0 | 0% | ⏸️ 未开始 |
-| **总计** | **48** | **11** | **22.9%** | 🔄 进行中 |
+| 阶段                         | 模块数 | 已完成 | 进度      | 状态      |
+| ---------------------------- | ------ | ------ | --------- | --------- |
+| 第一阶段：项目基础设施       | 3      | 3      | 100%      | ✅ 已完成 |
+| 第二阶段：后端核心服务       | 11     | 8      | 72.7%     | 🔄 进行中 |
+| 第三阶段：AI 服务开发        | 6      | 0      | 0%        | ⏸️ 未开始 |
+| 第四阶段：患者端开发         | 9      | 0      | 0%        | ⏸️ 未开始 |
+| 第五阶段：医生端和管理端开发 | 8      | 0      | 0%        | ⏸️ 未开始 |
+| 第六阶段：IoT 设备接入       | 2      | 0      | 0%        | ⏸️ 未开始 |
+| 第七阶段：部署与监控         | 4      | 0      | 0%        | ⏸️ 未开始 |
+| 第八阶段：测试与上线         | 5      | 0      | 0%        | ⏸️ 未开始 |
+| **总计**                     | **48** | **11** | **22.9%** | 🔄 进行中 |
 
 ## 第二阶段完成情况
 
-| 模块 | 状态 | 完成时间 |
-|------|------|----------|
-| 4. 认证授权模块 | ✅ 已完成 | 2025-12-22 |
-| 5. 用户管理模块 | ✅ 已完成 | 2025-12-22 |
-| 6. CI/CD 配置 | ✅ 已完成 | 2025-12-22 |
-| 7. AI 服务基础框架 | ✅ 已完成 | 2025-12-22 |
-| 8. 健康管理模块 | ✅ 已完成 | 2025-12-24 |
-| 7. 积分系统模块 | ✅ 已完成 | 2025-12-23 |
+| 模块                     | 状态      | 完成时间   |
+| ------------------------ | --------- | ---------- |
+| 4. 认证授权模块          | ✅ 已完成 | 2025-12-22 |
+| 5. 用户管理模块          | ✅ 已完成 | 2025-12-22 |
+| 6. CI/CD 配置            | ✅ 已完成 | 2025-12-22 |
+| 7. AI 服务基础框架       | ✅ 已完成 | 2025-12-22 |
+| 8. 健康管理模块          | ✅ 已完成 | 2025-12-24 |
+| 7. 积分系统模块          | ✅ 已完成 | 2025-12-23 |
 | 8. 通讯模块（WebSocket） | ✅ 已完成 | 2025-12-24 |
-| 9. 通知模块 | ✅ 已完成 | 2025-12-24 |
-| 10. 医患关系管理模块 | ⏸️ 待开发 | - |
-| 11. 数据分析模块 | ⏸️ 待开发 | - |
-| 12. 审计日志模块 | ⏸️ 待开发 | - |
+| 9. 通知模块              | ✅ 已完成 | 2025-12-24 |
+| 10. 医患关系管理模块     | ⏸️ 待开发 | -          |
+| 11. 数据分析模块         | ⏸️ 待开发 | -          |
+| 12. 审计日志模块         | ⏸️ 待开发 | -          |
 
 ## 概述
 
@@ -89,8 +89,6 @@
 
 ### 2. NestJS 项目初始化 ✅ 100% 完成
 
-**完成时间**: 2025-12-22 10:44 | **负责人**: @backend-ts
-
 - [x] 创建 NestJS 应用骨架 ✅ 完成于 2025-12-22 10:44
   - [x] 使用 Nest CLI 初始化项目（手动创建项目结构）✅ 完成于 2025-12-22
   - [x] 配置环境变量管理（@nestjs/config + dotenv）✅ 完成于 2025-12-22
@@ -121,38 +119,45 @@
 
 ---
 
-### 3. 数据库设计与迁移 ✅ 100% 完成（MVP阶段核心表）
+### 3. 数据库设计与迁移 ✅ 100% 完成
 
-**完成时间**: 2025-12-22 10:44 | **负责人**: @backend-ts + @data-infra
+- [x] 实现用户模块数据模型 ✅ 完成于 2025-12-22
+  - [x] 定义 users 表 schema（参考 design.md 4.1.1）✅
+  - [x] 创建数据库索引（role, status, created_at）✅
+- [x] 实现健康管理模块数据模型 ✅ 完成于 2025-12-22
+  - [x] 定义 health_records 表（参考 design.md 4.1.2）✅
+  - [x] 定义 check_ins 表（参考 design.md 4.1.3）✅
+  - [x] 定义 risk_assessments 表（参考 design.md 4.1.4）✅
+  - [x] 创建必要索引和唯一约束 ✅
+- [x] 实现积分系统数据模型 ✅ 完成于 2025-12-22
+  - [x] 定义 points_transactions 表（参考 design.md 4.1.5）✅
+  - [x] 创建必要索引 ✅
+- [x] 实现医患关系数据模型 ✅ 完成于 2025-12-22
+  - [x] 定义 doctor_patient_relations 表（参考 design.md 4.1.6）✅
+  - [x] 创建必要索引和唯一约束 ✅
+- [x] 执行数据库迁移 ✅ 完成于 2025-12-22
+  - [x] 运行 `prisma db push` 创建所有表 ✅
+  - [x] 验证数据库约束和索引 ✅
 
-- [x] 实现用户模块数据模型 ✅ 完成于 2025-12-22 10:44
-  - [x] 定义 users 表 schema（参考 design.md 4.1.1）✅ 完成于 2025-12-22
-  - [x] 创建数据库索引（role, status, created_at）✅ 完成于 2025-12-22 10:44
-    - **已创建索引**: users_role_idx, users_status_idx, users_createdAt_idx, users_username_key, users_email_key, users_phone_key
-  - 🔖 **延后到第二阶段**：实现敏感字段加密中间件（Prisma Middleware + AES-256-GCM 加密）
-  - 🔖 **延后到第二阶段**：编写种子数据（测试用户）
-- [x] 实现健康管理模块数据模型 ✅ 完成于 2025-12-22 10:44
-  - [x] 定义 health_records 表（参考 design.md 4.1.2）✅ 完成于 2025-12-22
-  - [x] 定义 check_ins 表（参考 design.md 4.1.3）✅ 完成于 2025-12-22
-  - [x] 定义 risk_assessments 表（参考 design.md 4.1.4）✅ 完成于 2025-12-22
-  - [x] 创建必要索引和唯一约束 ✅ 完成于 2025-12-22 10:44
-    - **check_ins 索引**: userId_type_checkInDate_key (唯一约束), userId_checkInDate_idx, type_idx, createdAt_idx
-    - **risk_assessments 索引**: userId_type_idx, riskLevel_idx, assessedAt_idx
-- [x] 实现积分系统数据模型 ✅ 完成于 2025-12-22 10:44
-  - [x] 定义 points_transactions 表（参考 design.md 4.1.5）✅ 完成于 2025-12-22
-  - [x] 创建必要索引 ✅ 完成于 2025-12-22 10:44
-    - **已创建索引**: userId_createdAt_idx, type_idx
-  - 🔖 **延后到第二阶段**：创建 user_points_balance 视图
-  - 🔖 **延后到第二阶段**：编写积分计算触发器或存储过程
-- [x] 实现医患关系数据模型 ✅ 完成于 2025-12-22 10:44
-  - [x] 定义 doctor_patient_relations 表（参考 design.md 4.1.6）✅ 完成于 2025-12-22
-  - [x] 创建必要索引和唯一约束 ✅ 完成于 2025-12-22 10:44
-    - **已创建索引**: doctorId_patientId_key (唯一约束), doctorId_idx, patientId_idx
-  - 🔖 **延后到第二阶段**：定义 manager_member_relations 表（需求优先级较低）
-- [x] 执行数据库迁移（关键任务）✅ 完成于 2025-12-22 10:44
-  - [x] 运行 `prisma db push` 创建所有表 ✅ 完成于 2025-12-22 10:44
-  - [x] 验证数据库约束和索引 ✅ 完成于 2025-12-22 10:44
-    - **验证结果**: 6 个表、26 个索引、所有外键约束和唯一约束已生效
+**实现细节**：
+
+- ✅ 6 个核心表已创建（users, health_records, check_ins, risk_assessments, points_transactions, doctor_patient_relations）
+- ✅ 26 个索引已创建（包括主键、唯一约束、查询优化索引）
+  - users 表：users_role_idx, users_status_idx, users_createdAt_idx, users_username_key, users_email_key, users_phone_key
+  - check_ins 表：userId_type_checkInDate_key (唯一约束), userId_checkInDate_idx, type_idx, createdAt_idx
+  - risk_assessments 表：userId_type_idx, riskLevel_idx, assessedAt_idx
+  - points_transactions 表：userId_createdAt_idx, type_idx
+  - doctor_patient_relations 表：doctorId_patientId_key (唯一约束), doctorId_idx, patientId_idx
+- ✅ 所有外键约束和唯一约束已生效
+- ✅ 数据库迁移验证通过
+
+**延后任务**（第二阶段实现）：
+
+- 实现敏感字段加密中间件（Prisma Middleware + AES-256-GCM 加密）
+- 编写种子数据（测试用户）
+- 创建 user_points_balance 视图
+- 编写积分计算触发器或存储过程
+- 定义 manager_member_relations 表（需求优先级较低）
 
 **关联需求**：需求 #2（患者端 - 健康档案管理）、需求 #3（患者端 - 健康打卡功能）、需求 #4（患者端 - 风险评估功能）、需求 #7（患者端 - 积分奖励系统）
 
@@ -163,8 +168,6 @@
 **状态**: 🔄 进行中 | **前置条件**: 第一阶段数据库迁移完成 ✅
 
 ### 4. 认证授权模块 ✅ 100% 完成
-
-**完成时间**: 2025-12-22 10:39 | **负责人**: @backend-ts
 
 - [x] 实现 JWT 认证 ✅ 完成于 2025-12-22 10:39
   - [x] 安装 @nestjs/jwt 和 @nestjs/passport ✅
@@ -654,8 +657,6 @@
 
 ### 9. 通知模块 ✅ 100% 完成
 
-**完成时间**: 2025-12-24 | **负责人**: @backend-ts
-
 - [x] 实现通知服务 ✅ 完成于 2025-12-24
   - [x] 创建 NotificationModule、NotificationService、NotificationController ✅
   - [x] 定义通知表 Schema（6 种通知类型，3 个索引）✅
@@ -685,8 +686,13 @@
 
 **实现细节**：
 
+- ✅ NotificationModule 已创建并集成到 AppModule
 - ✅ NotificationService 实现了 13 个核心方法
-- ✅ 7 个 RESTful API 端点
+- ✅ NotificationController 实现了 7 个 RESTful API 端点
+- ✅ NotificationQueueService 实现了定时任务调度（支持每日重复和多时间点提醒）
+- ✅ NotificationProcessor 实现了队列任务处理（打卡提醒、用药提醒）
+- ✅ PushNotificationService 实现了推送服务（预留 FCM 接口）
+- ✅ 支持 6 种通知类型（打卡提醒、用药提醒、风险预警、健康异常、系统通知、消息）
 - ✅ 支持分页查询和多维度筛选（类型、已读状态）
 - ✅ Bull 队列定时任务（支持每日重复和多时间点提醒）
 - ✅ 权限控制：用户只能操作自己的通知
@@ -705,9 +711,10 @@
 - backend/src/notification/push-notification.service.ts
 - backend/src/notification/dto/create-notification.dto.ts
 - backend/src/notification/dto/query-notifications.dto.ts
-- backend/src/notification/notification.service.spec.ts
-- backend/test/notification/notification.e2e-spec.ts
-- backend/docs/notification/IMPLEMENTATION.md
+- backend/src/notification/dto/index.ts
+- backend/src/notification/notification.service.spec.ts（单元测试，18个测试用例）
+- backend/test/notification/notification.e2e-spec.ts（E2E 测试，13个测试用例）
+- backend/docs/notification/IMPLEMENTATION.md（实现总结文档）
 
 **待优化项**：
 
