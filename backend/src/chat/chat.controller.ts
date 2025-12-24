@@ -6,9 +6,10 @@ import {
   Query,
   UseGuards,
   Request,
-  HttpStatus,
   ParseIntPipe,
   DefaultValuePipe,
+  ForbiddenException,
+  NotFoundException,
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { ChatService } from './chat.service';
@@ -25,14 +26,7 @@ export class ChatController {
   ) {
     // 权限检查：用户只能查看自己的会话
     if (req.user.sub !== userId && req.user.role !== 'admin') {
-      return {
-        success: false,
-        error: {
-          code: HttpStatus.FORBIDDEN,
-          message: '无权访问此用户的会话列表',
-          timestamp: new Date().toISOString(),
-        },
-      };
+      throw new ForbiddenException('无权访问此用户的会话列表');
     }
 
     const conversations = await this.chatService.getConversations(userId);
@@ -53,12 +47,7 @@ export class ChatController {
 
     return {
       success: true,
-      data: {
-        items: messages,
-        page,
-        limit,
-        total: messages.length,
-      },
+      data: messages,
     };
   }
 
@@ -67,14 +56,7 @@ export class ChatController {
     const message = await this.chatService.markAsRead(messageId);
 
     if (!message) {
-      return {
-        success: false,
-        error: {
-          code: HttpStatus.NOT_FOUND,
-          message: '消息不存在',
-          timestamp: new Date().toISOString(),
-        },
-      };
+      throw new NotFoundException('消息不存在');
     }
 
     return {
@@ -90,21 +72,14 @@ export class ChatController {
   ) {
     // 权限检查：用户只能查看自己的未读数
     if (req.user.sub !== userId && req.user.role !== 'admin') {
-      return {
-        success: false,
-        error: {
-          code: HttpStatus.FORBIDDEN,
-          message: '无权访问此用户的未读消息数',
-          timestamp: new Date().toISOString(),
-        },
-      };
+      throw new ForbiddenException('无权访问此用户的未读消息数');
     }
 
     const count = await this.chatService.getUnreadCount(userId);
 
     return {
       success: true,
-      data: { count },
+      data: count,
     };
   }
 }

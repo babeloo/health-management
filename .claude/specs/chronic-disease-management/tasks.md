@@ -1,11 +1,11 @@
 # 智慧慢病管理系统 - MVP阶段实施计划
 
 > **最后更新**: 2025-12-24
-> **总体进度**: 27.1% (74/273 任务)
+> **总体进度**: 20.8% (10/48 模块已完成)
 > **当前阶段**: 第二阶段 - 后端核心服务（Week 2-6）
 > **第一阶段进度**: 100% (24/24 已完成) ✅
 > **第二阶段进度**: 100% (50/50 已完成) ✅
-> **状态**: ✅ 已完成（用户管理模块、健康档案接口、健康打卡接口、InfluxDB 时序数据存储、风险评估接口、积分交易接口、积分排行榜已完成）
+> **状态**: ✅ 已完成（用户管理模块、健康档案接口、健康打卡接口、InfluxDB 时序数据存储、风险评估接口、积分交易接口、积分排行榜、通讯模块已完成）
 > **阶段报告**: 第一阶段详见 `stage1-summary-report.md`
 
 ## 概述
@@ -178,7 +178,7 @@
 
 **关联需求**：需求 #18（数据安全与隐私保护）
 
-### 5. 用户管理模块
+### 5. 用户管理模块 ✅ 100% 完成
 
 - [x] 实现用户 CRUD 接口 ✅ 完成于 2025-12-22
   - [x] 创建 UserModule、UserService、UserController ✅ 完成于 2025-12-22
@@ -241,7 +241,7 @@
 
 **关联需求**：需求 #2（患者端 - 健康档案管理）
 
-### 6. CI/CD 配置
+### 6. CI/CD 配置 ✅ 100% 完成
 
 - [x] 配置 GitHub Actions 工作流 ✅ 完成于 2025-12-22
   - [x] CI - 持续集成（ci.yml）✅
@@ -275,7 +275,7 @@
 - ✅ 测试覆盖率报告
 - ✅ 同时支持 master 和 main 分支
 
-### 7. AI 服务基础框架
+### 7. AI 服务基础框架 ✅ 100% 完成
 
 - [x] 初始化 AI 服务模块 ✅ 完成于 2025-12-22
   - [x] 创建 FastAPI 应用入口 ✅
@@ -296,7 +296,7 @@
 
 **关联需求**：需求 #7（AI 科普与健康建议）
 
-### 8. 健康管理模块
+### 8. 健康管理模块 ✅ 100% 完成
 
 - [x] 实现健康档案接口 ✅ 完成于 2025-12-22 17:00
   - [x] 创建 HealthModule、HealthService、HealthController ✅
@@ -488,7 +488,7 @@
 
 **关联需求**：需求 #2（患者端 - 健康档案管理）、需求 #3（患者端 - 健康打卡功能）、需求 #4（患者端 - 风险评估功能）、需求 #16（数据采集与互联互通）
 
-### 7. 积分系统模块
+### 7. 积分系统模块 ✅ 100% 完成
 
 - [x] 实现积分交易接口 ✅ 完成于 2025-12-23
   - [x] 创建 PointsModule、PointsService、PointsController ✅
@@ -566,7 +566,7 @@
 
 **关联需求**：需求 #7（患者端 - 积分奖励系统）
 
-### 8. 通讯模块（WebSocket）
+### 8. 通讯模块（WebSocket）✅ 100% 完成
 
 - [x] 实现实时通讯基础 ✅ 完成于 2025-12-24
   - [x] 安装 @nestjs/websockets 和 socket.io ✅
@@ -586,11 +586,11 @@
   - [x] 实现获取聊天记录接口（GET /api/v1/chat/messages/:conversationId）✅
   - [x] 实现标记消息已读接口（PUT /api/v1/chat/messages/:id/read）✅
   - [x] 实现未读消息计数 ✅
-- [ ] 编写通讯模块测试
-  - [ ] 单元测试：MessageService 消息保存和查询
-  - [ ] 集成测试：WebSocket 连接和认证
-  - [ ] 集成测试：消息发送和接收
-  - [ ] E2E 测试：完整聊天流程（医生发送 → 患者接收 → 标记已读）
+- [x] 编写通讯模块测试 ✅ 完成于 2025-12-24
+  - [x] 单元测试：ChatService 消息保存和查询 ✅ (11个测试用例，100%通过)
+  - [x] 集成测试：WebSocket 连接和认证 ✅ (已编写 E2E 测试)
+  - [x] 集成测试：消息发送和接收 ✅ (已编写 E2E 测试)
+  - [x] E2E 测试：完整聊天流程（医生发送 → 患者接收 → 标记已读）✅ (已编写)
 
 **实现细节**：
 
@@ -606,8 +606,9 @@
 - ✅ 会话 ID 自动生成（确保双向一致性）
 - ✅ 权限控制：用户只能查看自己的会话和消息
 - ✅ TypeScript 编译通过（Strict Mode）
-- 🚧 单元测试待编写（MessageService、ChatGateway）
-- 🚧 E2E 测试待编写（完整聊天流程）
+- ✅ 单元测试已完成（ChatService，11 个测试用例，100% 通过）
+- ✅ E2E 测试已编写（WebSocket 连接、消息收发、完整聊天流程）
+- ✅ Controller 异常处理优化（使用 ForbiddenException 和 NotFoundException）
 
 **文件清单**：
 
@@ -619,6 +620,8 @@
 - backend/src/chat/guards/ws-jwt.guard.ts
 - backend/src/chat/dto/send-message.dto.ts
 - backend/src/chat/dto/index.ts
+- backend/src/chat/chat.service.spec.ts（单元测试，11个测试用例）
+- backend/test/chat/chat.e2e-spec.ts（E2E 测试，WebSocket + RESTful API）
 - backend/src/common/cache/cache.service.ts（新增在线状态管理方法）
 - backend/src/app.module.ts（集成 MongooseModule 和 ChatModule）
 
@@ -1404,6 +1407,12 @@
   - [ ] 负载测试：1000 并发用户
   - [ ] 压力测试：数据库查询
   - [ ] 压力测试：AI API 调用
+- [ ] 编写边界测试
+  - [ ] 测试超长消息内容（>10000 字符）
+  - [ ] 测试特殊字符和 emoji 处理
+  - [ ] 测试文件大小限制（超过 10MB）
+  - [ ] 测试输入验证边界（血压、血糖等数值范围）
+  - [ ] 测试数据类型边界（空值、null、undefined）
 - [ ] 修复测试中发现的问题
   - [ ] 修复功能 Bug
   - [ ] 修复性能瓶颈
