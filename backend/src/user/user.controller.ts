@@ -13,7 +13,9 @@ import {
   UseInterceptors,
   ParseFilePipe,
   MaxFileSizeValidator,
+  Req,
 } from '@nestjs/common';
+import { Request } from 'express';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { UserService } from './user.service';
 import { UpdateUserDto, QueryUsersDto } from './dto';
@@ -59,8 +61,16 @@ export class UserController {
     @Param('id') id: string,
     @Body() updateUserDto: UpdateUserDto,
     @CurrentUser() currentUser: CurrentUserType,
+    @Req() req: Request,
   ) {
-    const user = await this.userService.update(id, updateUserDto, currentUser.id, currentUser.role);
+    const user = await this.userService.update(
+      id,
+      updateUserDto,
+      currentUser.id,
+      currentUser.role,
+      req.ip,
+      req.headers['user-agent'],
+    );
     return {
       success: true,
       data: user,

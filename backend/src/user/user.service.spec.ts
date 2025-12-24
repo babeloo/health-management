@@ -3,6 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundException, ForbiddenException } from '@nestjs/common';
 import { UserService } from './user.service';
 import { PrismaService } from '../common/prisma/prisma.service';
+import { AuditService } from '../audit/audit.service';
 import { UpdateUserDto, QueryUsersDto } from './dto';
 
 describe('UserService', () => {
@@ -15,6 +16,13 @@ describe('UserService', () => {
       findMany: jest.fn(),
       count: jest.fn(),
     },
+  };
+
+  const mockAuditService = {
+    logHealthDataAccess: jest.fn().mockResolvedValue(undefined),
+    logUserManagement: jest.fn().mockResolvedValue(undefined),
+    logLogin: jest.fn().mockResolvedValue(undefined),
+    logLogout: jest.fn().mockResolvedValue(undefined),
   };
 
   const mockUser = {
@@ -42,6 +50,10 @@ describe('UserService', () => {
         {
           provide: PrismaService,
           useValue: mockPrismaService,
+        },
+        {
+          provide: AuditService,
+          useValue: mockAuditService,
         },
       ],
     }).compile();

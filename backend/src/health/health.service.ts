@@ -14,6 +14,7 @@ import {
   CheckInType,
   RiskAssessment,
   RiskLevel,
+  AuditAction,
 } from '../generated/prisma/client';
 import { PrismaService } from '../common/prisma/prisma.service';
 import { FileStorageService } from '../common/storage/file-storage.service';
@@ -22,6 +23,7 @@ import { RiskCalculationService } from './services/risk-calculation.service';
 import { PointsRulesService } from '../points/services/points-rules.service';
 import { StreakCalculationService } from '../points/services/streak-calculation.service';
 import { PointsService } from '../points/points.service';
+import { AuditService } from '../audit/audit.service';
 import { CreateHealthRecordDto } from './dto/create-health-record.dto';
 import { UpdateHealthRecordDto } from './dto/update-health-record.dto';
 import { CreateCheckInDto } from './dto/create-check-in.dto';
@@ -66,6 +68,7 @@ export class HealthService {
     private readonly pointsRulesService: PointsRulesService,
     private readonly streakCalculationService: StreakCalculationService,
     private readonly pointsService: PointsService,
+    private readonly auditService: AuditService,
   ) {}
 
   /**
@@ -101,12 +104,16 @@ export class HealthService {
    * @param userId 目标用户 ID
    * @param currentUserId 当前登录用户 ID
    * @param currentUserRole 当前登录用户角色
+   * @param ipAddress 请求 IP 地址
+   * @param userAgent 请求 User-Agent
    * @returns 健康档案
    */
   async getHealthRecord(
     userId: string,
     currentUserId: string,
     currentUserRole: UserRole,
+    ipAddress?: string,
+    userAgent?: string,
   ): Promise<HealthRecord> {
     // 权限验证
     await this.validateAccess(userId, currentUserId, currentUserRole);
@@ -120,6 +127,21 @@ export class HealthService {
       throw new NotFoundException('健康档案不存在');
     }
 
+    // 记录审计日志
+    try {
+      await this.auditService.logHealthDataAccess(
+        currentUserId,
+        AuditAction.READ,
+        record.id,
+        ipAddress,
+        userAgent,
+      );
+    } catch (error) {
+      this.logger.error(
+        `审计日志记录失败: ${error instanceof Error ? error.message : String(error)}`,
+      );
+    }
+
     return record;
   }
 
@@ -131,6 +153,8 @@ export class HealthService {
    * @param updateDto 更新 DTO
    * @param currentUserId 当前登录用户 ID
    * @param currentUserRole 当前登录用户角色
+   * @param ipAddress 请求 IP 地址
+   * @param userAgent 请求 User-Agent
    * @returns 更新后的健康档案
    */
   async updateHealthRecord(
@@ -138,6 +162,8 @@ export class HealthService {
     updateDto: UpdateHealthRecordDto,
     currentUserId: string,
     currentUserRole: UserRole,
+    ipAddress?: string,
+    userAgent?: string,
   ): Promise<HealthRecord> {
     // 权限验证：仅允许患者本人更新
     if (currentUserRole === UserRole.PATIENT && currentUserId !== userId) {
@@ -154,10 +180,27 @@ export class HealthService {
     }
 
     // 更新档案
-    return this.prisma.healthRecord.update({
+    const updated = await this.prisma.healthRecord.update({
       where: { userId },
       data: updateDto,
     });
+
+    // 记录审计日志
+    try {
+      await this.auditService.logHealthDataAccess(
+        currentUserId,
+        AuditAction.UPDATE,
+        userId,
+        ipAddress,
+        userAgent,
+      );
+    } catch (error) {
+      this.logger.error(
+        `审计日志记录失败: ${error instanceof Error ? error.message : String(error)}`,
+      );
+    }
+
+    return updated;
   }
 
   /**
@@ -270,11 +313,15 @@ export class HealthService {
    * 创建打卡记录
    * @param userId 用户 ID
    * @param createDto 创建 DTO
+   * @param ipAddress 请求 IP 地址
+   * @param userAgent 请求 User-Agent
    * @returns 创建的打卡记录及积分信息
    */
   async createCheckIn(
     userId: string,
     createDto: CreateCheckInDto,
+    ipAddress?: string,
+    userAgent?: string,
   ): Promise<CheckIn & { bonusPoints?: number; totalPoints?: number; streakDays?: number }> {
     // 解析打卡日期（默认今天）
     const checkInDate = createDto.checkInDate ? new Date(createDto.checkInDate) : new Date();
@@ -319,6 +366,21 @@ export class HealthService {
         checkInDate,
       },
     });
+
+    // 记录审计日志
+    try {
+      await this.auditService.logHealthDataAccess(
+        userId,
+        AuditAction.CREATE,
+        checkIn.id,
+        ipAddress,
+        userAgent,
+      );
+    } catch (error) {
+      this.logger.error(
+        `审计日志记录失败: ${error instanceof Error ? error.message : String(error)}`,
+      );
+    }
 
     // 3. 同步到 InfluxDB（降级处理）
     try {

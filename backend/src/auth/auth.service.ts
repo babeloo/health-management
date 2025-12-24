@@ -3,6 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcrypt';
 import { PrismaService } from '../common/prisma/prisma.service';
+import { AuditService } from '../audit/audit.service';
 import { RegisterDto, LoginDto, AuthResponseDto } from './dto';
 
 /**
@@ -15,6 +16,7 @@ export class AuthService {
     private prisma: PrismaService,
     private jwtService: JwtService,
     private configService: ConfigService,
+    private auditService: AuditService,
   ) {}
 
   /**
@@ -81,7 +83,11 @@ export class AuthService {
   /**
    * 用户登录
    */
-  async login(loginDto: LoginDto): Promise<AuthResponseDto> {
+  async login(
+    loginDto: LoginDto,
+    ipAddress?: string,
+    userAgent?: string,
+  ): Promise<AuthResponseDto> {
     // 查找用户
     const user = await this.prisma.user.findUnique({
       where: { username: loginDto.username },
@@ -108,6 +114,13 @@ export class AuthService {
       where: { id: user.id },
       data: { lastLoginAt: new Date() },
     });
+
+    // 记录审计日志
+    try {
+      await this.auditService.logLogin(user.id, ipAddress, userAgent);
+    } catch (error) {
+      // 审计日志失败不影响主流程
+    }
 
     // 生成 Token
     return this.generateAuthResponse({

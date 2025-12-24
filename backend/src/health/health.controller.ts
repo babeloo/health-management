@@ -14,6 +14,7 @@ import {
   ForbiddenException,
   Query,
 } from '@nestjs/common';
+import { Request as ExpressRequest } from 'express';
 import { FileInterceptor } from '@nestjs/platform-express';
 import {
   ApiTags,
@@ -52,7 +53,7 @@ interface RequestUser {
 /**
  * 扩展的请求接口
  */
-interface RequestWithUser extends Request {
+interface RequestWithUser extends ExpressRequest {
   user: RequestUser;
 }
 
@@ -121,7 +122,13 @@ export class HealthController {
     const currentUserId = req.user.id; // 修复：CurrentUser 使用 id
     const currentUserRole = req.user.role;
 
-    const record = await this.healthService.getHealthRecord(userId, currentUserId, currentUserRole);
+    const record = await this.healthService.getHealthRecord(
+      userId,
+      currentUserId,
+      currentUserRole,
+      req.ip,
+      req.headers['user-agent'],
+    );
 
     return {
       success: true,
@@ -165,6 +172,8 @@ export class HealthController {
       updateDto,
       currentUserId,
       currentUserRole,
+      req.ip,
+      req.headers['user-agent'],
     );
 
     return {
@@ -272,7 +281,12 @@ export class HealthController {
   })
   async createCheckIn(@Request() req: RequestWithUser, @Body() createDto: CreateCheckInDto) {
     const userId = req.user.id; // 修复：CurrentUser 使用 id 而不是 userId
-    const checkIn = await this.healthService.createCheckIn(userId, createDto);
+    const checkIn = await this.healthService.createCheckIn(
+      userId,
+      createDto,
+      req.ip,
+      req.headers['user-agent'],
+    );
 
     return {
       success: true,

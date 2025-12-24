@@ -1,4 +1,5 @@
-import { Controller, Post, Body, HttpCode, HttpStatus, UseGuards, Get } from '@nestjs/common';
+import { Controller, Post, Body, HttpCode, HttpStatus, UseGuards, Get, Req } from '@nestjs/common';
+import { Request } from 'express';
 import { AuthService } from './auth.service';
 import { RegisterDto, LoginDto, RefreshTokenDto, AuthResponseDto } from './dto';
 import { JwtAuthGuard } from './guards';
@@ -38,12 +39,15 @@ export class AuthController {
    */
   @Post('login')
   @HttpCode(HttpStatus.OK)
-  async login(@Body() loginDto: LoginDto): Promise<{
+  async login(
+    @Body() loginDto: LoginDto,
+    @Req() req: Request,
+  ): Promise<{
     success: boolean;
     data: AuthResponseDto;
     message: string;
   }> {
-    const data = await this.authService.login(loginDto);
+    const data = await this.authService.login(loginDto, req.ip, req.headers['user-agent']);
     return {
       success: true,
       data,

@@ -14,6 +14,7 @@ import { RiskCalculationService } from './services/risk-calculation.service';
 import { PointsRulesService } from '../points/services/points-rules.service';
 import { StreakCalculationService } from '../points/services/streak-calculation.service';
 import { PointsService } from '../points/points.service';
+import { AuditService } from '../audit/audit.service';
 import { CreateHealthRecordDto } from './dto/create-health-record.dto';
 import { UpdateHealthRecordDto } from './dto/update-health-record.dto';
 import { CreateCheckInDto } from './dto/create-check-in.dto';
@@ -87,6 +88,13 @@ describe('HealthService', () => {
     earnPoints: jest.fn().mockResolvedValue(undefined),
   };
 
+  const mockAuditService = {
+    logHealthDataAccess: jest.fn().mockResolvedValue(undefined),
+    logUserManagement: jest.fn().mockResolvedValue(undefined),
+    logLogin: jest.fn().mockResolvedValue(undefined),
+    logLogout: jest.fn().mockResolvedValue(undefined),
+  };
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -118,6 +126,10 @@ describe('HealthService', () => {
         {
           provide: PointsService,
           useValue: mockPointsService,
+        },
+        {
+          provide: AuditService,
+          useValue: mockAuditService,
         },
       ],
     }).compile();

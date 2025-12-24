@@ -104,10 +104,15 @@ describe('AuthController', () => {
         password: 'Test@123456',
       };
 
+      const mockReq = {
+        ip: '127.0.0.1',
+        headers: { 'user-agent': 'test-agent' },
+      } as any;
+
       mockAuthService.login.mockResolvedValue(mockAuthResponse);
 
       // 执行
-      const result = await controller.login(loginDto);
+      const result = await controller.login(loginDto, mockReq);
 
       // 验证
       expect(result).toEqual({
@@ -115,7 +120,7 @@ describe('AuthController', () => {
         data: mockAuthResponse,
         message: '登录成功',
       });
-      expect(mockAuthService.login).toHaveBeenCalledWith(loginDto);
+      expect(mockAuthService.login).toHaveBeenCalledWith(loginDto, '127.0.0.1', 'test-agent');
       expect(mockAuthService.login).toHaveBeenCalledTimes(1);
     });
 
@@ -126,11 +131,16 @@ describe('AuthController', () => {
         password: 'WrongPassword',
       };
 
+      const mockReq = {
+        ip: '127.0.0.1',
+        headers: { 'user-agent': 'test-agent' },
+      } as any;
+
       const error = new Error('用户名或密码错误');
       mockAuthService.login.mockRejectedValue(error);
 
       // 执行并验证
-      await expect(controller.login(loginDto)).rejects.toThrow(error);
+      await expect(controller.login(loginDto, mockReq)).rejects.toThrow(error);
     });
   });
 
@@ -221,8 +231,13 @@ describe('AuthController', () => {
         password: 'Test@123456',
       };
 
+      const mockReq = {
+        ip: '127.0.0.1',
+        headers: { 'user-agent': 'test-agent' },
+      } as any;
+
       mockAuthService.login.mockResolvedValue(mockAuthResponse);
-      await controller.login(loginDto);
+      await controller.login(loginDto, mockReq);
 
       // 验证 @HttpCode(HttpStatus.OK) 装饰器
       const httpCode = Reflect.getMetadata('__httpCode__', controller.login);

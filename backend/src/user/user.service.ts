@@ -1,5 +1,7 @@
 import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
 import { PrismaService } from '../common/prisma/prisma.service';
+import { AuditService } from '../audit/audit.service';
+import { AuditAction } from '../generated/prisma/client';
 import { UpdateUserDto, QueryUsersDto } from './dto';
 
 /**
@@ -8,7 +10,10 @@ import { UpdateUserDto, QueryUsersDto } from './dto';
  */
 @Injectable()
 export class UserService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private auditService: AuditService,
+  ) {}
 
   /**
    * 获取用户信息
@@ -55,6 +60,8 @@ export class UserService {
     updateUserDto: UpdateUserDto,
     requestUserId: string,
     requestUserRole: string,
+    ipAddress?: string,
+    userAgent?: string,
   ) {
     // 权限检查：只能更新自己的信息，或者管理员可以更新所有用户
     if (id !== requestUserId && requestUserRole !== 'ADMIN') {
@@ -94,6 +101,20 @@ export class UserService {
         updatedAt: true,
       },
     });
+
+    // 记录审计日志
+    try {
+      await this.auditService.logUserManagement(
+        requestUserId,
+        AuditAction.UPDATE,
+        id,
+        { updatedFields: Object.keys(updateUserDto) },
+        ipAddress,
+        userAgent,
+      );
+    } catch (error) {
+      // 审计日志失败不影响主流程
+    }
 
     return updatedUser;
   }

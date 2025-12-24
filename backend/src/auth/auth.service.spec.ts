@@ -6,6 +6,7 @@ import { ConflictException, UnauthorizedException } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { AuthService } from './auth.service';
 import { PrismaService } from '../common/prisma/prisma.service';
+import { AuditService } from '../audit/audit.service';
 import { RegisterDto, LoginDto } from './dto';
 import { Role } from './enums/role.enum';
 
@@ -35,6 +36,13 @@ describe('AuthService', () => {
     get: jest.fn(),
   };
 
+  const mockAuditService = {
+    logHealthDataAccess: jest.fn().mockResolvedValue(undefined),
+    logUserManagement: jest.fn().mockResolvedValue(undefined),
+    logLogin: jest.fn().mockResolvedValue(undefined),
+    logLogout: jest.fn().mockResolvedValue(undefined),
+  };
+
   const mockedBcrypt = bcrypt as jest.Mocked<typeof bcrypt>;
 
   beforeEach(async () => {
@@ -52,6 +60,10 @@ describe('AuthService', () => {
         {
           provide: ConfigService,
           useValue: mockConfigService,
+        },
+        {
+          provide: AuditService,
+          useValue: mockAuditService,
         },
       ],
     }).compile();
