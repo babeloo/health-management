@@ -19,6 +19,8 @@ import { NotificationModule } from './notification/notification.module';
 import { AuditModule } from './audit/audit.module';
 import { RelationModule } from './relation/relation.module';
 
+import { AnalyticsModule } from './analytics/analytics.module';
+
 @Module({
   imports: [
     // 环境变量配置
@@ -76,6 +78,9 @@ import { RelationModule } from './relation/relation.module';
 
     // 医患关系管理模块
     RelationModule,
+
+    // 数据分析模块
+    AnalyticsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

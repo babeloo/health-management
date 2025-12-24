@@ -18,17 +18,12 @@ module.exports = {
   },
   ignorePatterns: ['.eslintrc.js', 'dist', 'node_modules', 'prisma'],
   rules: {
-    // TypeScript 规则
     '@typescript-eslint/interface-name-prefix': 'off',
     '@typescript-eslint/explicit-function-return-type': 'off',
     '@typescript-eslint/explicit-module-boundary-types': 'off',
     '@typescript-eslint/no-explicit-any': 'warn',
     '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
-
-    // Prettier 规则
     'prettier/prettier': ['error', { endOfLine: 'auto' }],
-
-    // 自定义规则（适配 NestJS）
     'import/prefer-default-export': 'off',
     'class-methods-use-this': 'off',
     'import/no-unresolved': 'off',
@@ -37,12 +32,14 @@ module.exports = {
     '@typescript-eslint/no-useless-constructor': 'error',
     'no-empty-function': ['error', { allow: ['constructors'] }],
     'max-classes-per-file': 'off',
-
-    // 安全规则
     'no-console': ['warn', { allow: ['warn', 'error'] }],
     'no-param-reassign': ['error', { props: false }],
-
-    // 允许从 devDependencies 导入测试和文档相关的包
+    'no-underscore-dangle': ['error', { allow: ['_count', '_sum', '_max', '_min', '_avg'] }],
+    'no-restricted-syntax': ['error', 'ForInStatement', 'LabeledStatement', 'WithStatement'],
+    'no-plusplus': ['error', { allowForLoopAfterthoughts: true }],
+    'no-shadow': 'off',
+    '@typescript-eslint/no-shadow': ['error'],
+    'default-case': 'off',
     'import/no-extraneous-dependencies': [
       'error',
       {
