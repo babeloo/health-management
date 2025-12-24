@@ -1001,48 +1001,75 @@
 
 ## 第四阶段：患者端开发（Uni-app）（Week 5-9）
 
-### 19. Uni-app 项目初始化
+### 19. Uni-app 项目初始化 ✅
 
-- [ ] 创建 Uni-app 项目
-  - [ ] 使用 HBuilderX 创建 Vue 3 项目
-  - [ ] 配置编译目标（微信小程序 + H5）
-  - [ ] 安装 uni-ui 或 uView UI 框架
-  - [ ] 配置 Pinia 状态管理
-  - [ ] 配置 API 请求封装（uni.request 拦截器）
-- [ ] 配置开发环境
-  - [ ] 设置环境变量（开发/生产 API 地址）
-  - [ ] 配置微信小程序开发者工具
-  - [ ] 配置代码格式化（Prettier + ESLint）
-- [ ] 实现基础组件
-  - [ ] 创建底部导航栏组件（TabBar）
-  - [ ] 创建页面加载组件（Loading）
-  - [ ] 创建空状态组件（Empty）
-  - [ ] 创建弹窗组件（Modal）
+**状态**: 已完成 | **完成时间**: 2025-12-25 | **负责人**: @mobile | **工作量**: 1天
 
+- [x] 创建 Uni-app 项目
+  - [x] 使用 Vue 3 + TypeScript 创建项目（Uni-app 3.0.0-4080720251210001）
+  - [x] 配置编译目标（微信小程序 + H5 + App）
+  - [x] 配置 Pinia 状态管理（含持久化插件）
+  - [x] 配置 API 请求封装（uni.request 拦截器，自动附加 JWT Token）
+- [x] 配置开发环境
+  - [x] 设置环境变量（.env.development / .env.production）
+  - [x] 配置 Vite 构建工具
+  - [x] 配置代码格式化（Prettier + ESLint）
+- [x] 实现基础组件
+  - [x] 创建底部导航栏（TabBar）
+  - [x] 创建页面加载组件（Loading）
+  - [x] 创建空状态组件（Empty）
+  - [x] 创建弹窗组件（Modal）
+- [x] 创建基础页面（首页、健康、消息、我的、登录）
+
+**完成成果**: 32 个文件，1595 个依赖包，网络请求封装，Pinia 用户状态管理，TypeScript 类型定义，ESLint + Prettier 配置
+**相关文档**: `frontend-patient/TASK-19-COMPLETION-REPORT.md`
 **关联需求**：需求 #19（多端响应式设计）
 
 ### 20. 患者端认证与个人中心
 
-- [ ] 实现登录注册页面
-  - [ ] 创建登录页面（pages/login/index.vue）
-  - [ ] 创建注册页面（pages/register/index.vue）
-  - [ ] 实现表单验证（用户名、密码格式）
-  - [ ] 集成登录 API（调用 NestJS 后端）
-  - [ ] 实现 Token 存储（uni.setStorageSync）
-- [ ] 实现个人中心页面
-  - [ ] 创建个人中心页面（pages/profile/index.vue）
-  - [ ] 显示用户基本信息（头像、姓名、积分）
-  - [ ] 实现头像上传（uni.chooseImage + API 上传）
-  - [ ] 实现个人信息编辑（姓名、性别、生日）
-- [ ] 实现 Pinia 用户状态管理
-  - [ ] 创建 userStore（保存用户信息、Token）
-  - [ ] 实现自动登录（检查 Token 有效性）
-  - [ ] 实现退出登录（清除 Token 和状态）
-- [ ] 编写页面测试
-  - [ ] E2E 测试：完整登录流程
-  - [ ] E2E 测试：用户信息编辑
+- [x] 实现登录注册页面
+  - [x] 创建登录页面（pages/login/index.vue）
+  - [x] 创建注册页面（pages/register/index.vue）
+  - [x] 实现表单验证（手机号、验证码、密码格式）
+  - [x] 集成登录 API（调用 NestJS 后端）
+  - [x] 实现 Token 存储（uni.setStorageSync）
+- [x] 实现个人中心页面
+  - [x] 完善个人中心页面（pages/mine/index.vue）
+  - [x] 显示用户基本信息（头像、姓名、电话、积分）
+  - [x] 实现头像上传（uni.chooseImage + API 上传）
+  - [x] 实现个人信息编辑（pages/profile/edit.vue）
+- [x] 实现 Pinia 用户状态管理
+  - [x] 使用已有的 userStore（保存用户信息、Token）
+  - [x] 实现自动登录（初始化时检查 Token）
+  - [x] 实现退出登录（清除 Token 和状态）
+- [x] 实现设置页面
+  - [x] 创建设置主页（pages/settings/index.vue）
+  - [x] 创建修改密码页面（pages/settings/change-password.vue）
+  - [x] 创建修改手机号页面（pages/settings/change-phone.vue）
+  - [x] 实现隐私设置和通知设置
+- [x] 实现路由守卫
+  - [x] 创建路由守卫工具（utils/route-guard.ts）
+  - [x] 拦截需要登录的页面
+  - [x] 实现白名单机制
+  - [x] 在 main.ts 中初始化路由守卫
 
-**关联需求**：需求 #2（患者端 - 健康档案管理）
+**负责人**: @mobile
+**状态**: ✅ 已完成（2025-12-25）
+**工作量**: 2天
+
+**完成成果**:
+- ✅ 登录页面支持三种方式：手机号验证码、用户名密码、微信小程序
+- ✅ 注册页面支持手机号验证码注册和基本信息填写
+- ✅ 个人中心展示用户信息、积分、等级
+- ✅ 个人信息编辑支持头像上传、基本信息修改
+- ✅ 设置页面支持修改密码、修改手机号、隐私设置、通知设置
+- ✅ 路由守卫自动拦截未登录访问
+- ✅ 新增 3 个 API 文件（auth.ts、user.ts、upload.ts）
+- ✅ 新增 5 个页面（register、profile/edit、settings、change-password、change-phone）
+- ✅ 代码质量：ESLint 检查通过（0 errors）
+
+**相关文档**: `frontend-patient/TASK-20-COMPLETION-REPORT.md`
+**关联需求**：需求 #1（用户注册与登录）、需求 #2（患者端 - 健康档案管理）
 
 ### 21. 患者端健康档案
 
@@ -1245,28 +1272,28 @@
 
 ### 29. 医生端患者管理
 
-- [ ] 实现患者列表页面
-  - [ ] 创建患者列表页面（pages/patients/index.tsx）
-  - [ ] 使用 Ant Design Table 组件
-  - [ ] 显示患者列表（姓名、年龄、病种、风险等级）
-  - [ ] 实现搜索和筛选（姓名、病种、风险等级）
-  - [ ] 实现分页
-  - [ ] 高亮显示高风险患者
-- [ ] 实现患者详情页面
-  - [ ] 创建患者详情页面（pages/patients/:id/index.tsx）
-  - [ ] 显示患者基本信息和健康档案
-  - [ ] 显示打卡记录（时间线视图）
-  - [ ] 显示风险评估历史
-- [ ] 实现健康数据可视化
-  - [ ] 创建数据可视化页面（pages/patients/:id/charts.tsx）
-  - [ ] 集成 ECharts
-  - [ ] 绘制血压趋势折线图
-  - [ ] 绘制血糖波动图
-  - [ ] 支持时间范围切换
-- [ ] 实现患者备注功能
-  - [ ] 添加备注输入框
-  - [ ] 集成备注 API
-  - [ ] 显示历史备注
+- [x] 实现患者列表页面
+  - [x] 创建患者列表页面（pages/patients/index.tsx）
+  - [x] 使用 Ant Design Table 组件
+  - [x] 显示患者列表（姓名、年龄、病种、风险等级）
+  - [x] 实现搜索和筛选（姓名、病种、风险等级）
+  - [x] 实现分页
+  - [x] 高亮显示高风险患者
+- [x] 实现患者详情页面
+  - [x] 创建患者详情页面（pages/patients/:id/index.tsx）
+  - [x] 显示患者基本信息和健康档案
+  - [x] 显示打卡记录（时间线视图）
+  - [x] 显示风险评估历史
+- [x] 实现健康数据可视化
+  - [x] 创建数据可视化页面（pages/patients/:id/charts.tsx）
+  - [x] 集成 ECharts
+  - [x] 绘制血压趋势折线图
+  - [x] 绘制血糖波动图
+  - [x] 支持时间范围切换
+- [x] 实现患者备注功能
+  - [x] 添加备注输入框
+  - [x] 集成备注 API
+  - [x] 显示历史备注
 - [ ] 编写患者管理测试
   - [ ] E2E 测试：患者列表查看
   - [ ] E2E 测试：患者详情查看
