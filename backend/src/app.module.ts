@@ -6,6 +6,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { createWinstonLogger } from './config/winston.config';
 import { LoggerMiddleware } from './common/middlewares/logger.middleware';
+import { AuditLogMiddleware } from './common/middlewares/audit-log.middleware';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { PrismaModule } from './common/prisma/prisma.module';
@@ -15,6 +16,8 @@ import { HealthModule } from './health/health.module';
 import { PointsModule } from './points/points.module';
 import { ChatModule } from './chat/chat.module';
 import { NotificationModule } from './notification/notification.module';
+import { AuditModule } from './audit/audit.module';
+import { RelationModule } from './relation/relation.module';
 
 @Module({
   imports: [
@@ -67,6 +70,12 @@ import { NotificationModule } from './notification/notification.module';
 
     // 通知模块
     NotificationModule,
+
+    // 审计日志模块
+    AuditModule,
+
+    // 医患关系管理模块
+    RelationModule,
   ],
   controllers: [AppController],
   providers: [AppService],
@@ -75,5 +84,8 @@ export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     // 应用日志中间件到所有路由
     consumer.apply(LoggerMiddleware).forRoutes('*');
+
+    // 应用审计日志中间件到所有路由
+    consumer.apply(AuditLogMiddleware).forRoutes('*');
   }
 }

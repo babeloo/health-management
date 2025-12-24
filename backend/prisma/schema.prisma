@@ -46,7 +46,10 @@ model User {
   streakBonusRecords     StreakBonusRecord[]
   doctorPatientRelations DoctorPatientRelation[] @relation("PatientRelations")
   doctorRelations        DoctorPatientRelation[] @relation("DoctorRelations")
+  managerMemberRelations ManagerMemberRelation[] @relation("MemberRelations")
+  managerRelations       ManagerMemberRelation[] @relation("ManagerRelations")
   notifications          Notification[]
+  auditLogs              AuditLog[]
 
   @@index([role])
   @@index([status])
@@ -180,6 +183,32 @@ model DoctorPatientRelation {
   @@map("doctor_patient_relations")
 }
 
+// 健康管理师会员关系表
+model ManagerMemberRelation {
+  id        String @id @default(uuid())
+  managerId String
+  memberId  String
+
+  manager   User @relation("ManagerRelations", fields: [managerId], references: [id])
+  member    User @relation("MemberRelations", fields: [memberId], references: [id])
+
+  membershipType     String? // basic, premium, vip
+  serviceCount       Int @default(0)
+  totalServiceHours  Float @default(0)
+
+  status    RelationStatus @default(ACTIVE)
+
+  startedAt DateTime @default(now())
+  endedAt   DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([managerId, memberId])
+  @@index([managerId])
+  @@index([memberId])
+  @@map("manager_member_relations")
+}
+
 // 枚举类型
 enum UserRole {
   PATIENT
@@ -264,4 +293,37 @@ enum NotificationType {
   SYSTEM_NOTIFICATION
   MESSAGE
   @@map("notification_type")
+}
+
+// 审计日志表
+model AuditLog {
+  id     String @id @default(uuid())
+  userId String?
+  user   User?  @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  action      AuditAction
+  resource    String      // 资源类型(如 health_record, user, check_in)
+  resourceId  String?     // 资源ID
+  details     Json?       // 操作详情
+  ipAddress   String?
+  userAgent   String?
+
+  createdAt DateTime @default(now())
+
+  @@index([userId, createdAt])
+  @@index([action])
+  @@index([resource])
+  @@index([createdAt])
+  @@map("audit_logs")
+}
+
+enum AuditAction {
+  CREATE
+  READ
+  UPDATE
+  DELETE
+  LOGIN
+  LOGOUT
+  PERMISSION_CHANGE
+  @@map("audit_action")
 }
