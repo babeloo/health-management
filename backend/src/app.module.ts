@@ -14,6 +14,7 @@ import { CacheModule } from './common/cache/cache.module';
 import { HealthModule } from './health/health.module';
 import { PointsModule } from './points/points.module';
 import { ChatModule } from './chat/chat.module';
+import { NotificationModule } from './notification/notification.module';
 
 @Module({
   imports: [
@@ -63,6 +64,9 @@ import { ChatModule } from './chat/chat.module';
 
     // 实时通讯模块
     ChatModule,
+
+    // 通知模块
+    NotificationModule,
   ],
   controllers: [AppController],
   providers: [AppService],

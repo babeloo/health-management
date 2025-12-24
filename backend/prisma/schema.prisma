@@ -46,6 +46,7 @@ model User {
   streakBonusRecords     StreakBonusRecord[]
   doctorPatientRelations DoctorPatientRelation[] @relation("PatientRelations")
   doctorRelations        DoctorPatientRelation[] @relation("DoctorRelations")
+  notifications          Notification[]
 
   @@index([role])
   @@index([status])
@@ -231,4 +232,36 @@ enum RelationStatus {
   ACTIVE
   INACTIVE
   @@map("relation_status")
+}
+
+// 通知表
+model Notification {
+  id     String @id @default(uuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  type    NotificationType
+  title   String
+  content String
+  data    Json?
+
+  isRead Boolean @default(false)
+  readAt DateTime?
+
+  createdAt DateTime @default(now())
+
+  @@index([userId, createdAt])
+  @@index([userId, isRead])
+  @@index([type])
+  @@map("notifications")
+}
+
+enum NotificationType {
+  CHECK_IN_REMINDER
+  MEDICATION_REMINDER
+  RISK_ALERT
+  HEALTH_ABNORMAL
+  SYSTEM_NOTIFICATION
+  MESSAGE
+  @@map("notification_type")
 }
