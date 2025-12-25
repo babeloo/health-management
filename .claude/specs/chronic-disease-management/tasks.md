@@ -1357,19 +1357,19 @@
 
 ### 31. 医生端医患沟通
 
-- [ ] 实现消息中心
-  - [ ] 创建消息中心页面（pages/messages/index.tsx）
-  - [ ] 显示会话列表（患者列表、未读数）
-  - [ ] 实现会话搜索
+- [x] 实现消息中心
+  - [x] 创建消息中心页面（pages/messages/index.tsx）
+  - [x] 显示会话列表（患者列表、未读数）
+  - [x] 实现会话搜索
 - [ ] 实现聊天界面
-  - [ ] 创建聊天页面（pages/messages/chat/:conversationId.tsx）
-  - [ ] 集成 WebSocket（Socket.io Client）
-  - [ ] 实现消息发送和接收
-  - [ ] 支持发送治疗建议（快捷回复模板）
+  - [x] 创建聊天页面（pages/messages/chat/:conversationId.tsx）
+  - [x] 集成 WebSocket（Socket.io Client）
+  - [x] 实现消息发送和接收
+  - [x] 支持发送治疗建议（快捷回复模板）
 - [ ] 实现工作时间设置
-  - [ ] 创建设置页面（pages/settings/index.tsx）
-  - [ ] 配置工作时间
-  - [ ] 配置自动回复内容
+  - [x] 创建设置页面（pages/settings/index.tsx）
+  - [x] 配置工作时间
+  - [x] 配置自动回复内容
 - [ ] 编写沟通模块测试
   - [ ] E2E 测试：医患聊天
 

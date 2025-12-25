@@ -9,6 +9,33 @@
 ## [Unreleased]
 
 ### Added
+- **医生端医患沟通功能** - 2025-12-25 @backend-ts  - 实现完整的医患沟通前端界面  - 创建消息中心页面（MessageCenter.tsx）  - 实现聊天窗口组件（ChatWindow.tsx）  - 实现消息列表组件（MessageList.tsx）  - 实现消息输入框组件（MessageInput.tsx）  - 集成 WebSocket 实时消息推送（Socket.io Client）  - 支持多种消息类型（文本、图片、文件、语音）  - 支持消息撤回（2分钟内）  - 支持文件上传（图片、文档，最大10MB）  - 支持表情符号发送  - 实现未读消息统计  - 实现在线状态显示  - 实现正在输入状态  - 实现对话搜索功能  - 患者信息侧边栏（快速查看基本信息）  - 使用 Zustand 进行全局状态管理  - 集成到路由系统（/messages）  - 新增文件：    - `frontend-web/src/types/message.ts` - 消息相关类型定义    - `frontend-web/src/services/message.ts` - 消息 API 服务    - `frontend-web/src/stores/useMessageStore.ts` - 消息全局状态    - `frontend-web/src/hooks/useWebSocket.ts` - WebSocket Hook    - `frontend-web/src/components/MessageList.tsx` - 消息列表组件    - `frontend-web/src/components/MessageInput.tsx` - 消息输入框组件    - `frontend-web/src/components/ChatWindow.tsx` - 聊天窗口组件    - `frontend-web/src/pages/MessageCenter.tsx` - 消息中心页面  - 关联需求：需求 #12（医患沟通）  - 关联任务：任务 31（医生端医患沟通）  - Worktree: intl-health-mgmt-admin (feature/stage5-admin-web)
+
+- **后续并行任务执行计划** - 2025-12-25 @pm
+  - 完成第二组任务(AI 服务开发,任务 13-18)的详细执行计划
+  - 完成第三组任务(前端初始化,任务 19 和 28)的详细执行计划
+  - 制定并行开发协调机制(每日同步、API 契约管理、集成测试策略)
+  - 制定风险预警和应对措施(5 个关键风险)
+  - 制定任务完成验收流程(从自检到合并 master)
+  - 新增文档:
+    - `docs/reports/parallel/task-groups-execution-plan.md` - 后续并行任务启动计划(50+ 页详细文档)
+  - 关键内容:
+    - 任务 13(Python FastAPI 初始化): 1 天工期,@ai-python 负责
+    - 任务 14(DeepSeek API 集成): 2 天工期,@ai-python 负责
+    - 任务 15(RAG 知识库): 2 天工期,@ai-python + @data-infra 并行
+    - 任务 16(AI Agent 对话): 2 天工期,@ai-python 负责
+    - 任务 17(AI 辅助诊断): 2 天工期,@ai-python 负责
+    - 任务 18(AI 服务监控): 1 天工期,@ai-python 负责
+    - 任务 19(Uni-app 初始化): 1 天工期,@mobile 负责
+    - 任务 28(React 初始化): 1 天工期,@backend-ts 负责
+  - 每个任务包含:
+    - 详细任务清单(技术实现步骤)
+    - 验收标准(基于 requirements.md 的 AC)
+    - 测试验收标准(可执行的测试命令)
+    - Worktree 切换指南(Git 操作流程)
+    - 关联需求映射
+  - 预计总工期: 从 12 周缩短至 10 周(通过并行加速)
+  - 下一步行动: 立即启动任务 13、19、28(三个任务完全并行)
 
 - **实时通讯基础模块** - 2025-12-24 @backend-ts
   - 集成 Socket.io 实现 WebSocket 实时通信
