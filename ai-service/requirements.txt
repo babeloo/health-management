@@ -1,23 +1,26 @@
 # AI Service Dependencies
 
 # FastAPI Framework
-fastapi==0.104.1
-uvicorn[standard]==0.24.0
-pydantic==2.5.0
-pydantic-settings==2.1.0
+fastapi==0.115.0
+uvicorn[standard]==0.32.0
+pydantic==2.10.0
+pydantic-settings==2.6.0
 
-# LangChain & LlamaIndex
-langchain==0.1.0
-llama-index==0.9.0
+# LangChain (使用更新的版本以兼容)
+langchain==0.3.0
+langchain-text-splitters==0.3.0
 
 # Vector Database
-qdrant-client==1.7.0
+qdrant-client==1.12.0
+
+# Embedding Models
+sentence-transformers==5.2.0
 
 # DeepSeek API (OpenAI compatible)
-openai==1.3.0
+openai==1.57.0
 
 # HTTP Client
-httpx==0.25.0
+httpx==0.28.0
 aiohttp==3.9.0
 
 # Environment Variables
@@ -27,14 +30,14 @@ python-dotenv==1.0.0
 loguru==0.7.2
 
 # Testing
-pytest==7.4.3
-pytest-asyncio==0.21.1
-pytest-cov==4.1.0
+pytest==8.3.0
+pytest-asyncio==0.25.0
+pytest-cov==6.0.0
 
 # Code Quality
-black==23.11.0
-flake8==6.1.0
-mypy==1.7.0
+black==24.10.0
+flake8==7.1.0
+mypy==1.13.0
 
 # Type Stubs
 types-requests==2.31.0
