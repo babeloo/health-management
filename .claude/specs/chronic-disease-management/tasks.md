@@ -1303,11 +1303,11 @@
 
 ### 30. 医生端 AI 辅助诊断
 
-- [ ] 实现 AI 辅助分析页面
-  - [ ] 创建分析页面（pages/patients/:id/ai-assist.tsx）
-  - [ ] 显示患者健康状况摘要（AI 生成）
-  - [ ] 显示异常指标预警
-  - [ ] 显示 AI 诊断建议
+- [x] 实现 AI 辅助分析页面
+  - [x] 创建分析页面（pages/patients/:id/ai-assist.tsx）
+  - [x] 显示患者健康状况摘要（AI 生成）
+  - [x] 显示异常指标预警
+  - [x] 显示 AI 诊断建议
 - [ ] 实现风险预警
   - [ ] 创建预警列表页面（pages/warnings/index.tsx）
   - [ ] 显示高风险患者列表
