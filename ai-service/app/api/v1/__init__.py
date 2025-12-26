@@ -6,7 +6,7 @@ API v1 Router
 
 from fastapi import APIRouter
 
-from app.api.v1 import health, ai, rag, agent
+from app.api.v1 import health, ai, rag, agent, diagnosis
 
 api_router = APIRouter(prefix="/api/v1")
 
@@ -21,5 +21,8 @@ api_router.include_router(rag.router)
 
 # 注册 Agent 服务路由
 api_router.include_router(agent.router)
+
+# 注册诊断服务路由
+api_router.include_router(diagnosis.router)
 
 __all__ = ["api_router"]
