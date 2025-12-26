@@ -44,3 +44,9 @@ mypy==1.13.0
 
 # Type Stubs
 types-requests==2.31.0
+
+# Monitoring and Metrics
+prometheus-client==0.21.0
+
+# Load Testing
+locust==2.29.1

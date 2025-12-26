@@ -12,6 +12,8 @@ from loguru import logger
 
 from app.api import api_router
 from app.core.config import settings
+from app.middleware.metrics_middleware import MetricsMiddleware
+from app.services.metrics_service import start_metrics_server
 
 
 @asynccontextmanager
@@ -26,6 +28,9 @@ async def lifespan(app: FastAPI):
     logger.info(f"Environment: {settings.environment}")
     logger.info(f"Debug mode: {settings.debug}")
     logger.info(f"Server: {settings.host}:{settings.port}")
+
+    # 启动 Prometheus metrics 服务器（在独立端口上）
+    start_metrics_server(port=8002)
 
     yield
 
@@ -43,6 +48,9 @@ app = FastAPI(
     docs_url="/docs" if not settings.is_production() else None,  # 生产环境关闭文档
     redoc_url="/redoc" if not settings.is_production() else None,
 )
+
+# 添加性能监控中间件（必须在 CORS 之前）
+app.add_middleware(MetricsMiddleware)
 
 # CORS 配置
 app.add_middleware(
