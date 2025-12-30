@@ -1,0 +1,54 @@
+{
+  "pages": [
+    {
+      "path": "pages/index/index",
+      "style": {
+        "navigationBarTitleText": "首页"
+      }
+    },
+    {
+      "path": "pages/ai-chat/index",
+      "style": {
+        "navigationBarTitleText": "AI 健康问答"
+      }
+    },
+    {
+      "path": "pages/education/index",
+      "style": {
+        "navigationBarTitleText": "健康科普"
+      }
+    },
+    {
+      "path": "pages/education/detail",
+      "style": {
+        "navigationBarTitleText": "文章详情"
+      }
+    }
+  ],
+  "globalStyle": {
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "智慧慢病管理",
+    "navigationBarBackgroundColor": "#F8F8F8",
+    "backgroundColor": "#F8F8F8"
+  },
+  "tabBar": {
+    "color": "#7A7E83",
+    "selectedColor": "#3cc51f",
+    "borderStyle": "black",
+    "backgroundColor": "#ffffff",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "首页"
+      },
+      {
+        "pagePath": "pages/ai-chat/index",
+        "text": "AI 问答"
+      },
+      {
+        "pagePath": "pages/education/index",
+        "text": "健康科普"
+      }
+    ]
+  }
+}
