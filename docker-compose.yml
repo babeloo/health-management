@@ -93,14 +93,26 @@ services:
       EMQX_HOST: ${EMQX_HOST:-emqx}
       EMQX_DASHBOARD__DEFAULT_USERNAME: admin
       EMQX_DASHBOARD__DEFAULT_PASSWORD: ${EMQX_PASSWORD:-emqx123}
+      # PostgreSQL 连接信息 (用于设备认证和 ACL)
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: health_mgmt
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-admin123}
     volumes:
       - emqx_data:/opt/emqx/data
       - emqx_log:/opt/emqx/log
+      # 挂载配置文件
+      - ./emqx/emqx.conf:/opt/emqx/etc/emqx.conf:ro
+      - ./emqx/auth-pgsql.conf:/opt/emqx/etc/auth-pgsql.conf:ro
+      - ./emqx/acl.conf:/opt/emqx/etc/acl.conf:ro
     ports:
       - '1883:1883' # MQTT
       - '8883:8883' # MQTT/SSL
       - '8083:8083' # WebSocket
       - '18083:18083' # Dashboard
+    depends_on:
+      - postgres
     networks:
       - health-mgmt
 

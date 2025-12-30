@@ -18,8 +18,9 @@ import { ChatModule } from './chat/chat.module';
 import { NotificationModule } from './notification/notification.module';
 import { AuditModule } from './audit/audit.module';
 import { RelationModule } from './relation/relation.module';
-
 import { AnalyticsModule } from './analytics/analytics.module';
+import { DeviceModule } from './device/device.module';
+import { MqttModule } from './mqtt/mqtt.module';
 
 @Module({
   imports: [
@@ -81,6 +82,12 @@ import { AnalyticsModule } from './analytics/analytics.module';
 
     // 数据分析模块
     AnalyticsModule,
+
+    // IoT设备管理模块
+    DeviceModule,
+
+    // MQTT 设备数据接收模块
+    MqttModule,
   ],
   controllers: [AppController],
   providers: [AppService],

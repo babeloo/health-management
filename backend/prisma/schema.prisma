@@ -50,6 +50,7 @@ model User {
   managerRelations       ManagerMemberRelation[] @relation("ManagerRelations")
   notifications          Notification[]
   auditLogs              AuditLog[]
+  devices                Device[]
 
   @@index([role])
   @@index([status])
@@ -326,4 +327,75 @@ enum AuditAction {
   LOGOUT
   PERMISSION_CHANGE
   @@map("audit_action")
+}
+
+// 设备表（IoT设备管理）
+model Device {
+  id String @id @default(uuid())
+
+  // 设备信息
+  deviceId      String      @unique // 设备唯一标识符（如MAC地址）
+  deviceType    DeviceType  // 设备类型
+  deviceName    String?     // 设备名称
+  manufacturer  String?     // 制造商
+  model         String?     // 型号
+  firmwareVersion String?   // 固件版本
+
+  // 用户绑定
+  userId    String?
+  user      User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+  bindStatus BindStatus @default(UNBOUND)
+
+  // MQTT认证信息
+  mqttUsername String? @unique
+  mqttPasswordHash String?
+  mqttClientId String? @unique
+
+  // 设备状态
+  status      DeviceStatus @default(INACTIVE)
+  lastOnlineAt DateTime?
+  lastDataAt   DateTime? // 最后一次数据上报时间
+
+  // 元数据
+  metadata  Json? // 设备额外信息（如序列号、生产日期等）
+
+  // 时间戳
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([deviceType])
+  @@index([status])
+  @@index([bindStatus])
+  @@index([createdAt])
+  @@map("devices")
+}
+
+// 设备类型枚举
+enum DeviceType {
+  BLOOD_PRESSURE_MONITOR  // 血压计
+  BLOOD_GLUCOSE_METER     // 血糖仪
+  WEIGHT_SCALE            // 体重秤
+  THERMOMETER             // 体温计
+  OXIMETER                // 血氧仪
+  ECG_MONITOR             // 心电仪
+  OTHER                   // 其他
+  @@map("device_type")
+}
+
+// 设备状态枚举
+enum DeviceStatus {
+  ACTIVE      // 活跃
+  INACTIVE    // 未激活
+  OFFLINE     // 离线
+  MAINTENANCE // 维护中
+  DISABLED    // 已禁用
+  @@map("device_status")
+}
+
+// 绑定状态枚举
+enum BindStatus {
+  BOUND       // 已绑定
+  UNBOUND     // 未绑定
+  @@map("bind_status")
 }
