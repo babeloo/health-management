@@ -1,4 +1,4 @@
 """Config package"""
-from .settings import settings, Settings
+from .settings import settings
 
-__all__ = ["settings", "Settings"]
+__all__ = ["settings"]

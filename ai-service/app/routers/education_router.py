@@ -1,9 +1,10 @@
 """
 Education Article Router
 """
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, HTTPException, Query, Depends
 from app.models import Article, ArticleListResponse, FavoriteRequest
 from app.services import article_service
+from app.middleware import get_current_user, JWTUser
 
 router = APIRouter(prefix="/api/v1/education", tags=["Education"])
 
@@ -54,41 +55,53 @@ async def get_article(article_id: str):
 
 
 @router.post("/articles/{article_id}/favorite")
-async def favorite_article(article_id: str, request: FavoriteRequest):
+async def favorite_article(
+    article_id: str, current_user: JWTUser = Depends(get_current_user)
+):
     """
     收藏文章
 
     - 幂等操作（重复收藏不报错）
+    - 需要JWT认证
     """
     try:
-        success = await article_service.add_favorite(request.user_id, article_id)
+        user_id = current_user.user_id
+        success = await article_service.add_favorite(user_id, article_id)
         return {"success": success, "message": "收藏成功"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"收藏失败: {str(e)}")
 
 
 @router.delete("/articles/{article_id}/favorite")
-async def unfavorite_article(article_id: str, user_id: str = Query(...)):
+async def unfavorite_article(
+    article_id: str, current_user: JWTUser = Depends(get_current_user)
+):
     """
     取消收藏文章
+
+    - 需要JWT认证
     """
     try:
+        user_id = current_user.user_id
         success = await article_service.remove_favorite(user_id, article_id)
         return {"success": success, "message": "取消收藏成功"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"取消收藏失败: {str(e)}")
 
 
-@router.get("/favorites/{user_id}")
+@router.get("/favorites")
 async def get_user_favorites(
-    user_id: str,
+    current_user: JWTUser = Depends(get_current_user),
     page: int = Query(1, ge=1),
     page_size: int = Query(20, ge=1, le=100),
 ):
     """
     获取用户收藏的文章列表
+
+    - 需要JWT认证
     """
     try:
+        user_id = current_user.user_id
         articles, total = await article_service.get_user_favorites(
             user_id, page=page, page_size=page_size
         )

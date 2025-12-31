@@ -6,6 +6,7 @@ AI 服务的主入口文件
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.security import HTTPBearer
 from app.routers import ai_router, education_router
 
 app = FastAPI(
@@ -13,6 +14,9 @@ app = FastAPI(
     description="提供 RAG 知识库检索、AI 对话、辅助诊断等功能",
     version="0.1.0",
 )
+
+# 配置 HTTPBearer 安全方案（用于 Swagger UI）
+security = HTTPBearer()
 
 # CORS 配置
 app.add_middleware(

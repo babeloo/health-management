@@ -14,7 +14,6 @@ class ChatMessage(BaseModel):
 
 class ChatRequest(BaseModel):
     """AI对话请求"""
-    user_id: str = Field(..., description="用户ID")
     message: str = Field(..., description="用户消息")
     conversation_id: Optional[str] = Field(None, description="对话ID")
     use_rag: bool = Field(True, description="是否使用RAG检索")
@@ -59,8 +58,7 @@ class ArticleListResponse(BaseModel):
 
 class FavoriteRequest(BaseModel):
     """收藏请求"""
-    user_id: str = Field(..., description="用户ID")
-    article_id: str = Field(..., description="文章ID")
+    pass
 
 
 class ErrorResponse(BaseModel):

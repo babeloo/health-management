@@ -1,5 +1,5 @@
 """
-Configuration Management
+配置管理模块
 """
 from pydantic_settings import BaseSettings
 from typing import Optional
@@ -8,45 +8,27 @@ from typing import Optional
 class Settings(BaseSettings):
     """应用配置"""
 
-    # 应用配置
-    APP_NAME: str = "AI Health Service"
-    APP_VERSION: str = "0.1.0"
-    DEBUG: bool = False
+    # JWT 配置
+    jwt_secret: str = "your-super-secret-jwt-key-change-this-in-production"
+    jwt_algorithm: str = "HS256"
+    jwt_expires_in: int = 86400  # 24小时（秒）
 
-    # DeepSeek API配置
-    DEEPSEEK_API_KEY: str
-    DEEPSEEK_API_BASE: str = "https://api.deepseek.com/v1"
-    DEEPSEEK_MODEL: str = "deepseek-chat"
-    DEEPSEEK_MAX_RETRIES: int = 3
-    DEEPSEEK_TIMEOUT: int = 30
+    # DeepSeek API
+    deepseek_api_key: Optional[str] = None
+    deepseek_base_url: str = "https://api.deepseek.com/v1"
 
-    # MongoDB配置
-    MONGODB_URL: str = "mongodb://localhost:27017"
-    MONGODB_DB_NAME: str = "health_mgmt"
+    # Qdrant
+    qdrant_url: str = "http://localhost:6333"
+    qdrant_collection: str = "health_knowledge"
 
-    # Redis配置
-    REDIS_HOST: str = "localhost"
-    REDIS_PORT: int = 6379
-    REDIS_DB: int = 0
-    REDIS_PASSWORD: Optional[str] = None
-    REDIS_CACHE_TTL: int = 300  # 5分钟
-
-    # Qdrant配置
-    QDRANT_HOST: str = "localhost"
-    QDRANT_PORT: int = 6333
-    QDRANT_COLLECTION_NAME: str = "health_knowledge"
-    QDRANT_API_KEY: Optional[str] = None
-
-    # RAG配置
-    RAG_TOP_K: int = 5
-    RAG_SCORE_THRESHOLD: float = 0.7
-
-    # 免责声明
-    DISCLAIMER_TEXT: str = "此建议仅供参考，请咨询专业医生。"
+    # Redis
+    redis_host: str = "localhost"
+    redis_port: int = 6379
+    redis_password: Optional[str] = None
 
     class Config:
         env_file = ".env"
-        case_sensitive = True
+        case_sensitive = False
 
 
 settings = Settings()
