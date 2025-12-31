@@ -918,7 +918,7 @@
 - [ ] 实现知识库管理
   - [ ] 创建 HealthKnowledgeBase 类（参考 design.md 3.2.2）
   - [ ] 实现文档分块（chunk）和向量化
-  - [ ] 实现批量导入科普文档（从 JSON/Markdown 文件）
+  - [x] 实现批量导入科普文档（从 JSON/Markdown 文件）- 2025-12-31：重构知识库数据到 app/data/knowledge_base.py
   - [ ] 创建科普文档管理接口（POST /api/v1/ai/knowledge）
 - [ ] 实现 RAG 检索增强生成
   - [ ] 创建 HealthEducationService 类

@@ -12,10 +12,10 @@ from pathlib import Path
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
-from loguru import logger
+from loguru import logger  # noqa: E402
 
-from app.services.rag_service import get_rag_service
-from docs.health_knowledge_data import health_knowledge_documents
+from app.services.rag_service import get_rag_service  # noqa: E402
+from app.data import health_knowledge_documents  # noqa: E402
 
 
 async def import_knowledge():
