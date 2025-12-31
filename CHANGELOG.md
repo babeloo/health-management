@@ -9,7 +9,42 @@
 ## [Unreleased]
 
 ### Added
-- **医生端医患沟通功能** - 2025-12-25 @backend-ts  - 实现完整的医患沟通前端界面  - 创建消息中心页面（MessageCenter.tsx）  - 实现聊天窗口组件（ChatWindow.tsx）  - 实现消息列表组件（MessageList.tsx）  - 实现消息输入框组件（MessageInput.tsx）  - 集成 WebSocket 实时消息推送（Socket.io Client）  - 支持多种消息类型（文本、图片、文件、语音）  - 支持消息撤回（2分钟内）  - 支持文件上传（图片、文档，最大10MB）  - 支持表情符号发送  - 实现未读消息统计  - 实现在线状态显示  - 实现正在输入状态  - 实现对话搜索功能  - 患者信息侧边栏（快速查看基本信息）  - 使用 Zustand 进行全局状态管理  - 集成到路由系统（/messages）  - 新增文件：    - `frontend-web/src/types/message.ts` - 消息相关类型定义    - `frontend-web/src/services/message.ts` - 消息 API 服务    - `frontend-web/src/stores/useMessageStore.ts` - 消息全局状态    - `frontend-web/src/hooks/useWebSocket.ts` - WebSocket Hook    - `frontend-web/src/components/MessageList.tsx` - 消息列表组件    - `frontend-web/src/components/MessageInput.tsx` - 消息输入框组件    - `frontend-web/src/components/ChatWindow.tsx` - 聊天窗口组件    - `frontend-web/src/pages/MessageCenter.tsx` - 消息中心页面  - 关联需求：需求 #12（医患沟通）  - 关联任务：任务 31（医生端医患沟通）  - Worktree: intl-health-mgmt-admin (feature/stage5-admin-web)
+
+- **敏感数据加密功能（P0-1 安全漏洞修复）** - 2025-12-31 @backend-ts
+  - 创建 EncryptionModule 和 EncryptionService
+  - 实现 AES-256-GCM 加密算法（encrypt/decrypt 方法）
+  - 创建 Prisma 加密中间件（自动加密/解密敏感字段）
+  - 配置敏感字段列表：idCardNumber、medicalHistory
+  - 支持环境变量配置加密密钥（ENCRYPTION_KEY）
+  - 编写完整单元测试（覆盖率 > 85%）
+  - 新增文件：
+    - `backend/src/common/encryption/encryption.module.ts`
+    - `backend/src/common/encryption/encryption.service.ts`
+    - `backend/src/common/encryption/encryption.service.spec.ts`
+    - `backend/src/common/encryption/prisma-encryption.middleware.ts`
+    - `backend/src/common/encryption/prisma-encryption.middleware.spec.ts`
+    - `backend/src/common/encryption/index.ts`
+  - 关联需求：需求 #18（数据安全与隐私保护）
+  - 问题编号：P0-1（严重安全漏洞）
+
+- **AI 服务 JWT 认证实现（P0-2 安全漏洞修复）** - 2025-12-31 @ai-python
+  - 添加 JWT 依赖（PyJWT==2.8.0、python-jose[cryptography]==3.3.0）
+  - 创建配置管理模块（app/config/settings.py）
+  - 实现 JWT 验证中间件（app/middleware/auth.py）
+  - 实现 decode_jwt() 和 get_current_user() 方法
+  - 更新路由处理器（ai_router.py、education_router.py）
+  - 移除不安全的 user_id 请求参数，改用 JWT Token 验证
+  - 与 NestJS 后端认证机制保持一致（HS256 算法）
+  - 编写完整单元测试（11 个测试用例，覆盖率 > 85%）
+  - 新增文件：
+    - `ai-service/app/config/settings.py`
+    - `ai-service/app/middleware/auth.py`
+    - `ai-service/tests/unit/test_auth.py`
+    - `ai-service/.env.example`
+  - 关联需求：需求 #18（数据安全与隐私保护）
+  - 问题编号：P0-2（严重安全漏洞）
+
+- **医生端医患沟通功能** - 2025-12-25 @backend-ts - 实现完整的医患沟通前端界面 - 创建消息中心页面（MessageCenter.tsx） - 实现聊天窗口组件（ChatWindow.tsx） - 实现消息列表组件（MessageList.tsx） - 实现消息输入框组件（MessageInput.tsx） - 集成 WebSocket 实时消息推送（Socket.io Client） - 支持多种消息类型（文本、图片、文件、语音） - 支持消息撤回（2分钟内） - 支持文件上传（图片、文档，最大10MB） - 支持表情符号发送 - 实现未读消息统计 - 实现在线状态显示 - 实现正在输入状态 - 实现对话搜索功能 - 患者信息侧边栏（快速查看基本信息） - 使用 Zustand 进行全局状态管理 - 集成到路由系统（/messages） - 新增文件： - `frontend-web/src/types/message.ts` - 消息相关类型定义 - `frontend-web/src/services/message.ts` - 消息 API 服务 - `frontend-web/src/stores/useMessageStore.ts` - 消息全局状态 - `frontend-web/src/hooks/useWebSocket.ts` - WebSocket Hook - `frontend-web/src/components/MessageList.tsx` - 消息列表组件 - `frontend-web/src/components/MessageInput.tsx` - 消息输入框组件 - `frontend-web/src/components/ChatWindow.tsx` - 聊天窗口组件 - `frontend-web/src/pages/MessageCenter.tsx` - 消息中心页面 - 关联需求：需求 #12（医患沟通） - 关联任务：任务 31（医生端医患沟通） - Worktree: intl-health-mgmt-admin (feature/stage5-admin-web)
 
 - **后续并行任务执行计划** - 2025-12-25 @pm
   - 完成第二组任务(AI 服务开发,任务 13-18)的详细执行计划
