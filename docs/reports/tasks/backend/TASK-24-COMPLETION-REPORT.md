@@ -15,6 +15,7 @@
 创建了完整的 Uni-app Vue 3 项目结构：
 
 **核心配置文件**:
+
 - `package.json` - 项目依赖配置（Vue 3 + Pinia + Uni-app）
 - `vite.config.ts` - Vite 构建配置
 - `tsconfig.json` - TypeScript 配置
@@ -23,12 +24,14 @@
 - `index.html` - H5 入口文件
 
 **应用入口**:
+
 - `src/main.ts` - 应用主入口（集成 Pinia）
 - `src/App.vue` - 根组件
 
 ### 2. AI 问答页面 (`pages/ai-chat/index.vue`)
 
 **功能特性**:
+
 - ✅ 实时对话界面（类似微信聊天）
 - ✅ 消息气泡样式（用户消息右侧绿色，AI 消息左侧白色）
 - ✅ 支持文本输入和发送
@@ -39,6 +42,7 @@
 - ✅ 空状态提示
 
 **技术实现**:
+
 - 使用 `scroll-view` 实现消息列表滚动
 - 使用 `scroll-into-view` 自动滚动到底部
 - 集成 Pinia store 管理对话状态
@@ -47,6 +51,7 @@
 ### 3. 科普内容页面 (`pages/education/index.vue`)
 
 **功能特性**:
+
 - ✅ 文章列表展示（标题、摘要、封面图）
 - ✅ 分类标签切换（全部、慢病知识、用药指导、饮食建议）
 - ✅ 分页加载（下拉加载更多）
@@ -55,6 +60,7 @@
 - ✅ 空状态和加载状态
 
 **技术实现**:
+
 - 使用 `scroll-view` 的 `@scrolltolower` 实现下拉加载
 - 分类筛选和分页查询
 - 响应式布局（rpx 单位）
@@ -62,6 +68,7 @@
 ### 4. 文章详情页 (`pages/education/detail.vue`)
 
 **功能特性**:
+
 - ✅ 文章标题、封面图、正文展示
 - ✅ 文章元信息（分类、阅读量、发布日期）
 - ✅ 收藏功能（切换收藏状态）
@@ -69,6 +76,7 @@
 - ✅ Markdown 内容渲染（使用 `white-space: pre-wrap`）
 
 **技术实现**:
+
 - 使用 `onLoad` 生命周期获取路由参数
 - 调用 API 获取文章详情
 - 收藏状态本地更新
@@ -76,6 +84,7 @@
 ### 5. API 服务层 (`api/ai.ts`)
 
 **实现的接口**:
+
 - ✅ `chat()` - AI 问答
 - ✅ `getConversationHistory()` - 获取对话历史
 - ✅ `getArticles()` - 获取科普文章列表（支持分类筛选、分页）
@@ -84,6 +93,7 @@
 - ✅ `unfavoriteArticle()` - 取消收藏
 
 **技术实现**:
+
 - 统一的 `request` 工具函数（`utils/request.ts`）
 - 自动添加 JWT Token（从本地存储读取）
 - 统一错误处理
@@ -91,6 +101,7 @@
 ### 6. 状态管理 (`stores/ai.ts`)
 
 **Pinia Store 功能**:
+
 - ✅ `messages` - 对话消息列表
 - ✅ `conversationId` - 当前会话 ID
 - ✅ `loading` - 加载状态
@@ -99,6 +110,7 @@
 - ✅ `clearMessages()` - 清空对话
 
 **技术实现**:
+
 - 使用 Composition API 风格（`defineStore` + `setup`）
 - 本地缓存对话历史（`uni.setStorageSync`）
 - 自动拼接免责声明到 AI 回复
@@ -106,6 +118,7 @@
 ### 7. 类型定义 (`types/ai.ts`)
 
 **TypeScript 接口**:
+
 - ✅ `Message` - 消息对象
 - ✅ `EducationArticle` - 科普文章对象
 - ✅ `ChatRequest` - 聊天请求
@@ -114,6 +127,7 @@
 ### 8. 首页 (`pages/index/index.vue`)
 
 **功能特性**:
+
 - ✅ 渐变背景设计
 - ✅ 功能入口（AI 问答、健康科普）
 - ✅ 使用 `uni.switchTab` 切换 Tab 页面
@@ -183,15 +197,15 @@ frontend-patient/
 
 根据需求 #8（AI 健康科普）的验收标准：
 
-| 验收标准 | 状态 | 说明 |
-|---------|------|------|
-| AC1: 集成 AI 健康科普垂直大模型 | ✅ | 通过 API 调用后端 AI 服务 |
-| AC2: AI 模型生成专业且易懂的回答 | ✅ | 调用 `/api/v1/ai/chat` 接口 |
-| AC3: 基于患者疾病类型推荐个性化科普 | ⚠️ | 前端已实现分类筛选，需后端支持个性化推荐 |
-| AC4: AI 建议包含免责声明 | ✅ | Store 自动拼接免责声明到回复 |
-| AC5: 支持科普内容收藏和分享 | ✅ | 详情页实现收藏和分享功能 |
-| AC6: 记录浏览历史用于改进推荐 | ⚠️ | 前端已实现浏览，需后端记录日志 |
-| AC7: 提供 AI 问答对话历史记录 | ✅ | 本地缓存对话历史，支持加载 |
+| 验收标准                            | 状态 | 说明                                     |
+| ----------------------------------- | ---- | ---------------------------------------- |
+| AC1: 集成 AI 健康科普垂直大模型     | ✅   | 通过 API 调用后端 AI 服务                |
+| AC2: AI 模型生成专业且易懂的回答    | ✅   | 调用 `/api/v1/ai/chat` 接口              |
+| AC3: 基于患者疾病类型推荐个性化科普 | ⚠️   | 前端已实现分类筛选，需后端支持个性化推荐 |
+| AC4: AI 建议包含免责声明            | ✅   | Store 自动拼接免责声明到回复             |
+| AC5: 支持科普内容收藏和分享         | ✅   | 详情页实现收藏和分享功能                 |
+| AC6: 记录浏览历史用于改进推荐       | ⚠️   | 前端已实现浏览，需后端记录日志           |
+| AC7: 提供 AI 问答对话历史记录       | ✅   | 本地缓存对话历史，支持加载               |
 
 **完成度**: 5/7 完全实现，2/7 需后端支持
 
@@ -202,10 +216,12 @@ frontend-patient/
 当前前端已完成，但需要后端提供以下接口：
 
 **AI 服务接口**:
+
 - `POST /api/v1/ai/chat` - AI 问答
 - `GET /api/v1/ai/conversations/:id` - 获取对话历史
 
 **科普内容接口**:
+
 - `GET /api/v1/education/articles` - 获取文章列表
 - `GET /api/v1/education/articles/:id` - 获取文章详情
 - `POST /api/v1/education/articles/:id/favorite` - 收藏文章
@@ -327,6 +343,7 @@ Task 24 已完成患者端 AI 健康科普功能的前端开发，包括：
 - ✅ TypeScript 类型定义
 
 **代码质量**：
+
 - 使用 Vue 3 Composition API
 - TypeScript 严格模式
 - 跨平台兼容（微信小程序 + H5）

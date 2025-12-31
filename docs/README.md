@@ -7,25 +7,27 @@
 ```
 docs/
 ├── README.md                           # 本文件：文档目录说明
+├── development/                        # 开发指南和技术文档
+│   └── WINDOWS.md                     # Windows 开发环境配置
+│   └── PRISMA_7_UPGRADE.md            # Prisma 7 升级指南
 ├── reports/                            # 项目报告
+│   ├── architecture/                  # 架构审查报告
+│   ├── parallel/                      # 并行开发报告
+│   ├── project-summaries/             # 项目总结报告
 │   ├── stage-summaries/               # 阶段总结报告
-│   │   ├── stage1-summary-report.md   # 第一阶段总结
-│   │   ├── stage2-summary-report.md   # 第二阶段总结（未来）
-│   │   └── ...
-│   └── weekly/                        # 周报
-│       ├── 2025-W51.md                # 2025年第51周周报
-│       └── ...
-├── architecture/                       # 架构演进文档（未来）
-│   └── decisions/                     # 架构决策记录（ADR）
-├── deployment/                         # 部署文档（未来）
-│   ├── production-deployment.md       # 生产环境部署指南
-│   └── troubleshooting.md             # 故障排查指南
-└── meeting-notes/                      # 会议纪要（未来）
+│   ├── tasks/                         # 任务完成报告
+│   │   ├── backend/                   # 后端任务报告
+│   │   ├── frontend-patient/          # 患者端任务报告
+│   │   └── frontend-web/              # 管理端任务报告
+│   ├── weekly/                        # 周报
+│   └── GIT-WORKTREE-STATUS-REPORT.md
+├── guides/                             # 使用指南（未来）
+└── api/                                # API 文档（未来）
 ```
 
 ## 📝 文档分类说明
 
-### 核心规约文档（存放于 `.claude/specs/**/`，比如 `.claude/specs/chronic-disease-management/`）
+### 核心规约文档（存放于 `.claude/specs/chronic-disease-management/`）
 
 这些文档是项目的核心规约，**只应包含三个文件**：
 
@@ -37,32 +39,20 @@ docs/
 
 由 PM Agent 生成的项目进度报告：
 
+- **架构审查报告**（`architecture/`）：架构设计审查和评估
+- **并行开发报告**（`parallel/`）：并行开发过程的规划和总结
+- **项目总结报告**（`project-summaries/`）：项目整体进度和管理总结
 - **阶段总结报告**（`stage-summaries/`）：每个开发阶段完成后生成
-  - 格式：`stage{N}-summary-report.md`
-  - 内容：阶段概览、任务明细、成果交付、问题解决、经验教训
-
+- **任务完成报告**（`tasks/`）：按模块分类的任务完成报告
 - **周报**（`weekly/`）：每周五自动生成
-  - 格式：`YYYY-Wnn.md`（如 `2025-W51.md` 表示 2025 年第 51 周）
-  - 内容：本周完成任务、下周计划、风险预警、关键指标
 
-### 架构演进文档（存放于 `docs/architecture/`）
+### 开发指南（存放于 `docs/development/`）
 
-重大架构变更的决策记录：
+开发环境配置和技术指南。
 
-- **ADR（Architecture Decision Records）**：记录技术选型和架构调整的决策依据
-- **演进历史**：记录系统架构的演化过程
+### 技术文档（存放于 `docs/` 根目录）
 
-### 部署文档（存放于 `docs/deployment/`）
-
-生产环境部署和运维文档：
-
-- 部署指南
-- 故障排查
-- 性能优化
-
-### 会议纪要（存放于 `docs/meeting-notes/`）
-
-重要技术会议和需求评审的记录。
+- `PRISMA_7_UPGRADE.md` - Prisma 7 升级指南
 
 ## 🔄 文档更新规则
 
@@ -70,6 +60,7 @@ docs/
 
 - ✅ 周报（每周五自动生成）
 - ✅ 阶段总结报告（阶段完成后生成）
+- ✅ 任务完成报告（任务完成后生成）
 - ✅ CHANGELOG.md（任务完成后立即更新）
 
 ### 由技术 Agents 协作维护
@@ -78,11 +69,6 @@ docs/
 - ✅ Swagger/OpenAPI 文档（自动生成 + 手动注解）
 - ✅ design.md 架构演进记录（重大变更时更新）
 
-### 手动维护
-
-- ✅ 会议纪要
-- ✅ ADR（架构决策记录）
-
 ## 📌 注意事项
 
 1. **不要在 `.claude/specs/` 目录下创建新文档**
@@ -90,14 +76,20 @@ docs/
    - 所有其他文档都应放到 `docs/` 目录下
 
 2. **报告命名规范**
-   - 阶段报告：`stage{N}-summary-report.md`（N 为阶段编号）
-   - 周报：`YYYY-Wnn.md`（ISO 8601 周编号）
+   - 阶段报告：`stage{N}-summary-report.md`
+   - 周报：`YYYY-Wnn.md`
+   - 任务报告：`TASK-{N}-COMPLETION-REPORT.md`
 
 3. **文档版本控制**
    - 所有文档都纳入 Git 版本控制
    - 重要变更需要提交 commit message
 
+4. **文档存放位置**
+   - 模块内的 README.md 保留在各模块目录下
+   - 所有报告和总结文档统一存放在 `docs/reports/` 下
+   - 技术实现文档可保留在模块的 `docs/` 子目录下
+
 ---
 
-**文档管理负责人**：PM Agent
-**最后更新时间**：2025-12-22
+**文档管理负责人**：PM Agent  
+**最后更新时间**：2025-12-31

@@ -11,6 +11,7 @@
 **文件**: `src/api/assessment.ts`
 
 实现了 5 个核心 API 接口：
+
 - `getHistory()` - 获取评估历史记录
 - `assessDiabetes()` - 糖尿病风险评估
 - `assessStroke()` - 卒中风险评估
@@ -22,6 +23,7 @@
 **文件**: `src/types/assessment.ts`
 
 定义了完整的 TypeScript 类型：
+
 - `AssessmentRecord` - 评估记录
 - `DiabetesAssessmentRequest` - 糖尿病评估请求
 - `StrokeAssessmentRequest` - 卒中评估请求
@@ -33,12 +35,14 @@
 #### 3.1 评估首页 (`pages/assessment/index.vue`)
 
 **功能**：
+
 - 四类评估入口卡片（糖尿病、卒中、血管年龄、中风识别）
 - 历史评估记录列表
 - 风险等级标识（低/中/高风险，颜色区分）
 - 点击跳转到对应评估页面
 
 **特点**：
+
 - 使用 Grid 布局展示评估卡片
 - 风险等级使用颜色标识（绿色=低风险、橙色=中风险、红色=高风险）
 - 支持查看历史记录详情
@@ -46,6 +50,7 @@
 #### 3.2 糖尿病风险评估 (`pages/assessment/diabetes.vue`)
 
 **表单字段**：
+
 - 年龄、体重、身高（必填）
 - 腰围（可选）
 - 运动频率（从不/偶尔/经常）
@@ -53,6 +58,7 @@
 - 高血压（开关）
 
 **功能**：
+
 - 表单验证（必填项检查）
 - 提交评估请求
 - 弹窗展示评估结果（风险等级、评分、建议）
@@ -60,11 +66,13 @@
 #### 3.3 卒中风险评估 (`pages/assessment/stroke.vue`)
 
 **表单字段**：
+
 - 年龄（必填）
 - 性别（男/女）
 - 高血压、糖尿病、吸烟史、心脏病史、家族卒中史（开关）
 
 **功能**：
+
 - 简洁的问卷表单
 - 实时评估并展示结果
 - 健康建议展示
@@ -72,11 +80,13 @@
 #### 3.4 血管年龄评估 (`pages/assessment/vascular-age.vue`)
 
 **表单字段**：
+
 - 年龄、性别（必填）
 - 收缩压、舒张压、总胆固醇（必填）
 - 吸烟、糖尿病（开关）
 
 **特色功能**：
+
 - 显示血管年龄数值
 - 计算血管年龄与实际年龄差值
 - 差值颜色提示（绿色=良好、黄色=正常、红色=警告）
@@ -84,6 +94,7 @@
 #### 3.5 中风识别 (`pages/assessment/stroke-recognition.vue`)
 
 **教育内容**：
+
 - FAST 原则详细说明：
   - F (Face) - 面部对称性
   - A (Arm) - 手臂力量
@@ -93,6 +104,7 @@
 - 黄金救治时间提示
 
 **功能**：
+
 - 一键拨打 120 急救电话
 - 跨平台兼容（微信小程序需二次确认）
 - 自测评估引导
@@ -102,6 +114,7 @@
 **文件**: `src/pages.json`
 
 新增 5 个页面路由：
+
 - `/pages/assessment/index` - 风险评估首页
 - `/pages/assessment/diabetes` - 糖尿病风险评估
 - `/pages/assessment/stroke` - 卒中风险评估
@@ -172,6 +185,7 @@ frontend-patient/
 ### 1. 后端 API 实现
 
 需要在 NestJS 后端实现以下接口：
+
 - `GET /api/v1/assessments` - 获取评估历史
 - `POST /api/v1/assessments/diabetes` - 糖尿病评估
 - `POST /api/v1/assessments/stroke` - 卒中评估
@@ -181,6 +195,7 @@ frontend-patient/
 ### 2. 评估算法实现
 
 建议在后端实现以下评估模型：
+
 - 糖尿病风险评分（基于 BMI、年龄、家族史等）
 - 卒中风险评分（Framingham 卒中风险评分）
 - 血管年龄计算（基于血压、胆固醇等）

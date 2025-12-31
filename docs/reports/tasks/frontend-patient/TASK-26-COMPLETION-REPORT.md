@@ -18,6 +18,7 @@
 **文件**: `frontend-patient/src/types/message.ts`
 
 定义了完整的消息相关类型：
+
 - `MessageType`: 消息类型（text, image, voice, video, file）
 - `MessageStatus`: 消息状态（sent, delivered, read）
 - `Message`: 消息实体接口
@@ -29,6 +30,7 @@
 **文件**: `frontend-patient/src/utils/socket.ts`
 
 实现了完整的 Socket.io Client 封装：
+
 - ✅ 连接管理（connect/disconnect）
 - ✅ 自动重连机制（最多5次，间隔3秒）
 - ✅ 消息发送（sendMessage）
@@ -38,6 +40,7 @@
 - ✅ 事件清理（offNewMessage, offMessageSent, offUserTyping）
 
 **跨平台兼容性**：
+
 - 使用 `socket.io-client` 4.7.2 版本
 - 支持 WebSocket 和 Polling 双传输模式
 - 兼容微信小程序、H5、App 环境
@@ -47,6 +50,7 @@
 **文件**: `frontend-patient/src/api/messages.ts`
 
 实现了 6 个 API 接口：
+
 1. `getConversations(userId)` - 获取会话列表
 2. `getMessages(conversationId, page, limit)` - 获取聊天记录（支持分页）
 3. `markAsRead(messageId)` - 标记消息已读
@@ -54,6 +58,7 @@
 5. `uploadImage(filePath)` - 上传图片（使用 uni.uploadFile）
 
 **特性**：
+
 - 统一使用 `request` 工具封装
 - 完整的类型定义
 - 错误处理和用户提示
@@ -65,6 +70,7 @@
 实现了完整的消息状态管理：
 
 **状态**：
+
 - `conversations` - 会话列表
 - `currentMessages` - 当前聊天消息列表
 - `currentConversationId` - 当前会话ID
@@ -72,6 +78,7 @@
 - `totalUnreadCount` - 计算属性：总未读数
 
 **方法**：
+
 - `loadConversations(userId)` - 加载会话列表
 - `loadMessages(conversationId, page)` - 加载聊天记录
 - `addMessage(message)` - 添加新消息（实时更新）
@@ -84,6 +91,7 @@
 **文件**: `frontend-patient/src/pages/messages/index.vue`
 
 **功能实现**：
+
 - ✅ 显示会话列表（头像、姓名、最后一条消息、时间）
 - ✅ 显示未读消息数量（红色徽章）
 - ✅ 支持下拉刷新（enablePullDownRefresh）
@@ -93,6 +101,7 @@
 - ✅ 空状态提示
 
 **UI 设计**：
+
 - 响应式布局（使用 rpx 单位）
 - 触摸区域 ≥ 44rpx（符合移动端标准）
 - 清晰的视觉层次和间距
@@ -102,6 +111,7 @@
 **文件**: `frontend-patient/src/pages/messages/chat.vue`
 
 **功能实现**：
+
 - ✅ 聊天界面（消息列表 + 输入框 + 发送按钮）
 - ✅ WebSocket 实时通信集成
 - ✅ 消息发送（文字、图片）
@@ -115,6 +125,7 @@
 - ✅ 图片上传（相册/相机选择）
 
 **UI 特性**：
+
 - 左右气泡布局（自己的消息在右侧，绿色气泡）
 - 图片消息支持点击预览
 - 输入框圆角设计
@@ -126,6 +137,7 @@
 **文件**: `frontend-patient/src/pages.json`
 
 **更新内容**：
+
 - ✅ 添加消息列表页面路由（pages/messages/index）
 - ✅ 添加聊天页面路由（pages/messages/chat）
 - ✅ 消息列表启用下拉刷新
@@ -136,6 +148,7 @@
 **更新文件**: `package.json`
 
 添加依赖：
+
 - `socket.io-client: ^4.7.2` - WebSocket 客户端库
 
 ---
@@ -162,6 +175,7 @@ MongoDB (消息持久化)
 ```
 
 **事件流**：
+
 1. 连接：`connect` → `join` → 加入用户房间
 2. 发送：`send_message` → 保存数据库 → 推送给接收者
 3. 接收：`new_message` → 更新 UI → 标记已读

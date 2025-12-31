@@ -8,6 +8,8 @@
 
 ## [Unreleased]
 
+### Changed- **重构项目文档目录结构** - 2025-12-31 @pm - 创建规范的 docs 目录结构（architecture/、parallel/、project-summaries/、tasks/） - 移动 frontend-patient 中的报告文件到 docs/reports/tasks/frontend-patient/ - 移动 frontend-web 中的报告文件到 docs/reports/tasks/frontend-web/ - 整理 docs/reports 目录，按类型分类现有报告 - 删除根目录的重复文件 GIT-WORKTREE-STATUS-REPORT.md - 更新 docs/README.md 文档索引，反映新的目录结构 - 统一文档管理规范，所有报告文档集中在 docs/reports/ 下 - 目的：提高文档可维护性，便于查找和管理项目文档
+
 ### Added
 
 - **敏感数据加密功能（P0-1 安全漏洞修复）** - 2025-12-31 @backend-ts
