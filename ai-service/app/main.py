@@ -6,6 +6,7 @@ AI 服务的主入口文件
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from app.routers import ai_router, education_router
 
 app = FastAPI(
     title="智慧慢病管理系统 - AI 服务",
@@ -21,6 +22,10 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# 注册路由
+app.include_router(ai_router)
+app.include_router(education_router)
 
 
 @app.get("/")
@@ -42,4 +47,4 @@ async def health_check():
 if __name__ == "__main__":
     import uvicorn
 
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host="0.0.0.0", port=8001)

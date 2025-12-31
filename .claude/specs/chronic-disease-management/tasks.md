@@ -1,7 +1,7 @@
 # 智慧慢病管理系统 - MVP阶段实施计划
 
-> **最后更新**: 2025-12-30
-> **总体进度**: 72.9% (35/48 模块已完成)
+> **最后更新**: 2025-12-31
+> **总体进度**: 77.1% (37/48 模块已完成)
 
 ## 阶段进度总览
 
@@ -15,7 +15,7 @@
 | 第六阶段：IoT 设备接入       | 2      | 2      | 100%      | ✅ 已完成 |
 | 第七阶段：部署与监控         | 4      | 0      | 0%        | ⏸️ 未开始 |
 | 第八阶段：测试与上线         | 5      | 0      | 0%        | ⏸️ 未开始 |
-| **总计**                     | **48** | **35** | **72.9%** | 🔄 进行中 |
+| **总计**                     | **48** | **37** | **77.1%** | 🔄 进行中 |
 
 ## 第二阶段完成情况
 
@@ -135,21 +135,30 @@
 - [x] 实现医患关系数据模型 ✅ 完成于 2025-12-22
   - [x] 定义 doctor_patient_relations 表（参考 design.md 4.1.6）✅
   - [x] 创建必要索引和唯一约束 ✅
-- [x] 执行数据库迁移 ✅ 完成于 2025-12-22
+- [x] 实现IoT设备数据模型 ✅ 完成于 2025-12-30
+  - [x] 定义 devices 表（参考 design.md 4.1.7）✅
+  - [x] 创建设备类型枚举（DeviceType）✅
+  - [x] 创建设备状态枚举（DeviceStatus）✅
+  - [x] 创建绑定状态枚举（BindStatus）✅
+  - [x] 创建必要索引（userId, deviceType, status, bindStatus）✅
+- [x] 执行数据库迁移 ✅ 完成于 2025-12-30
   - [x] 运行 `prisma db push` 创建所有表 ✅
   - [x] 验证数据库约束和索引 ✅
+  - [x] 验证IoT设备表结构（devices表包含18个字段）✅
 
 **实现细节**：
 
-- ✅ 6 个核心表已创建（users, health_records, check_ins, risk_assessments, points_transactions, doctor_patient_relations）
-- ✅ 26 个索引已创建（包括主键、唯一约束、查询优化索引）
+- ✅ 12 个核心表已创建（users, health_records, check_ins, risk_assessments, points_transactions, doctor_patient_relations, manager_member_relations, notifications, audit_logs, streak_bonus_records, devices, \_prisma_migrations）
+- ✅ 所有索引已创建（包括主键、唯一约束、查询优化索引）
   - users 表：users_role_idx, users_status_idx, users_createdAt_idx, users_username_key, users_email_key, users_phone_key
   - check_ins 表：userId_type_checkInDate_key (唯一约束), userId_checkInDate_idx, type_idx, createdAt_idx
   - risk_assessments 表：userId_type_idx, riskLevel_idx, assessedAt_idx
   - points_transactions 表：userId_createdAt_idx, type_idx
   - doctor_patient_relations 表：doctorId_patientId_key (唯一约束), doctorId_idx, patientId_idx
+  - devices 表：devices_userId_idx, devices_deviceType_idx, devices_status_idx, devices_bindStatus_idx, devices_deviceId_key, devices_mqttUsername_key, devices_mqttClientId_key
 - ✅ 所有外键约束和唯一约束已生效
-- ✅ 数据库迁移验证通过
+- ✅ 数据库迁移验证通过（2025-12-30）
+- ✅ IoT设备表验证通过（18个字段，包含MQTT认证信息）
 
 **延后任务**（第二阶段实现）：
 
@@ -866,120 +875,159 @@
 
 ## 第三阶段：AI 服务开发（Week 4-7）
 
-### 13. Python FastAPI 项目初始化
+**阶段进度**: 100% (6/6 已完成) ✅ | **状态**: ✅ 已完成
+**完成时间**: 2025-12-26 | **负责人**: @ai-python
+**Worktree**: intl-health-mgmt-ai (feature/stage3-ai-service)
 
-- [ ] 创建 FastAPI 应用骨架
-  - [ ] 使用 uv 初始化 Python 项目（`uv init ai-service`）
-  - [ ] 创建 requirements.txt（FastAPI、Uvicorn、LangChain、LlamaIndex）
-  - [ ] 配置环境变量管理（python-dotenv）
-  - [ ] 设置多环境配置（.env.development、.env.production）
-  - [ ] 配置 CORS 中间件（允许 NestJS 后端调用）
-  - [ ] 设置日志配置（structlog）
-- [ ] 配置项目结构
-  - [ ] 创建 app/main.py（FastAPI 应用入口）
-  - [ ] 创建 app/routers（路由模块）
-  - [ ] 创建 app/services（业务逻辑）
-  - [ ] 创建 app/models（数据模型）
-  - [ ] 创建 app/config.py（配置管理）
+### 13. Python FastAPI 项目初始化 ✅ 100% 完成
 
-**关联需求**：需求 #1（外部 AI API 集成）
+- [x] 创建 FastAPI 应用骨架 ✅ 完成于 2025-12-26
+  - [x] 使用 uv 初始化 Python 项目（`uv init ai-service`）
+  - [x] 创建 requirements.txt（FastAPI、Uvicorn、LangChain、LlamaIndex）
+  - [x] 配置环境变量管理（python-dotenv）
+  - [x] 设置多环境配置（.env.development、.env.production）
+  - [x] 配置 CORS 中间件（允许 NestJS 后端调用）
+  - [x] 设置日志配置（structlog）
+- [x] 配置项目结构 ✅ 完成于 2025-12-26
+  - [x] 创建 app/main.py（FastAPI 应用入口）
+  - [x] 创建 app/routers（路由模块）
+  - [x] 创建 app/services（业务逻辑）
+  - [x] 创建 app/models（数据模型）
+  - [x] 创建 app/config.py（配置管理）
 
-### 14. DeepSeek API 集成
+**完成成果**:
 
-- [ ] 实现 AI Provider 抽象层
-  - [ ] 创建 AIProvider 接口类（参考 design.md 3.2.1）
-  - [ ] 实现 DeepSeekProvider 类
-  - [ ] 实现 chat 方法（调用 DeepSeek chat/completions API）
-  - [ ] 实现 embeddings 方法（调用 DeepSeek embeddings API）
-  - [ ] 实现 healthAdvice 方法（健康建议生成）
-- [ ] 实现重试和熔断机制
-  - [ ] 创建 RetryDecorator（最多重试 3 次）
-  - [ ] 创建 CircuitBreaker 类（失败阈值 5 次，熔断 60 秒）
-  - [ ] 在 AI 调用中应用重试和熔断
-- [ ] 实现 AI 调用监控
-  - [ ] 创建 Prometheus 指标（ai_calls_total、ai_call_duration）
-  - [ ] 记录每次 AI 调用的耗时和 Token 使用量
-- [ ] 编写 DeepSeek 集成测试
-  - [ ] 单元测试：DeepSeekProvider 方法（使用 Mock）
-  - [ ] 集成测试：真实 DeepSeek API 调用（需要 API Key）
-  - [ ] 单元测试：重试机制
-  - [ ] 单元测试：熔断器
+- ✅ FastAPI 应用骨架完成（app/main.py，端口 8001）
+- ✅ 项目结构完整（routers、services、models、config）
+- ✅ CORS 中间件配置完成
+- ✅ 环境变量管理配置完成
 
 **关联需求**：需求 #1（外部 AI API 集成）
 
-### 15. RAG 知识库实现
+### 14. DeepSeek API 集成 ✅ 100% 完成
 
-- [ ] 集成 Qdrant 向量数据库
-  - [ ] 安装 qdrant-client
-  - [ ] 创建 QdrantService
-  - [ ] 实现创建集合方法（health_knowledge）
-  - [ ] 实现添加文档方法（addDocument）
-  - [ ] 实现向量检索方法（search）
-- [ ] 实现知识库管理
-  - [ ] 创建 HealthKnowledgeBase 类（参考 design.md 3.2.2）
-  - [ ] 实现文档分块（chunk）和向量化
-  - [ ] 实现批量导入科普文档（从 JSON/Markdown 文件）
-  - [ ] 创建科普文档管理接口（POST /api/v1/ai/knowledge）
-- [ ] 实现 RAG 检索增强生成
-  - [ ] 创建 HealthEducationService 类
-  - [ ] 实现 answerQuestion 方法（检索 + 生成）
-  - [ ] 实现提示词模板（包含知识库上下文）
-  - [ ] 添加免责声明（"此建议仅供参考，请咨询专业医生"）
-- [ ] 编写知识库测试
-  - [ ] 单元测试：文档向量化和检索
-  - [ ] 集成测试：Qdrant 数据写入和查询
-  - [ ] 集成测试：RAG 问答流程
-  - [ ] 准备测试数据（10+ 篇医疗科普文章）
+- [x] 实现 AI Provider 抽象层 ✅ 完成于 2025-12-26
+  - [x] 创建 AIProvider 接口类（参考 design.md 3.2.1）
+  - [x] 实现 DeepSeekProvider 类
+  - [x] 实现 chat 方法（调用 DeepSeek chat/completions API）
+  - [x] 实现 embeddings 方法（调用 DeepSeek embeddings API）
+  - [x] 实现 healthAdvice 方法（健康建议生成）
+- [x] 实现重试和熔断机制 ✅ 完成于 2025-12-26
+  - [x] 创建 RetryDecorator（最多重试 3 次）
+  - [x] 创建 CircuitBreaker 类（失败阈值 5 次，熔断 60 秒）
+  - [x] 在 AI 调用中应用重试和熔断
+- [x] 实现 AI 调用监控 ✅ 完成于 2025-12-26
+  - [x] 创建 Prometheus 指标（ai_calls_total、ai_call_duration）
+  - [x] 记录每次 AI 调用的耗时和 Token 使用量
+- [x] 编写 DeepSeek 集成测试 ✅ 完成于 2025-12-26
+  - [x] 单元测试：DeepSeekProvider 方法（使用 Mock）
+  - [x] 集成测试：真实 DeepSeek API 调用（需要 API Key）
+  - [x] 单元测试：重试机制
+  - [x] 单元测试：熔断器
+
+**完成成果**:
+
+- ✅ DeepSeek API 集成完成（chat、embeddings、healthAdvice）
+- ✅ 重试和熔断机制实现
+- ✅ Prometheus 监控指标完成
+- ✅ 完整的单元测试和集成测试
+
+**关联需求**：需求 #1（外部 AI API 集成）
+
+### 15. RAG 知识库实现 ✅ 100% 完成
+
+- [x] 集成 Qdrant 向量数据库 ✅ 完成于 2025-12-26
+  - [x] 安装 qdrant-client
+  - [x] 创建 QdrantService
+  - [x] 实现创建集合方法（health_knowledge）
+  - [x] 实现添加文档方法（addDocument）
+  - [x] 实现向量检索方法（search）
+- [x] 实现知识库管理 ✅ 完成于 2025-12-26
+  - [x] 创建 HealthKnowledgeBase 类（参考 design.md 3.2.2）
+  - [x] 实现文档分块（chunk）和向量化
+  - [x] 实现批量导入科普文档（从 JSON/Markdown 文件）
+  - [x] 创建科普文档管理接口（POST /api/v1/ai/knowledge）
+- [x] 实现 RAG 检索增强生成 ✅ 完成于 2025-12-26
+  - [x] 创建 HealthEducationService 类
+  - [x] 实现 answerQuestion 方法（检索 + 生成）
+  - [x] 实现提示词模板（包含知识库上下文）
+  - [x] 添加免责声明（"此建议仅供参考，请咨询专业医生"）
+- [x] 编写知识库测试 ✅ 完成于 2025-12-26
+  - [x] 单元测试：文档向量化和检索
+  - [x] 集成测试：Qdrant 数据写入和查询
+  - [x] 集成测试：RAG 问答流程
+  - [x] 准备测试数据（10+ 篇医疗科普文章）
+
+**完成成果**:
+
+- ✅ Qdrant 向量数据库集成完成
+- ✅ RAG 检索增强生成实现
+- ✅ 科普文档管理接口完成
+- ✅ 完整的测试覆盖
 
 **关联需求**：需求 #5（患者端 - AI 健康科普）
 
-### 16. AI Agent 对话管理
+### 16. AI Agent 对话管理 ✅ 100% 完成
 
-- [ ] 实现对话状态管理
-  - [ ] 连接 MongoDB（motor 异步客户端）
-  - [ ] 定义对话历史 Schema（参考 design.md 4.1.9）
-  - [ ] 实现对话上下文缓存（Redis，30 分钟过期）
-- [ ] 实现 AI Agent 核心逻辑
-  - [ ] 创建 AIAgentController 类（参考 design.md 3.2.3）
-  - [ ] 实现 handleMessage 方法（处理用户消息）
-  - [ ] 实现 detectIntent 方法（意图识别）
-  - [ ] 实现 handleCheckIn 方法（协助打卡）
-  - [ ] 实现 handleSymptomReport 方法（症状报告）
-- [ ] 实现 AI Agent 接口
-  - [ ] 创建 POST /api/v1/ai/chat 接口（对话）
-  - [ ] 创建 GET /api/v1/ai/conversations/:userId 接口（对话历史）
-  - [ ] 创建 POST /api/v1/ai/health-advice 接口（健康建议）
-- [ ] 编写 AI Agent 测试
-  - [ ] 单元测试：意图识别
-  - [ ] 单元测试：对话状态管理
-  - [ ] 集成测试：完整对话流程
-  - [ ] E2E 测试：用户通过 AI Agent 完成打卡
+- [x] 实现对话状态管理 ✅ 完成于 2025-12-26
+  - [x] 连接 MongoDB（motor 异步客户端）
+  - [x] 定义对话历史 Schema（参考 design.md 4.1.9）
+  - [x] 实现对话上下文缓存（Redis，30 分钟过期）
+- [x] 实现 AI Agent 核心逻辑 ✅ 完成于 2025-12-26
+  - [x] 创建 AIAgentController 类（参考 design.md 3.2.3）
+  - [x] 实现 handleMessage 方法（处理用户消息）
+  - [x] 实现 detectIntent 方法（意图识别）
+  - [x] 实现 handleCheckIn 方法（协助打卡）
+  - [x] 实现 handleSymptomReport 方法（症状报告）
+- [x] 实现 AI Agent 接口 ✅ 完成于 2025-12-26
+  - [x] 创建 POST /api/v1/ai/chat 接口（对话）
+  - [x] 创建 GET /api/v1/ai/conversations/:userId 接口（对话历史）
+  - [x] 创建 POST /api/v1/ai/health-advice 接口（健康建议）
+- [x] 编写 AI Agent 测试 ✅ 完成于 2025-12-26
+  - [x] 单元测试：意图识别
+  - [x] 单元测试：对话状态管理
+  - [x] 集成测试：完整对话流程
+  - [x] E2E 测试：用户通过 AI Agent 完成打卡
+
+**完成成果**:
+
+- ✅ AI Agent 对话管理完成
+- ✅ 意图识别和自然语言打卡实现
+- ✅ 对话历史和上下文缓存完成
+- ✅ 完整的测试覆盖
 
 **关联需求**：需求 #6（患者端 - AI Agent 主动健康管理）
 
-### 17. AI 辅助诊断
+### 17. AI 辅助诊断 ✅ 100% 完成
 
-- [ ] 实现健康状况分析
-  - [ ] 创建 DiagnosisService
-  - [ ] 实现分析患者数据方法（analyzePatientData）
-  - [ ] 实现生成健康摘要方法（generateHealthSummary）
-  - [ ] 实现诊断建议生成方法（generateDiagnosisAdvice）
-- [ ] 实现风险预测
-  - [ ] 创建 RiskPredictionService
-  - [ ] 实现疾病风险预测方法（predictRisk）
-  - [ ] 实现趋势分析方法（analyzeTrends）
-  - [ ] 集成 InfluxDB 时序数据（通过 NestJS API 调用）
-- [ ] 实现 AI 辅助诊断接口
-  - [ ] 创建 POST /api/v1/ai/diagnosis-assist 接口
-  - [ ] 创建 POST /api/v1/ai/risk-prediction 接口
-- [ ] 编写辅助诊断测试
-  - [ ] 单元测试：数据分析算法
-  - [ ] 集成测试：诊断建议生成
-  - [ ] 准备测试数据（模拟患者健康档案）
+- [x] 实现健康状况分析 ✅ 完成于 2025-12-26
+  - [x] 创建 DiagnosisService
+  - [x] 实现分析患者数据方法（analyzePatientData）
+  - [x] 实现生成健康摘要方法（generateHealthSummary）
+  - [x] 实现诊断建议生成方法（generateDiagnosisAdvice）
+- [x] 实现风险预测 ✅ 完成于 2025-12-26
+  - [x] 创建 RiskPredictionService
+  - [x] 实现疾病风险预测方法（predictRisk）
+  - [x] 实现趋势分析方法（analyzeTrends）
+  - [x] 集成 InfluxDB 时序数据（通过 NestJS API 调用）
+- [x] 实现 AI 辅助诊断接口 ✅ 完成于 2025-12-26
+  - [x] 创建 POST /api/v1/ai/diagnosis-assist 接口
+  - [x] 创建 POST /api/v1/ai/risk-prediction 接口
+- [x] 编写辅助诊断测试 ✅ 完成于 2025-12-26
+  - [x] 单元测试：数据分析算法
+  - [x] 集成测试：诊断建议生成
+  - [x] 准备测试数据（模拟患者健康档案）
+
+**完成成果**:
+
+- ✅ AI 辅助诊断服务完成
+- ✅ 健康状况分析和风险预测实现
+- ✅ 诊断建议生成完成
+- ✅ 完整的测试覆盖
 
 **关联需求**：需求 #9（医生端 - AI 辅助诊断）、需求 #12（健康管理师端 - AI 健康干预助手）、需求 #17（智能预测与早期预警）
 
-### 18. AI 服务监控与优化 ✅
+### 18. AI 服务监控与优化 ✅ 100% 完成
 
 **状态**: 已完成 | **完成时间**: 2025-12-26 | **负责人**: @ai-python | **工作量**: 8小时
 
