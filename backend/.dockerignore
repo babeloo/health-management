@@ -1,0 +1,47 @@
+# 依赖
+node_modules
+npm-debug.log
+pnpm-debug.log
+yarn-error.log
+
+# 构建输出
+dist
+build
+coverage
+
+# 测试
+test
+*.spec.ts
+*.test.ts
+jest.config.js
+
+# 环境变量
+.env
+.env.local
+.env.*.local
+
+# Git
+.git
+.gitignore
+.github
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# 文档
+README.md
+CHANGELOG.md
+docs
+
+# CI/CD
+.gitlab-ci.yml
+.travis.yml
+
+# 其他
+.DS_Store
+Thumbs.db
+*.log

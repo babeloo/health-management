@@ -137,6 +137,163 @@ services:
     networks:
       - health-mgmt
 
+  # ================================
+  # 应用服务
+  # ================================
+
+  # NestJS 后端服务
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: backend
+    environment:
+      NODE_ENV: production
+      PORT: 5000
+      # 数据库配置
+      DATABASE_URL: postgresql://admin:${DB_PASSWORD:-admin123}@postgres:5432/health_mgmt
+      # Redis 配置
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-redis123}
+      # InfluxDB 配置
+      INFLUX_URL: http://influxdb:8086
+      INFLUX_TOKEN: ${INFLUX_TOKEN:-my-super-secret-auth-token}
+      INFLUX_ORG: vakyi
+      INFLUX_BUCKET: health_data
+      # MongoDB 配置
+      MONGO_URI: mongodb://admin:${MONGO_PASSWORD:-mongo123}@mongodb:27017/health_messages?authSource=admin
+      # MQTT 配置
+      MQTT_BROKER_URL: mqtt://emqx:1883
+      MQTT_USERNAME: ${MQTT_USERNAME:-admin}
+      MQTT_PASSWORD: ${MQTT_PASSWORD:-emqx123}
+      # MinIO 配置
+      MINIO_ENDPOINT: minio
+      MINIO_PORT: 9000
+      MINIO_ACCESS_KEY: ${MINIO_USER:-admin}
+      MINIO_SECRET_KEY: ${MINIO_PASSWORD:-minio123}
+      # AI 服务配置
+      AI_SERVICE_URL: http://ai-service:8001
+      # JWT 配置
+      JWT_SECRET: ${JWT_SECRET:-your-super-secret-jwt-key-change-in-production}
+      JWT_EXPIRES_IN: 24h
+    volumes:
+      - ./backend/logs:/app/logs
+    ports:
+      - '5000:5000'
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      influxdb:
+        condition: service_started
+      mongodb:
+        condition: service_started
+      qdrant:
+        condition: service_started
+      emqx:
+        condition: service_started
+      minio:
+        condition: service_healthy
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'node',
+          '-e',
+          "require('http').get('http://localhost:5000/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})",
+        ]
+      interval: 30s
+      timeout: 10s
+      start_period: 40s
+      retries: 3
+    networks:
+      - health-mgmt
+    restart: unless-stopped
+
+  # Python AI 服务
+  ai-service:
+    build:
+      context: ./ai-service
+      dockerfile: Dockerfile
+    container_name: ai-service
+    environment:
+      # 基础配置
+      ENVIRONMENT: production
+      LOG_LEVEL: INFO
+      # Qdrant 配置
+      QDRANT_HOST: qdrant
+      QDRANT_PORT: 6333
+      # DeepSeek API 配置
+      DEEPSEEK_API_KEY: ${DEEPSEEK_API_KEY}
+      DEEPSEEK_API_BASE: https://api.deepseek.com/v1
+      # 后端服务配置
+      BACKEND_URL: http://backend:5000
+      # JWT 配置（用于验证后端请求）
+      JWT_SECRET: ${JWT_SECRET:-your-super-secret-jwt-key-change-in-production}
+    volumes:
+      - ./ai-service/logs:/app/logs
+    ports:
+      - '8001:8001'
+    depends_on:
+      - qdrant
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'python',
+          '-c',
+          "import urllib.request; urllib.request.urlopen('http://localhost:8001/health').read()",
+        ]
+      interval: 30s
+      timeout: 10s
+      start_period: 40s
+      retries: 3
+    networks:
+      - health-mgmt
+    restart: unless-stopped
+
+  # React 医生/管理端
+  frontend-web:
+    build:
+      context: ./frontend-web
+      dockerfile: Dockerfile
+    container_name: frontend-web
+    ports:
+      - '3000:80'
+    depends_on:
+      - backend
+    healthcheck:
+      test: ['CMD', 'wget', '--quiet', '--tries=1', '--spider', 'http://localhost/health']
+      interval: 30s
+      timeout: 10s
+      start_period: 10s
+      retries: 3
+    networks:
+      - health-mgmt
+    restart: unless-stopped
+
+  # Uni-app 患者端（H5）
+  frontend-patient:
+    build:
+      context: ./frontend-patient
+      dockerfile: Dockerfile
+    container_name: frontend-patient
+    ports:
+      - '3001:80'
+    depends_on:
+      - backend
+    healthcheck:
+      test: ['CMD', 'wget', '--quiet', '--tries=1', '--spider', 'http://localhost/health']
+      interval: 30s
+      timeout: 10s
+      start_period: 10s
+      retries: 3
+    networks:
+      - health-mgmt
+    restart: unless-stopped
+
 volumes:
   postgres_data:
   redis_data:

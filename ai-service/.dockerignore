@@ -1,0 +1,58 @@
+# Python
+__pycache__
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# 测试
+.pytest_cache/
+.coverage
+htmlcov/
+*.cover
+.hypothesis/
+
+# 环境变量
+.env
+.env.local
+.env.*.local
+
+# Git
+.git
+.gitignore
+.github
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# 文档
+README.md
+CHANGELOG.md
+docs
+
+# 其他
+.DS_Store
+Thumbs.db
+*.log
