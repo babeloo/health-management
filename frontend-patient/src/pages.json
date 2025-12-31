@@ -23,6 +23,72 @@
       "style": {
         "navigationBarTitleText": "文章详情"
       }
+    },
+    {
+      "path": "pages/assessment/index",
+      "style": {
+        "navigationBarTitleText": "健康评估"
+      }
+    },
+    {
+      "path": "pages/assessment/diabetes",
+      "style": {
+        "navigationBarTitleText": "糖尿病风险评估"
+      }
+    },
+    {
+      "path": "pages/assessment/stroke",
+      "style": {
+        "navigationBarTitleText": "卒中风险评估"
+      }
+    },
+    {
+      "path": "pages/assessment/vascular-age",
+      "style": {
+        "navigationBarTitleText": "血管年龄评估"
+      }
+    },
+    {
+      "path": "pages/assessment/stroke-recognition",
+      "style": {
+        "navigationBarTitleText": "中风识别"
+      }
+    },
+    {
+      "path": "pages/assessment/compare",
+      "style": {
+        "navigationBarTitleText": "评估结果对比"
+      }
+    },
+    {
+      "path": "pages/points/index",
+      "style": {
+        "navigationBarTitleText": "我的积分"
+      }
+    },
+    {
+      "path": "pages/points/leaderboard",
+      "style": {
+        "navigationBarTitleText": "积分排行榜"
+      }
+    },
+    {
+      "path": "pages/points/mall",
+      "style": {
+        "navigationBarTitleText": "积分商城"
+      }
+    },
+    {
+      "path": "pages/messages/index",
+      "style": {
+        "navigationBarTitleText": "消息"
+      }
+    },
+    {
+      "path": "pages/messages/chat",
+      "style": {
+        "navigationBarTitleText": "聊天"
+      }
     }
   ],
   "globalStyle": {

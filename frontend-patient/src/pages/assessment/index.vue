@@ -16,7 +16,12 @@
 
     <!-- 历史记录 -->
     <view class="history-section">
-      <view class="section-title">评估记录</view>
+      <view class="section-header">
+        <view class="section-title">评估记录</view>
+        <view v-if="records.length > 0" class="compare-btn" @click="goToCompare">
+          结果对比 ({{ records.length }})
+        </view>
+      </view>
       <view v-if="loading" class="loading">加载中...</view>
       <view v-else-if="records.length === 0" class="empty">暂无评估记录</view>
       <view v-else class="record-list">
@@ -81,6 +86,10 @@ const loading = ref(false);
 
 const navigateTo = (path: string) => {
   uni.navigateTo({ url: path });
+};
+
+const goToCompare = () => {
+  uni.navigateTo({ url: '/pages/assessment/compare' });
 };
 
 const loadHistory = async () => {
@@ -178,11 +187,25 @@ onMounted(() => {
   padding: 32rpx;
 }
 
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24rpx;
+}
+
 .section-title {
   font-size: 32rpx;
   font-weight: 600;
   color: #333;
-  margin-bottom: 24rpx;
+}
+
+.compare-btn {
+  font-size: 26rpx;
+  color: #1890ff;
+  padding: 8rpx 20rpx;
+  border: 1rpx solid #1890ff;
+  border-radius: 20rpx;
 }
 
 .loading,
