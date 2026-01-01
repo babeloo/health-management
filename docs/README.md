@@ -6,23 +6,50 @@
 
 ```
 docs/
-├── README.md                           # 本文件：文档目录说明
-├── development/                        # 开发指南和技术文档
-│   └── WINDOWS.md                     # Windows 开发环境配置
-│   └── PRISMA_7_UPGRADE.md            # Prisma 7 升级指南
-├── reports/                            # 项目报告
-│   ├── architecture/                  # 架构审查报告
-│   ├── parallel/                      # 并行开发报告
-│   ├── project-summaries/             # 项目总结报告
-│   ├── stage-summaries/               # 阶段总结报告
-│   ├── tasks/                         # 任务完成报告
-│   │   ├── backend/                   # 后端任务报告
-│   │   ├── frontend-patient/          # 患者端任务报告
-│   │   └── frontend-web/              # 管理端任务报告
-│   ├── weekly/                        # 周报
-│   └── GIT-WORKTREE-STATUS-REPORT.md
-├── guides/                             # 使用指南（未来）
-└── api/                                # API 文档（未来）
+├── README.md                           # 本文件：文档导航
+├── NAMING-CONVENTIONS.md               # 文档命名规范
+├── guides/                             # 📖 操作指南
+│   ├── quick-start.md                  # 快速入门
+│   ├── worktree-guide.md               # Git Worktree 使用指南
+│   ├── docker-deployment.md            # Docker 部署指南
+│   └── windows-development.md          # Windows 开发环境配置
+├── reference/                          # 📚 参考文档
+│   ├── architecture/                   # 架构设计
+│   │   ├── review-report.md            # 架构审查报告
+│   │   ├── review-request.md           # 架构审查请求
+│   │   └── review-summary.md           # 架构审查总结
+│   └── api/                            # API 文档（预留）
+├── reports/                            # 📊 项目报告
+│   ├── completion/                     # 完成报告
+│   │   ├── stage1-summary.md           # 第一阶段总结
+│   │   ├── admin-frontend.md           # 管理端完成报告
+│   │   ├── ai-service.md               # AI 服务完成报告
+│   │   ├── patient-frontend.md         # 患者端完成报告
+│   │   ├── encryption-implementation.md # 加密实现报告
+│   │   ├── jwt-auth-implementation.md  # JWT 认证实现报告
+│   │   └── tasks/                      # 任务完成报告
+│   │       ├── backend/                # 后端任务（4个）
+│   │       ├── frontend-patient/       # 患者端任务（6个）
+│   │       ├── frontend-web/           # 管理端任务（1个）
+│   │       └── infrastructure/         # 基础设施任务（1个）
+│   ├── progress/                       # 进度报告
+│   │   ├── 2025-12-30.md               # 2025-12-30 进度
+│   │   ├── 2025-12-31.md               # 2025-12-31 进度
+│   │   ├── project-completion-summary.md    # 项目完成总结
+│   │   └── project-management-summary.md    # 项目管理总结
+│   ├── parallel/                       # 并行开发报告
+│   │   ├── kickoff.md                  # 并行开发启动
+│   │   ├── tasks-analysis.md           # 任务分析
+│   │   ├── execution-plan.md           # 执行计划
+│   │   ├── worktree-consolidation.md   # Worktree 整合报告
+│   │   └── worktree-consolidation-review.md # Worktree 整合审查
+│   └── worktree-management/            # Git Worktree 管理
+│       ├── cleanup-strategy.md         # 清理策略
+│       ├── status-report.md            # 状态报告
+│       └── cleanup-report-2026-01-01.md # 2026-01-01 清理报告
+├── development/                        # 🛠️ 开发文档
+│   └── prisma-7-upgrade.md             # Prisma 7 升级指南
+└── deployment/                         # 🚀 部署文档（已移至 guides/）
 ```
 
 ## 📝 文档分类说明
@@ -31,34 +58,56 @@ docs/
 
 这些文档是项目的核心规约，**只应包含三个文件**：
 
-- `design.md` - 系统设计文档（技术架构、数据库设计、API 规范）
 - `requirements.md` - 需求文档（19个功能需求及验收标准）
+- `design.md` - 系统设计文档（技术架构、数据库设计、API 规范）
 - `tasks.md` - 任务清单（MVP阶段 8 个开发阶段、46 个任务组）
 
-### 项目报告（存放于 `docs/reports/`）
+### 操作指南（`guides/`）
 
-由 PM Agent 生成的项目进度报告：
+面向开发者的操作指南和教程：
 
-- **架构审查报告**（`architecture/`）：架构设计审查和评估
-- **并行开发报告**（`parallel/`）：并行开发过程的规划和总结
-- **项目总结报告**（`project-summaries/`）：项目整体进度和管理总结
-- **阶段总结报告**（`stage-summaries/`）：每个开发阶段完成后生成
-- **任务完成报告**（`tasks/`）：按模块分类的任务完成报告
-- **周报**（`weekly/`）：每周五自动生成
+- **快速入门**：项目快速上手指南
+- **Worktree 指南**：Git Worktree 并行开发工作流
+- **Docker 部署**：容器化部署配置和流程
+- **Windows 开发**：Windows 环境开发注意事项
 
-### 开发指南（存放于 `docs/development/`）
+### 参考文档（`reference/`）
 
-开发环境配置和技术指南。
+技术参考和架构设计文档：
 
-### 技术文档（存放于 `docs/` 根目录）
+- **架构设计**：系统架构审查、评估和设计决策
+- **API 文档**：API 接口规范（预留，未来使用 Swagger/OpenAPI）
 
-- `PRISMA_7_UPGRADE.md` - Prisma 7 升级指南
+### 项目报告（`reports/`）
+
+由 PM Agent 和技术 Agents 生成的项目报告：
+
+- **完成报告**（`completion/`）：功能模块、阶段、任务的完成报告
+- **进度报告**（`progress/`）：项目整体进度和管理总结
+- **并行开发**（`parallel/`）：并行开发过程的规划和总结
+- **Worktree 管理**（`worktree-management/`）：Git Worktree 管理和清理报告
+
+### 开发文档（`development/`）
+
+开发环境配置和技术升级指南：
+
+- **Prisma 7 升级**：Prisma ORM 升级指南和注意事项
+
+## 📐 文档命名规范
+
+本项目采用统一的文档命名规范，详见 **[NAMING-CONVENTIONS.md](./NAMING-CONVENTIONS.md)**。
+
+**核心规则**：
+
+- 根目录重要文件使用大写（`README.md`, `CHANGELOG.md`）
+- 所有其他文档使用小写 kebab-case（`quick-start.md`, `docker-deployment.md`）
+- 日期格式使用 ISO 8601（`2025-12-30.md`）
 
 ## 🔄 文档更新规则
 
 ### 由 PM Agent 自动维护
 
-- ✅ 周报（每周五自动生成）
+- ✅ 进度报告（任务完成后生成）
 - ✅ 阶段总结报告（阶段完成后生成）
 - ✅ 任务完成报告（任务完成后生成）
 - ✅ CHANGELOG.md（任务完成后立即更新）
@@ -68,6 +117,7 @@ docs/
 - ✅ README.md（新增模块/依赖时更新）
 - ✅ Swagger/OpenAPI 文档（自动生成 + 手动注解）
 - ✅ design.md 架构演进记录（重大变更时更新）
+- ✅ 操作指南（guides/）：按需更新
 
 ## 📌 注意事项
 
@@ -75,10 +125,10 @@ docs/
    - 该目录只保留三个核心规约文档
    - 所有其他文档都应放到 `docs/` 目录下
 
-2. **报告命名规范**
-   - 阶段报告：`stage{N}-summary-report.md`
-   - 周报：`YYYY-Wnn.md`
-   - 任务报告：`TASK-{N}-COMPLETION-REPORT.md`
+2. **遵循命名规范**
+   - 新建文档前请阅读 [NAMING-CONVENTIONS.md](./NAMING-CONVENTIONS.md)
+   - 使用小写 kebab-case 命名（除根目录重要文件）
+   - 使用 `git mv` 重命名文件以保留历史
 
 3. **文档版本控制**
    - 所有文档都纳入 Git 版本控制
@@ -87,9 +137,10 @@ docs/
 4. **文档存放位置**
    - 模块内的 README.md 保留在各模块目录下
    - 所有报告和总结文档统一存放在 `docs/reports/` 下
-   - 技术实现文档可保留在模块的 `docs/` 子目录下
+   - 操作指南存放在 `docs/guides/` 下
+   - 技术参考存放在 `docs/reference/` 下
 
 ---
 
-**文档管理负责人**：PM Agent  
-**最后更新时间**：2025-12-31
+**文档管理负责人**：PM Agent
+**最后更新时间**：2026-01-01
