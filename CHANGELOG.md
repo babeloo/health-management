@@ -8,6 +8,24 @@
 
 ## [Unreleased]
 
+### In Progress
+
+- **任务24：患者端AI健康科普后端集成** - 2026-01-01 @ai-python + @mobile
+  - 状态：🚧 进行中（Worktree: feature/task24-ai-integration）
+  - 验证AI服务API可用性（POST /api/v1/ai/chat, GET /api/v1/ai/conversations/:userId, POST /api/v1/ai/health-advice）
+  - 前后端联调测试（更新前端API URL，测试对话流程）
+  - E2E测试验收
+  - 预计完成时间：0.5天
+  - 关联需求：#5（患者端 - AI健康科普）、#6（患者端 - AI Agent主动健康管理）
+
+- **任务38：Docker容器化** - 2026-01-01 @data-infra
+  - 状态：🚧 进行中（Worktree: feature/task38-docker）
+  - 编写4个Dockerfile（backend、ai-service、frontend-patient、frontend-web）
+  - 编写生产环境docker-compose.prod.yml（11个服务）
+  - 本地测试容器化部署
+  - 预计完成时间：2天
+  - 关联需求：无（部署任务）
+
 ### Changed
 
 - **重构项目文档目录结构** - 2025-12-31 @pm

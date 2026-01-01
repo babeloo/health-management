@@ -1466,38 +1466,43 @@
 
 **相关文档**: `docs/reports/tasks/frontend-patient/TASK-23.5-COMPLETION-REPORT.md`
 
-### 24. 患者端 AI 健康科普 ✅ 100% 完成
+### 24. 患者端 AI 健康科普后端集成 🚧 进行中
 
-- [x] 实现 AI 问答页面 ✅ 完成于 2025-12-30
-  - [x] 创建问答页面（pages/ai-chat/index.vue）
-  - [x] 实现聊天界面（消息列表、输入框）
-  - [x] 集成 AI 聊天 API
-  - [x] 显示 AI 回答（支持 Markdown 渲染）
-  - [x] 实现对话历史加载
-- [x] 实现科普内容页面 ✅ 完成于 2025-12-30
-  - [x] 创建科普首页（pages/education/index.vue）
-  - [x] 显示推荐科普文章（基于疾病类型）
-  - [x] 实现文章列表（标题、摘要、封面）
-  - [x] 创建文章详情页（pages/education/detail.vue）
-  - [x] 实现文章收藏和分享
-- [x] 实现 AI Agent 主动管理 ✅ 完成于 2025-12-30
-  - [x] 创建 AI 助手页面（pages/ai-agent/index.vue）
-  - [x] 实现自然语言打卡（"我今天血压 120/80"）
-  - [x] 实现症状咨询（"我头晕怎么办"）
-  - [x] 显示 AI 主动提醒（连续未打卡提醒）
-- [ ] 编写 AI 模块测试
-  - [ ] E2E 测试：AI 问答对话
-  - [ ] E2E 测试：通过 AI Agent 完成打卡
+**状态**: 🚧 进行中 | **开始时间**: 2026-01-01 | **负责人**: @ai-python + @mobile | **工作量**: 0.5天
+**Worktree**: `feature/task24-ai-integration` | **优先级**: P0
 
-**负责人**: @mobile
-**状态**: ✅ 前端已完成（2025-12-30），等待后端 API 集成
-**工作量**: 2天
+- [-] 验证 AI 服务 API 可用性 🚧 进行中
+  - [ ] 测试 POST /api/v1/ai/chat 接口
+  - [ ] 测试 GET /api/v1/ai/conversations/:userId 接口
+  - [ ] 测试 POST /api/v1/ai/health-advice 接口
+  - [ ] 验证 JWT 认证正常工作
+  - [ ] 确认响应格式符合前端预期
+- [ ] 前后端联调测试
+  - [ ] 更新前端 API URL 配置
+  - [ ] 测试 AI 聊天对话流程
+  - [ ] 测试对话历史加载
+  - [ ] 测试健康建议接口
+  - [ ] 验证错误处理机制
+- [ ] E2E 测试验收
+  - [ ] 完整对话流程测试
+  - [ ] 科普内容推荐测试
+  - [ ] AI Agent 自然语言打卡测试
+  - [ ] 错误场景处理测试
+  - [ ] 性能指标验证（响应时间<2秒）
 
-**完成说明**:
+**前置条件**:
 
-- ✅ 前端页面和交互已完全实现
-- ⏸️ 后端 AI 服务 API 尚未完成，前端使用 Mock 数据
-- ⏸️ 待后端 API 完成后进行联调测试
+- ✅ AI 服务已完成（任务13-18）
+- ✅ 患者端前端页面已完成（2025-12-30）
+- ✅ AI 服务 JWT 认证已实现（2025-12-31）
+
+**验收标准**:
+
+- [ ] AI 聊天接口正常工作
+- [ ] 对话历史正确加载
+- [ ] 健康建议接口正常工作
+- [ ] E2E 测试全部通过
+- [ ] 代码通过 ESLint 和 TypeScript 检查
 
 **关联需求**：需求 #5（患者端 - AI 健康科普）、需求 #6（患者端 - AI Agent 主动健康管理）
 
@@ -1939,22 +1944,46 @@
 
 ## 第七阶段：部署与监控（Week 10-12）
 
-### 38. Docker 容器化
+### 38. Docker 容器化 🚧 进行中
 
-- [ ] 编写 Dockerfile
-  - [ ] 创建 backend/Dockerfile（多阶段构建）
-  - [ ] 创建 ai-service/Dockerfile
-  - [ ] 创建 frontend-patient/Dockerfile（Nginx）
-  - [ ] 创建 frontend-web/Dockerfile（Nginx）
-- [ ] 编写 Docker Compose
-  - [ ] 编写完整的 docker-compose.yml（参考 design.md 9.1）
-  - [ ] 配置服务依赖关系
-  - [ ] 配置健康检查
-  - [ ] 配置数据卷持久化
+**状态**: 🚧 进行中 | **开始时间**: 2026-01-01 | **负责人**: @data-infra | **工作量**: 2天
+**Worktree**: `feature/task38-docker` | **优先级**: P1
+
+- [-] 编写 Dockerfile 🚧 进行中
+  - [ ] 创建 backend/Dockerfile（多阶段构建：builder + runner）
+  - [ ] 创建 ai-service/Dockerfile（Python 3.11 + uv）
+  - [ ] 创建 frontend-patient/Dockerfile（Nginx + 静态文件）
+  - [ ] 创建 frontend-web/Dockerfile（Nginx + 静态文件）
+  - [ ] 测试所有镜像构建成功
+- [ ] 编写生产环境 Docker Compose
+  - [ ] 编写 docker-compose.prod.yml（11个服务）
+  - [ ] 配置服务依赖关系（depends_on + healthcheck）
+  - [ ] 配置网络（chronic-network bridge）
+  - [ ] 配置数据卷持久化（6个数据卷）
+  - [ ] 配置环境变量和 secrets
 - [ ] 测试容器化部署
-  - [ ] 本地运行 docker-compose up
-  - [ ] 验证所有服务启动成功
-  - [ ] 验证服务间通信
+  - [ ] 本地运行 docker-compose -f docker-compose.prod.yml up
+  - [ ] 验证所有服务启动成功（11个容器）
+  - [ ] 验证服务间通信（Backend -> PostgreSQL/Redis/InfluxDB）
+  - [ ] 验证健康检查通过
+  - [ ] 验证数据持久化（重启后数据不丢失）
+  - [ ] 性能测试（并发请求、响应时间、资源占用）
+
+**前置条件**:
+
+- ✅ 所有后端服务已完成（任务4-12）
+- ✅ AI 服务已完成（任务13-18）
+- ✅ 前端应用已完成（任务19-27、28-35）
+
+**验收标准**:
+
+- [ ] 4个 Dockerfile 创建完成
+- [ ] docker-compose.prod.yml 配置完整
+- [ ] 所有容器启动成功
+- [ ] 服务间通信正常
+- [ ] 健康检查通过
+- [ ] 数据持久化验证通过
+- [ ] 创建部署文档 `docs/deployment/DOCKER.md`
 
 **关联需求**：无（部署任务）
 
