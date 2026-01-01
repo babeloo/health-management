@@ -1,0 +1,487 @@
+version: '3.8'
+
+# ================================
+# 生产环境 Docker Compose 配置
+# ================================
+
+services:
+  # ================================
+  # 基础设施服务（7个）
+  # ================================
+
+  # PostgreSQL 主数据库
+  postgres:
+    image: postgres:15-alpine
+    container_name: health-postgres
+    restart: always
+    environment:
+      POSTGRES_DB: health_mgmt
+      POSTGRES_USER: ${DB_USER:-admin}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD is required}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./scripts/init-db.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    ports:
+      - '${POSTGRES_PORT:-5432}:5432'
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ${DB_USER:-admin} -d health_mgmt']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - health-mgmt-backend
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 2G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+
+  # Redis 缓存
+  redis:
+    image: redis:7-alpine
+    container_name: health-redis
+    restart: always
+    command: redis-server --requirepass ${REDIS_PASSWORD:?REDIS_PASSWORD is required} --maxmemory 512mb --maxmemory-policy allkeys-lru
+    volumes:
+      - redis_data:/data
+    ports:
+      - '${REDIS_PORT:-6379}:6379'
+    healthcheck:
+      test: ['CMD', 'redis-cli', '-a', '${REDIS_PASSWORD}', '--no-auth-warning', 'ping']
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 5s
+    networks:
+      - health-mgmt-backend
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 128M
+
+  # InfluxDB 时序数据库
+  influxdb:
+    image: influxdb:2.7-alpine
+    container_name: health-influxdb
+    restart: always
+    environment:
+      DOCKER_INFLUXDB_INIT_MODE: setup
+      DOCKER_INFLUXDB_INIT_USERNAME: ${INFLUX_USER:-admin}
+      DOCKER_INFLUXDB_INIT_PASSWORD: ${INFLUX_PASSWORD:?INFLUX_PASSWORD is required}
+      DOCKER_INFLUXDB_INIT_ORG: ${INFLUX_ORG:-vakyi}
+      DOCKER_INFLUXDB_INIT_BUCKET: ${INFLUX_BUCKET:-health_data}
+      DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: ${INFLUX_TOKEN:?INFLUX_TOKEN is required}
+    volumes:
+      - influxdb_data:/var/lib/influxdb2
+      - influxdb_config:/etc/influxdb2
+    ports:
+      - '${INFLUX_PORT:-8086}:8086'
+    healthcheck:
+      test: ['CMD', 'influx', 'ping']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    networks:
+      - health-mgmt-backend
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 2G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+
+  # Qdrant 向量数据库
+  qdrant:
+    image: qdrant/qdrant:v1.7.4
+    container_name: health-qdrant
+    restart: always
+    volumes:
+      - qdrant_data:/qdrant/storage
+    ports:
+      - '${QDRANT_PORT:-6333}:6333'
+      - '${QDRANT_GRPC_PORT:-6334}:6334'
+    healthcheck:
+      test: ['CMD', 'wget', '--quiet', '--tries=1', '--spider', 'http://localhost:6333/health']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+    networks:
+      - health-mgmt-backend
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 2G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+
+  # MongoDB 消息存储
+  mongodb:
+    image: mongo:6
+    container_name: health-mongodb
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USER:-admin}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD:?MONGO_PASSWORD is required}
+      MONGO_INITDB_DATABASE: health_messages
+    volumes:
+      - mongo_data:/data/db
+      - mongo_config:/data/configdb
+    ports:
+      - '${MONGO_PORT:-27017}:27017'
+    healthcheck:
+      test: ['CMD', 'mongosh', '--eval', "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - health-mgmt-backend
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 2G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+
+  # EMQX MQTT Broker
+  emqx:
+    image: emqx/emqx:5.4.1
+    container_name: health-emqx
+    restart: always
+    environment:
+      EMQX_NAME: emqx
+      EMQX_HOST: ${EMQX_HOST:-emqx}
+      EMQX_DASHBOARD__DEFAULT_USERNAME: ${EMQX_USER:-admin}
+      EMQX_DASHBOARD__DEFAULT_PASSWORD: ${EMQX_PASSWORD:?EMQX_PASSWORD is required}
+      EMQX_LOADED_PLUGINS: "emqx_dashboard,emqx_management,emqx_auth_mnesia"
+    volumes:
+      - emqx_data:/opt/emqx/data
+      - emqx_log:/opt/emqx/log
+      - ./emqx/emqx.conf:/opt/emqx/etc/emqx.conf:ro
+    ports:
+      - '${EMQX_MQTT_PORT:-1883}:1883'
+      - '${EMQX_MQTTS_PORT:-8883}:8883'
+      - '${EMQX_WS_PORT:-8083}:8083'
+      - '${EMQX_DASHBOARD_PORT:-18083}:18083'
+    healthcheck:
+      test: ['CMD', 'emqx', 'ping']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    networks:
+      - health-mgmt-backend
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 1G
+        reservations:
+          cpus: '0.5'
+          memory: 256M
+
+  # MinIO 对象存储
+  minio:
+    image: minio/minio:RELEASE-2024-01-01T16-36-33Z
+    container_name: health-minio
+    restart: always
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_USER:?MINIO_USER is required}
+      MINIO_ROOT_PASSWORD: ${MINIO_PASSWORD:?MINIO_PASSWORD is required}
+    volumes:
+      - minio_data:/data
+    ports:
+      - '${MINIO_API_PORT:-9000}:9000'
+      - '${MINIO_CONSOLE_PORT:-9001}:9001'
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:9000/minio/health/live']
+      interval: 30s
+      timeout: 20s
+      retries: 3
+      start_period: 20s
+    networks:
+      - health-mgmt-backend
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 2G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+
+  # ================================
+  # 应用服务（4个）
+  # ================================
+
+  # NestJS 后端服务
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      target: production
+    image: health-mgmt/backend:${VERSION:-latest}
+    container_name: health-backend
+    restart: always
+    environment:
+      NODE_ENV: production
+      PORT: 5000
+      # 数据库配置
+      DATABASE_URL: postgresql://${DB_USER:-admin}:${DB_PASSWORD}@postgres:5432/health_mgmt
+      # Redis 配置
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+      # InfluxDB 配置
+      INFLUX_URL: http://influxdb:8086
+      INFLUX_TOKEN: ${INFLUX_TOKEN}
+      INFLUX_ORG: ${INFLUX_ORG:-vakyi}
+      INFLUX_BUCKET: ${INFLUX_BUCKET:-health_data}
+      # MongoDB 配置
+      MONGO_URI: mongodb://${MONGO_USER:-admin}:${MONGO_PASSWORD}@mongodb:27017/health_messages?authSource=admin
+      # MQTT 配置
+      MQTT_BROKER_URL: mqtt://emqx:1883
+      MQTT_USERNAME: ${MQTT_USERNAME:-admin}
+      MQTT_PASSWORD: ${MQTT_PASSWORD}
+      # MinIO 配置
+      MINIO_ENDPOINT: minio
+      MINIO_PORT: 9000
+      MINIO_ACCESS_KEY: ${MINIO_USER}
+      MINIO_SECRET_KEY: ${MINIO_PASSWORD}
+      MINIO_USE_SSL: false
+      # AI 服务配置
+      AI_SERVICE_URL: http://ai-service:8001
+      # JWT 配置
+      JWT_SECRET: ${JWT_SECRET:?JWT_SECRET is required}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-24h}
+      # 加密配置
+      ENCRYPTION_KEY: ${ENCRYPTION_KEY:?ENCRYPTION_KEY is required}
+    volumes:
+      - backend_logs:/app/logs
+    ports:
+      - '${BACKEND_PORT:-5000}:5000'
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      influxdb:
+        condition: service_healthy
+      mongodb:
+        condition: service_healthy
+      qdrant:
+        condition: service_healthy
+      emqx:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'node',
+          '-e',
+          "require('http').get('http://localhost:5000/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})",
+        ]
+      interval: 30s
+      timeout: 10s
+      start_period: 60s
+      retries: 3
+    networks:
+      - health-mgmt-backend
+      - health-mgmt-frontend
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 2G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+
+  # Python AI 服务
+  ai-service:
+    build:
+      context: ./ai-service
+      dockerfile: Dockerfile
+      target: production
+    image: health-mgmt/ai-service:${VERSION:-latest}
+    container_name: health-ai-service
+    restart: always
+    environment:
+      # 基础配置
+      ENVIRONMENT: production
+      LOG_LEVEL: ${AI_LOG_LEVEL:-INFO}
+      # Qdrant 配置
+      QDRANT_HOST: qdrant
+      QDRANT_PORT: 6333
+      # DeepSeek API 配置
+      DEEPSEEK_API_KEY: ${DEEPSEEK_API_KEY:?DEEPSEEK_API_KEY is required}
+      DEEPSEEK_API_BASE: ${DEEPSEEK_API_BASE:-https://api.deepseek.com/v1}
+      DEEPSEEK_MODEL: ${DEEPSEEK_MODEL:-deepseek-chat}
+      # 后端服务配置
+      BACKEND_URL: http://backend:5000
+      # JWT 配置
+      JWT_SECRET: ${JWT_SECRET}
+      # 缓存配置
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+    volumes:
+      - ai_logs:/app/logs
+    ports:
+      - '${AI_SERVICE_PORT:-8001}:8001'
+    depends_on:
+      qdrant:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'python',
+          '-c',
+          "import urllib.request; urllib.request.urlopen('http://localhost:8001/health').read()",
+        ]
+      interval: 30s
+      timeout: 10s
+      start_period: 60s
+      retries: 3
+    networks:
+      - health-mgmt-backend
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 4G
+        reservations:
+          cpus: '1'
+          memory: 1G
+
+  # React 医生/管理端
+  frontend-web:
+    build:
+      context: ./frontend-web
+      dockerfile: Dockerfile
+      target: production
+      args:
+        VITE_API_BASE_URL: ${VITE_API_BASE_URL:-http://localhost:5000}
+    image: health-mgmt/frontend-web:${VERSION:-latest}
+    container_name: health-frontend-web
+    restart: always
+    ports:
+      - '${FRONTEND_WEB_PORT:-3000}:80'
+    depends_on:
+      backend:
+        condition: service_healthy
+    healthcheck:
+      test: ['CMD', 'wget', '--quiet', '--tries=1', '--spider', 'http://localhost/health']
+      interval: 30s
+      timeout: 10s
+      start_period: 10s
+      retries: 3
+    networks:
+      - health-mgmt-frontend
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+        reservations:
+          cpus: '0.1'
+          memory: 64M
+
+  # Uni-app 患者端（H5）
+  frontend-patient:
+    build:
+      context: ./frontend-patient
+      dockerfile: Dockerfile
+      target: production
+      args:
+        VITE_API_BASE_URL: ${VITE_API_BASE_URL:-http://localhost:5000}
+    image: health-mgmt/frontend-patient:${VERSION:-latest}
+    container_name: health-frontend-patient
+    restart: always
+    ports:
+      - '${FRONTEND_PATIENT_PORT:-3001}:80'
+    depends_on:
+      backend:
+        condition: service_healthy
+    healthcheck:
+      test: ['CMD', 'wget', '--quiet', '--tries=1', '--spider', 'http://localhost/health']
+      interval: 30s
+      timeout: 10s
+      start_period: 10s
+      retries: 3
+    networks:
+      - health-mgmt-frontend
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+        reservations:
+          cpus: '0.1'
+          memory: 64M
+
+# ================================
+# 数据卷（持久化存储）
+# ================================
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+  influxdb_data:
+    driver: local
+  influxdb_config:
+    driver: local
+  qdrant_data:
+    driver: local
+  mongo_data:
+    driver: local
+  mongo_config:
+    driver: local
+  emqx_data:
+    driver: local
+  emqx_log:
+    driver: local
+  minio_data:
+    driver: local
+  backend_logs:
+    driver: local
+  ai_logs:
+    driver: local
+
+# ================================
+# 网络（服务隔离）
+# ================================
+networks:
+  health-mgmt-backend:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
+  health-mgmt-frontend:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.21.0.0/16

@@ -1,13 +1,12 @@
 # ================================
-# Stage 1: 构建阶段
+# Stage 1: 依赖安装阶段
 # ================================
-FROM node:18-alpine AS builder
+FROM node:18-alpine AS deps
 
-# 设置工作目录
 WORKDIR /app
 
-# 安装 pnpm
-RUN npm install -g pnpm
+# 安装 pnpm（使用 corepack）
+RUN corepack enable && corepack prepare pnpm@latest --activate
 
 # 复制依赖文件
 COPY package.json pnpm-lock.yaml ./
@@ -15,14 +14,25 @@ COPY package.json pnpm-lock.yaml ./
 # 安装依赖
 RUN pnpm install --frozen-lockfile
 
+# ================================
+# Stage 2: 构建阶段
+# ================================
+FROM node:18-alpine AS builder
+
+WORKDIR /app
+
+# 从 deps 阶段复制 node_modules
+COPY --from=deps /app/node_modules ./node_modules
+COPY --from=deps /app/package.json ./package.json
+
 # 复制源代码
 COPY . .
 
 # 构建 H5 版本
-RUN pnpm build:h5
+RUN npm run build:h5
 
 # ================================
-# Stage 2: 生产阶段（Nginx）
+# Stage 3: 生产阶段（Nginx）
 # ================================
 FROM nginx:alpine AS production
 
@@ -32,11 +42,13 @@ COPY nginx.conf /etc/nginx/conf.d/default.conf
 # 从构建阶段复制构建产物
 COPY --from=builder /app/dist/build/h5 /usr/share/nginx/html
 
-# 创建非 root 用户（Nginx 默认使用 nginx 用户）
+# 创建健康检查端点
+RUN echo '<!DOCTYPE html><html><body>OK</body></html>' > /usr/share/nginx/html/health
+
+# 设置权限
 RUN chown -R nginx:nginx /usr/share/nginx/html && \
     chmod -R 755 /usr/share/nginx/html
 
-# 暴露端口
 EXPOSE 80
 
 # 健康检查
