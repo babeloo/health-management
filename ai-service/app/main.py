@@ -8,6 +8,8 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import HTTPBearer
 from app.routers import ai_router, education_router
+from app.middleware.metrics_middleware import MetricsMiddleware
+from app.api.v1 import metrics
 
 app = FastAPI(
     title="智慧慢病管理系统 - AI 服务",
@@ -27,9 +29,13 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# 监控中间件
+app.add_middleware(MetricsMiddleware)
+
 # 注册路由
 app.include_router(ai_router)
 app.include_router(education_router)
+app.include_router(metrics.router)
 
 
 @app.get("/")

@@ -1076,28 +1076,32 @@
 
 ### 18. AI 服务监控与优化 ✅ 100% 完成
 
-**状态**: 已完成 | **完成时间**: 2025-12-26 | **负责人**: @ai-python | **工作量**: 8小时
+**状态**: 已完成 | **完成时间**: 2026-01-01 | **负责人**: @ai-python | **工作量**: 8小时
 
-- [x] 实现性能监控
-  - [x] 安装 prometheus-client
-  - [x] 创建 /metrics 端点
-  - [x] 记录 API 响应时间、错误率
-  - [x] 记录 DeepSeek API Token 使用量
-  - [x] 创建 MetricsMiddleware 中间件
-  - [x] 实现向量检索、RAG 检索等指标记录
-- [x] 实现缓存优化
-  - [x] 集成 Redis 缓存
-  - [x] 缓存常见问题的 AI 回答（1 小时过期）
-  - [x] 缓存向量检索结果（30 分钟过期）
-  - [x] 缓存健康建议模板（24 小时过期）
-  - [x] 实现缓存装饰器 (@cache_result)
-  - [x] 实现 CacheManager 统一管理
-- [x] 编写性能测试
-  - [x] 负载测试：100 并发 AI 对话（Locust）
-  - [x] 性能测试：RAG 检索响应时间 < 500ms
-  - [x] 压力测试：DeepSeek API 限流处理
-  - [x] 单元测试：监控和缓存功能验证
-  - [x] 集成测试：性能指标验收标准
+- [x] 实现性能监控 ✅ 完成于 2026-01-01
+  - [x] 安装 prometheus-client ✅
+  - [x] 创建 /metrics 端点 ✅
+  - [x] 记录 API 响应时间、错误率 ✅
+  - [x] 记录 DeepSeek API Token 使用量 ✅
+  - [x] 创建 MetricsMiddleware 中间件 ✅
+  - [x] 实现向量检索、RAG 检索等指标记录 ✅
+- [x] 实现缓存优化 ✅ 完成于 2026-01-01
+  - [x] 集成 Redis 缓存 ✅
+  - [x] 缓存常见问题的 AI 回答（1 小时过期）✅
+  - [x] 缓存向量检索结果（30 分钟过期）✅
+  - [x] 缓存健康建议模板（24 小时过期）✅
+  - [x] 实现缓存装饰器 (@cache_result) ✅
+  - [x] 实现 CacheManager 统一管理 ✅
+- [x] 医疗知识库数据导入 ✅ 完成于 2026-01-01
+  - [x] 导入 50+ 条结构化医疗知识（慢性病管理、用药指导、生活方式）✅
+- [x] 结构化日志系统 ✅ 完成于 2026-01-01
+  - [x] 创建统一的日志配置（logger.py）✅
+- [x] 编写性能测试 ✅ 完成于 2025-12-26
+  - [x] 负载测试：100 并发 AI 对话（Locust）✅
+  - [x] 性能测试：RAG 检索响应时间 < 500ms ✅
+  - [x] 压力测试：DeepSeek API 限流处理 ✅
+  - [x] 单元测试：监控和缓存功能验证 ✅
+  - [x] 集成测试：性能指标验收标准 ✅
 
 **关键代码文件**：
 
@@ -1141,6 +1145,17 @@
 - 错误率 < 1%
 - 向量检索 < 500ms
 - 测试覆盖率 > 80%
+
+**本次合并内容**（2026-01-01）：
+
+- ✅ 从 feature/stage3-ai-service 分支选择性合并以下功能到 master：
+  - Prometheus 监控系统（metrics_service.py + metrics_middleware.py）
+  - Redis 缓存优化（cache_service.py）
+  - 医疗知识库数据（50+ 条结构化医疗知识）
+  - 结构化日志系统（logger.py）
+- ✅ 更新 ai-service/app/main.py（集成监控中间件和路由）
+- ✅ 更新 ai-service/requirements.txt（添加 prometheus-client 和 redis 依赖）
+- ✅ 保留 JWT 认证中间件（确保安全性）
 
 **关联需求**：需求 #1（外部 AI API 集成）
 

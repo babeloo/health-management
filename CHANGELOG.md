@@ -22,6 +22,24 @@
 
 ### Added
 
+- **AI 服务监控、缓存和知识库功能** - 2026-01-01 @ai-python
+  - 添加 Prometheus 监控系统（metrics_service + metrics_middleware）
+  - 实现 Redis 缓存优化（cache_service，支持装饰器模式）
+  - 导入 50+ 条医疗知识库数据（高血压、糖尿病、心脏病等）
+  - 集成结构化日志系统（logger.py）
+  - 更新 main.py 集成监控中间件和路由
+  - 添加依赖：prometheus-client==0.21.0、redis==5.1.1
+  - 保留 JWT 认证中间件（确保安全性）
+  - 新增文件：
+    - `ai-service/app/services/metrics_service.py`
+    - `ai-service/app/middleware/metrics_middleware.py`
+    - `ai-service/app/api/v1/metrics.py`
+    - `ai-service/app/services/cache_service.py`
+    - `ai-service/app/data/knowledge_base.py`
+    - `ai-service/app/core/logger.py`
+    - `ai-service/MONITORING_GUIDE.md`
+  - 关联任务：任务 #18（AI 服务监控与优化）
+
 - **敏感数据加密功能（P0-1 安全漏洞修复）** - 2025-12-31 @backend-ts
   - 创建 EncryptionModule 和 EncryptionService
   - 实现 AES-256-GCM 加密算法（encrypt/decrypt 方法）
