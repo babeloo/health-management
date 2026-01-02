@@ -1,68 +1,84 @@
 # ================================
-# Stage 1: 构建阶段
+# Stage 1: 依赖安装阶段
 # ================================
-FROM node:18-alpine AS builder
+FROM node:18-alpine AS deps
 
-# 设置工作目录
 WORKDIR /app
 
-# 安装 pnpm
-RUN npm install -g pnpm
+# 安装 pnpm（使用 corepack 更高效）
+RUN corepack enable && corepack prepare pnpm@latest --activate
 
 # 复制依赖文件
 COPY package.json pnpm-lock.yaml ./
 COPY prisma ./prisma/
 
-# 安装依赖（包括 devDependencies）
+# 安装所有依赖（用于构建）
 RUN pnpm install --frozen-lockfile
+
+# ================================
+# Stage 2: 构建阶段
+# ================================
+FROM node:18-alpine AS builder
+
+WORKDIR /app
+
+# 从 deps 阶段复制 node_modules
+COPY --from=deps /app/node_modules ./node_modules
+COPY --from=deps /app/package.json ./package.json
+COPY --from=deps /app/prisma ./prisma/
 
 # 复制源代码
 COPY . .
 
-# 生成 Prisma Client
-RUN pnpm prisma generate
-
-# 构建应用
-RUN pnpm build
+# 生成 Prisma Client 并构建
+RUN npx prisma generate && npm run build
 
 # ================================
-# Stage 2: 生产阶段
+# Stage 3: 生产依赖阶段
 # ================================
-FROM node:18-alpine AS production
+FROM node:18-alpine AS prod-deps
 
-# 设置工作目录
 WORKDIR /app
 
-# 安装 pnpm
-RUN npm install -g pnpm
+RUN corepack enable && corepack prepare pnpm@latest --activate
 
-# 复制依赖文件
 COPY package.json pnpm-lock.yaml ./
 COPY prisma ./prisma/
 
 # 仅安装生产依赖
-RUN pnpm install --prod --frozen-lockfile
+RUN pnpm install --prod --frozen-lockfile && \
+    npx prisma generate
 
-# 生成 Prisma Client
-RUN pnpm prisma generate
+# ================================
+# Stage 4: 生产运行阶段
+# ================================
+FROM node:18-alpine AS production
+
+WORKDIR /app
+
+# 安装 dumb-init（优雅处理信号）
+RUN apk add --no-cache dumb-init
+
+# 从生产依赖阶段复制
+COPY --from=prod-deps /app/node_modules ./node_modules
+COPY --from=prod-deps /app/package.json ./package.json
 
 # 从构建阶段复制编译后的代码
 COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/prisma ./prisma
 
 # 创建非 root 用户
 RUN addgroup -g 1001 -S nodejs && \
     adduser -S nestjs -u 1001 && \
     chown -R nestjs:nodejs /app
 
-# 切换到非 root 用户
 USER nestjs
 
-# 暴露端口
 EXPOSE 5000
 
 # 健康检查
 HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
   CMD node -e "require('http').get('http://localhost:5000/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"
 
-# 启动应用
-CMD ["node", "dist/main"]
+# 使用 dumb-init 启动
+CMD ["dumb-init", "node", "dist/main"]
