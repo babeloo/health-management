@@ -19,11 +19,12 @@ export interface EducationArticle {
 
 export interface ChatRequest {
   message: string;
-  conversationId?: string;
+  conversation_id?: string;
+  use_rag?: boolean;
 }
 
 export interface ChatResponse {
-  reply: string;
-  conversationId: string;
-  disclaimer: string;
+  conversation_id: string;
+  message: string;
+  sources?: Array<{ content: string; score: number }>;
 }

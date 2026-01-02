@@ -1,4 +1,4 @@
-const BASE_URL = 'http://localhost:3001/api/v1';
+const BASE_URL = 'http://localhost:5000/api/v1';
 
 interface RequestOptions {
   method?: 'GET' | 'POST' | 'PUT' | 'DELETE';
@@ -16,14 +16,14 @@ export const request = <T>(url: string, options: RequestOptions = {}): Promise<T
       data: options.data,
       header: {
         'Content-Type': 'application/json',
-        'Authorization': token ? `Bearer ${token}` : '',
+        Authorization: token ? `Bearer ${token}` : '',
         ...options.header,
       },
       success: (res) => {
         if (res.statusCode === 200) {
           resolve(res.data as T);
         } else {
-          reject(new Error(res.data as any || '请求失败'));
+          reject(new Error((res.data as any) || '请求失败'));
         }
       },
       fail: (err) => {
