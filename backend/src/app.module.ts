@@ -21,6 +21,7 @@ import { RelationModule } from './relation/relation.module';
 import { AnalyticsModule } from './analytics/analytics.module';
 import { DeviceModule } from './device/device.module';
 import { MqttModule } from './mqtt/mqtt.module';
+import { AiModule } from './ai/ai.module';
 
 @Module({
   imports: [
@@ -88,6 +89,9 @@ import { MqttModule } from './mqtt/mqtt.module';
 
     // MQTT 设备数据接收模块
     MqttModule,
+
+    // AI 健康科普模块
+    AiModule,
   ],
   controllers: [AppController],
   providers: [AppService],
