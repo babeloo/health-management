@@ -203,12 +203,12 @@ jobs:
         run: |
           cd ai-service
           cp .env.example .env
+          # Override for CI environment
           echo "QDRANT_URL=http://localhost:6333" >> .env
           echo "QDRANT_COLLECTION=health_knowledge_test" >> .env
           echo "DEEPSEEK_API_KEY=test-key-for-ci" >> .env
-          echo "REDIS_HOST=localhost" >> .env
-          echo "REDIS_PORT=6379" >> .env
           echo "REDIS_PASSWORD=" >> .env
+          echo "MONGODB_URL=mongodb://admin:mongo123@localhost:27017/health_messages_test?authSource=admin" >> .env
 
       - name: Lint with flake8
         run: |
