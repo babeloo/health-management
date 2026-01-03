@@ -171,9 +171,9 @@ jobs:
           echo "Waiting for Qdrant to start..."
           sleep 5
 
-          # 等待 Qdrant 健康检查通过
+          # 等待 Qdrant 健康检查通过（使用 /healthz 端点）
           for i in {1..30}; do
-            if curl -f http://localhost:6333/health > /dev/null 2>&1; then
+            if curl -f http://localhost:6333/healthz > /dev/null 2>&1; then
               echo "Qdrant is ready!"
               break
             fi
@@ -182,7 +182,7 @@ jobs:
           done
 
           # 最终验证
-          curl -f http://localhost:6333/health || (echo "Qdrant failed to start" && exit 1)
+          curl -f http://localhost:6333/healthz || (echo "Qdrant failed to start" && exit 1)
 
       - name: Setup Python ${{ matrix.python-version }}
         uses: actions/setup-python@v4
