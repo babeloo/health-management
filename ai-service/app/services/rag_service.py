@@ -52,8 +52,8 @@ class RAGService:
         Returns:
             检索结果列表
         """
-        top_k = top_k or settings.RAG_TOP_K
-        score_threshold = score_threshold or settings.RAG_SCORE_THRESHOLD
+        top_k = top_k or settings.rag_top_k
+        score_threshold = score_threshold or settings.rag_score_threshold
 
         query_filter = None
         if filters:

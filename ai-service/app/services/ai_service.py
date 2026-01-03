@@ -15,13 +15,13 @@ class AIService:
 
     def __init__(self):
         self.client = AsyncOpenAI(
-            api_key=settings.DEEPSEEK_API_KEY,
-            base_url=settings.DEEPSEEK_API_BASE,
-            timeout=settings.DEEPSEEK_TIMEOUT,
-            max_retries=settings.DEEPSEEK_MAX_RETRIES,
+            api_key=settings.deepseek_api_key,
+            base_url=settings.deepseek_base_url,
+            timeout=settings.deepseek_timeout,
+            max_retries=settings.deepseek_max_retries,
         )
-        self.model = settings.DEEPSEEK_MODEL
-        self.disclaimer = settings.DISCLAIMER_TEXT
+        self.model = settings.deepseek_model
+        self.disclaimer = settings.disclaimer_text
 
     async def get_embedding(self, text: str) -> List[float]:
         """获取文本向量"""
