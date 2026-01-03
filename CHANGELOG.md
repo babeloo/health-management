@@ -28,6 +28,21 @@
 
 ### Fixed
 
+- **修复 CI 环境 Node.js 版本兼容性问题（Issue #5）** - 2026-01-04 @ai-python
+  - 问题描述：Prisma 7.2.0 要求 Node.js >= 20.19.0，但 CI 配置中包含 Node.js 18.x
+  - 修复内容：
+    - 从 CI 配置中移除 Node.js 18.x 测试矩阵
+    - 仅保留 Node.js 20.x 进行 CI 测试
+    - 使用 Black 格式化 Python 文件（添加文件末尾换行符）
+  - 修改文件：
+    - `.github/workflows/ci.yml`（移除 18.x，仅保留 20.x）
+    - `ai-service/app/api/__init__.py`（格式化）
+    - `ai-service/app/api/v1/__init__.py`（格式化）
+  - 分支：babeloo/issue5
+  - 关联任务：任务 #6（CI/CD 配置）
+  - 问题编号：Issue #5
+  - 影响范围：CI/CD 流水线，确保测试环境与 Prisma 7 兼容
+
 - **修复 AI 服务 CI/CD 测试环境配置问题（Issue #5）** - 2026-01-03 @ai-python
   - 增强 AI 服务配置管理（settings.py）
     - 添加日志配置选项（格式、级别、轮转、保留时间）
