@@ -152,6 +152,18 @@ jobs:
     name: Python Lint and Test
     runs-on: ubuntu-latest
 
+    services:
+      qdrant:
+        image: qdrant/qdrant:latest
+        ports:
+          - 6333:6333
+          - 6334:6334
+        options: >-
+          --health-cmd "curl -f http://localhost:6333/health || exit 1"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     strategy:
       matrix:
         python-version: ['3.11']
@@ -174,6 +186,26 @@ jobs:
         run: |
           cd ai-service
           uv pip install -r requirements.txt --system
+
+      - name: Setup environment variables
+        run: |
+          cd ai-service
+          cp .env.example .env
+          echo "QDRANT_URL=http://localhost:6333" >> .env
+          echo "QDRANT_COLLECTION=health_knowledge_test" >> .env
+
+      - name: Wait for Qdrant to be ready
+        run: |
+          echo "Waiting for Qdrant to start..."
+          for i in {1..30}; do
+            if curl -f http://localhost:6333/health > /dev/null 2>&1; then
+              echo "Qdrant is ready!"
+              break
+            fi
+            echo "Waiting for Qdrant... (attempt $i/30)"
+            sleep 2
+          done
+          curl -f http://localhost:6333/health || (echo "Qdrant failed to start" && exit 1)
 
       - name: Lint with flake8
         run: |
