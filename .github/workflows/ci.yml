@@ -205,6 +205,10 @@ jobs:
           cp .env.example .env
           echo "QDRANT_URL=http://localhost:6333" >> .env
           echo "QDRANT_COLLECTION=health_knowledge_test" >> .env
+          echo "DEEPSEEK_API_KEY=test-key-for-ci" >> .env
+          echo "REDIS_HOST=localhost" >> .env
+          echo "REDIS_PORT=6379" >> .env
+          echo "REDIS_PASSWORD=" >> .env
 
       - name: Lint with flake8
         run: |
