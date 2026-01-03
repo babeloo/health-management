@@ -25,15 +25,20 @@ export class AiService {
   /**
    * AI 聊天
    */
-  async chat(userId: string, chatRequest: ChatRequestDto) {
+  async chat(_userId: string, chatRequest: ChatRequestDto, authorization?: string) {
     try {
       const response = await firstValueFrom(
-        this.httpService.post<any>(`${this.aiServiceUrl}/api/v1/ai/chat`, {
-          message: chatRequest.message,
-          conversation_id: chatRequest.conversationId,
-          use_rag: chatRequest.useRag ?? true,
-          user_id: userId,
-        }),
+        this.httpService.post<any>(
+          `${this.aiServiceUrl}/api/v1/ai/chat`,
+          {
+            message: chatRequest.message,
+            conversation_id: chatRequest.conversationId,
+            use_rag: chatRequest.useRag ?? true,
+          },
+          {
+            headers: authorization ? { Authorization: authorization } : undefined,
+          },
+        ),
       );
 
       // 转换响应格式并添加免责声明
@@ -59,10 +64,15 @@ export class AiService {
   /**
    * 获取对话历史
    */
-  async getConversationHistory(conversationId: string) {
+  async getConversationHistory(conversationId: string, authorization?: string) {
     try {
       const response = await firstValueFrom(
-        this.httpService.get<any>(`${this.aiServiceUrl}/api/v1/ai/conversations/${conversationId}`),
+        this.httpService.get<any>(
+          `${this.aiServiceUrl}/api/v1/ai/conversations/${conversationId}`,
+          {
+            headers: authorization ? { Authorization: authorization } : undefined,
+          },
+        ),
       );
 
       return response.data;
@@ -82,16 +92,19 @@ export class AiService {
   /**
    * 获取科普文章列表
    */
-  async getArticles(params: ArticleQueryDto) {
+  async getArticles(params: ArticleQueryDto, authorization?: string) {
     try {
       const queryParams = new URLSearchParams();
       if (params.category) queryParams.append('category', params.category);
       if (params.page) queryParams.append('page', params.page.toString());
-      if (params.limit) queryParams.append('limit', params.limit.toString());
+      if (params.limit) queryParams.append('page_size', params.limit.toString());
 
       const response = await firstValueFrom(
         this.httpService.get<any>(
           `${this.aiServiceUrl}/api/v1/education/articles?${queryParams.toString()}`,
+          {
+            headers: authorization ? { Authorization: authorization } : undefined,
+          },
         ),
       );
 
@@ -116,10 +129,12 @@ export class AiService {
   /**
    * 获取文章详情
    */
-  async getArticleDetail(articleId: string) {
+  async getArticleDetail(articleId: string, authorization?: string) {
     try {
       const response = await firstValueFrom(
-        this.httpService.get<any>(`${this.aiServiceUrl}/api/v1/education/articles/${articleId}`),
+        this.httpService.get<any>(`${this.aiServiceUrl}/api/v1/education/articles/${articleId}`, {
+          headers: authorization ? { Authorization: authorization } : undefined,
+        }),
       );
 
       return response.data;
@@ -139,13 +154,14 @@ export class AiService {
   /**
    * 收藏文章
    */
-  async favoriteArticle(userId: string, articleId: string) {
+  async favoriteArticle(_userId: string, articleId: string, authorization?: string) {
     try {
       const response = await firstValueFrom(
         this.httpService.post<any>(
           `${this.aiServiceUrl}/api/v1/education/articles/${articleId}/favorite`,
+          undefined,
           {
-            user_id: userId,
+            headers: authorization ? { Authorization: authorization } : undefined,
           },
         ),
       );
@@ -167,13 +183,13 @@ export class AiService {
   /**
    * 取消收藏文章
    */
-  async unfavoriteArticle(userId: string, articleId: string) {
+  async unfavoriteArticle(_userId: string, articleId: string, authorization?: string) {
     try {
       const response = await firstValueFrom(
         this.httpService.delete<any>(
           `${this.aiServiceUrl}/api/v1/education/articles/${articleId}/favorite`,
           {
-            data: { user_id: userId },
+            headers: authorization ? { Authorization: authorization } : undefined,
           },
         ),
       );

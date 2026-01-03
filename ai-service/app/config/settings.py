@@ -26,6 +26,10 @@ class Settings(BaseSettings):
     redis_port: int = 6379
     redis_password: Optional[str] = None
 
+    # CORS
+    # 逗号分隔域名列表，或使用 "*" 表示允许所有来源（建议仅在开发环境使用）
+    cors_origins: str = "*"
+
     class Config:
         env_file = ".env"
         case_sensitive = False

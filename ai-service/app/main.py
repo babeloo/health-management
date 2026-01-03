@@ -10,6 +10,7 @@ from fastapi.security import HTTPBearer
 from app.routers import ai_router, education_router
 from app.middleware.metrics_middleware import MetricsMiddleware
 from app.api.v1 import metrics
+from app.config import settings
 
 app = FastAPI(
     title="智慧慢病管理系统 - AI 服务",
@@ -21,10 +22,17 @@ app = FastAPI(
 security = HTTPBearer()
 
 # CORS 配置
+cors_origins = (
+    ["*"]
+    if (settings.cors_origins or "").strip() == "*"
+    else [o.strip() for o in (settings.cors_origins or "").split(",") if o.strip()]
+)
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # 生产环境应该配置具体的域名
-    allow_credentials=True,
+    allow_origins=cors_origins,
+    # Bearer Token 不依赖 Cookie，关闭 credentials 可避免与 "*" 组合导致的安全/兼容问题
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )

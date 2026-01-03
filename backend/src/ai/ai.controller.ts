@@ -8,6 +8,7 @@ import {
   Query,
   UseGuards,
   Request,
+  Headers,
 } from '@nestjs/common';
 import { Request as ExpressRequest } from 'express';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
@@ -30,7 +31,7 @@ interface RequestUser {
  * 代理转发请求到 Python AI 服务
  */
 @ApiTags('AI 健康科普')
-@Controller('api/v1')
+@Controller()
 @UseGuards(JwtAuthGuard)
 @ApiBearerAuth()
 export class AiController {
@@ -49,9 +50,10 @@ export class AiController {
   async chat(
     @Request() req: ExpressRequest & { user: RequestUser },
     @Body() chatRequest: ChatRequestDto,
+    @Headers('authorization') authorization?: string,
   ): Promise<ChatResponseDto> {
     const { userId } = req.user;
-    return this.aiService.chat(userId, chatRequest);
+    return this.aiService.chat(userId, chatRequest, authorization);
   }
 
   /**
@@ -66,8 +68,9 @@ export class AiController {
   async getConversationHistory(
     @Request() req: ExpressRequest & { user: RequestUser },
     @Param('id') conversationId: string,
+    @Headers('authorization') authorization?: string,
   ) {
-    return this.aiService.getConversationHistory(conversationId);
+    return this.aiService.getConversationHistory(conversationId, authorization);
   }
 
   /**
@@ -86,8 +89,9 @@ export class AiController {
   async getArticles(
     @Request() req: ExpressRequest & { user: RequestUser },
     @Query() query: ArticleQueryDto,
+    @Headers('authorization') authorization?: string,
   ): Promise<ArticleListResponseDto> {
-    return this.aiService.getArticles(query);
+    return this.aiService.getArticles(query, authorization);
   }
 
   /**
@@ -102,8 +106,9 @@ export class AiController {
   async getArticleDetail(
     @Request() req: ExpressRequest & { user: RequestUser },
     @Param('id') articleId: string,
+    @Headers('authorization') authorization?: string,
   ) {
-    return this.aiService.getArticleDetail(articleId);
+    return this.aiService.getArticleDetail(articleId, authorization);
   }
 
   /**
@@ -118,9 +123,10 @@ export class AiController {
   async favoriteArticle(
     @Request() req: ExpressRequest & { user: RequestUser },
     @Param('id') articleId: string,
+    @Headers('authorization') authorization?: string,
   ) {
     const { userId } = req.user;
-    return this.aiService.favoriteArticle(userId, articleId);
+    return this.aiService.favoriteArticle(userId, articleId, authorization);
   }
 
   /**
@@ -135,8 +141,9 @@ export class AiController {
   async unfavoriteArticle(
     @Request() req: ExpressRequest & { user: RequestUser },
     @Param('id') articleId: string,
+    @Headers('authorization') authorization?: string,
   ) {
     const { userId } = req.user;
-    return this.aiService.unfavoriteArticle(userId, articleId);
+    return this.aiService.unfavoriteArticle(userId, articleId, authorization);
   }
 }

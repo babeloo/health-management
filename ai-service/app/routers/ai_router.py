@@ -2,7 +2,7 @@
 AI Chat Router
 """
 from fastapi import APIRouter, HTTPException, Depends
-from app.models import ChatRequest, ChatResponse, ChatMessage, ErrorResponse
+from app.models import ChatRequest, ChatResponse, ChatMessage, Conversation, ErrorResponse
 from app.services import ai_service, conversation_service
 from app.middleware import get_current_user, JWTUser
 
@@ -78,3 +78,23 @@ async def get_conversations(
         return {"conversations": conversations, "total": len(conversations)}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"获取对话历史失败: {str(e)}")
+
+
+@router.get("/conversations/{conversation_id}", response_model=Conversation)
+async def get_conversation(
+    conversation_id: str, current_user: JWTUser = Depends(get_current_user)
+):
+    """
+    获取对话详情
+
+    - 仅允许访问自己的对话
+    - 需要JWT认证
+    """
+    conversation = await conversation_service.get_conversation(conversation_id)
+    if not conversation:
+        raise HTTPException(status_code=404, detail="对话不存在")
+
+    if conversation.user_id != current_user.user_id:
+        raise HTTPException(status_code=403, detail="无权访问该对话")
+
+    return conversation

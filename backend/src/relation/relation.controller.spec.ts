@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication, ValidationPipe, ExecutionContext } from '@nestjs/common';
+import { ValidationPipe, ExecutionContext, ArgumentsHost, Catch, ExceptionFilter } from '@nestjs/common';
 import request from 'supertest';
 import { UserRole, RelationStatus } from '../generated/prisma/client';
 import { RelationController } from './relation.controller';
@@ -7,8 +7,33 @@ import { RelationService } from './relation.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { MembershipType } from './dto';
 
+@Catch()
+class TestCompatExceptionFilter implements ExceptionFilter {
+  catch(exception: any, host: ArgumentsHost) {
+    const ctx = host.switchToHttp();
+    const response = ctx.getResponse();
+
+    // monorepo 下可能存在 @nestjs/common 多实例：BadRequestException instanceof 判断失效时，兜底按 name 处理
+    if (exception?.name === 'BadRequestException') {
+      response.status(400).json({
+        statusCode: 400,
+        message: exception?.message ?? 'Bad Request',
+        error: 'Bad Request',
+      });
+      return;
+    }
+
+    const status = typeof exception?.status === 'number' ? exception.status : 500;
+    response.status(status).json({
+      statusCode: status,
+      message: exception?.message ?? 'Internal Server Error',
+      error: status === 500 ? 'Internal Server Error' : 'Error',
+    });
+  }
+}
+
 describe('RelationController (集成测试)', () => {
-  let app: INestApplication;
+  let app: any;
 
   const mockRelationService = {
     createDoctorPatientRelation: jest.fn(),
@@ -51,6 +76,7 @@ describe('RelationController (集成测试)', () => {
 
     app = module.createNestApplication();
     app.setGlobalPrefix('api/v1');
+    app.useGlobalFilters(new TestCompatExceptionFilter());
     app.useGlobalPipes(
       new ValidationPipe({
         whitelist: true,
@@ -90,7 +116,11 @@ describe('RelationController (集成测试)', () => {
 
       expect(response.status).toBe(201);
       expect(response.body).toEqual(expectedRelation);
-      expect(mockRelationService.createDoctorPatientRelation).toHaveBeenCalledWith(createDto);
+      expect(mockRelationService.createDoctorPatientRelation).toHaveBeenCalledWith(
+        createDto,
+        mockDoctorUser.id,
+        mockDoctorUser.role,
+      );
     });
 
     it('应该验证 DTO（缺少必填字段）', async () => {
@@ -151,6 +181,8 @@ describe('RelationController (集成测试)', () => {
           page: 1,
           limit: 20,
         }),
+        mockDoctorUser.id,
+        mockDoctorUser.role,
       );
     });
 
@@ -177,6 +209,8 @@ describe('RelationController (集成测试)', () => {
           page: 2,
           limit: 10,
         }),
+        mockDoctorUser.id,
+        mockDoctorUser.role,
       );
     });
   });
@@ -209,7 +243,11 @@ describe('RelationController (集成测试)', () => {
         .expect(200);
 
       expect(response.body).toEqual(mockDoctors);
-      expect(mockRelationService.getPatientDoctors).toHaveBeenCalledWith(patientId);
+      expect(mockRelationService.getPatientDoctors).toHaveBeenCalledWith(
+        patientId,
+        mockDoctorUser.id,
+        mockDoctorUser.role,
+      );
     });
   });
 
@@ -259,7 +297,11 @@ describe('RelationController (集成测试)', () => {
 
       expect(response.status).toBe(201);
       expect(response.body).toEqual(expectedRelation);
-      expect(mockRelationService.createManagerMemberRelation).toHaveBeenCalledWith(createDto);
+      expect(mockRelationService.createManagerMemberRelation).toHaveBeenCalledWith(
+        createDto,
+        mockDoctorUser.id,
+        mockDoctorUser.role,
+      );
     });
 
     it('应该验证会员类型枚举', async () => {
@@ -318,6 +360,8 @@ describe('RelationController (集成测试)', () => {
           page: 1,
           limit: 20,
         }),
+        mockDoctorUser.id,
+        mockDoctorUser.role,
       );
     });
   });
@@ -351,7 +395,12 @@ describe('RelationController (集成测试)', () => {
         .expect(200);
 
       expect(response.body).toEqual(updatedRelation);
-      expect(mockRelationService.updateMembership).toHaveBeenCalledWith(relationId, updateDto);
+      expect(mockRelationService.updateMembership).toHaveBeenCalledWith(
+        relationId,
+        updateDto,
+        mockDoctorUser.id,
+        mockDoctorUser.role,
+      );
     });
   });
 

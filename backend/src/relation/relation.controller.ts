@@ -77,8 +77,11 @@ export class RelationController {
     status: 409,
     description: '医患关系已存在',
   })
-  async createDoctorPatientRelation(@Body() createDto: CreateDoctorPatientRelationDto) {
-    return this.relationService.createDoctorPatientRelation(createDto);
+  async createDoctorPatientRelation(
+    @Body() createDto: CreateDoctorPatientRelationDto,
+    @Request() req: RequestWithUser,
+  ) {
+    return this.relationService.createDoctorPatientRelation(createDto, req.user.id, req.user.role);
   }
 
   /**
@@ -117,8 +120,9 @@ export class RelationController {
   async getDoctorPatients(
     @Param('doctorId') doctorId: string,
     @Query() queryDto: QueryRelationsDto,
+    @Request() req: RequestWithUser,
   ) {
-    return this.relationService.getDoctorPatients(doctorId, queryDto);
+    return this.relationService.getDoctorPatients(doctorId, queryDto, req.user.id, req.user.role);
   }
 
   /**
@@ -136,8 +140,8 @@ export class RelationController {
     status: 200,
     description: '返回患者的医生列表',
   })
-  async getPatientDoctors(@Param('patientId') patientId: string) {
-    return this.relationService.getPatientDoctors(patientId);
+  async getPatientDoctors(@Param('patientId') patientId: string, @Request() req: RequestWithUser) {
+    return this.relationService.getPatientDoctors(patientId, req.user.id, req.user.role);
   }
 
   /**
@@ -190,8 +194,11 @@ export class RelationController {
     status: 409,
     description: '关系已存在',
   })
-  async createManagerMemberRelation(@Body() createDto: CreateManagerMemberRelationDto) {
-    return this.relationService.createManagerMemberRelation(createDto);
+  async createManagerMemberRelation(
+    @Body() createDto: CreateManagerMemberRelationDto,
+    @Request() req: RequestWithUser,
+  ) {
+    return this.relationService.createManagerMemberRelation(createDto, req.user.id, req.user.role);
   }
 
   /**
@@ -230,8 +237,9 @@ export class RelationController {
   async getManagerMembers(
     @Param('managerId') managerId: string,
     @Query() queryDto: QueryRelationsDto,
+    @Request() req: RequestWithUser,
   ) {
-    return this.relationService.getManagerMembers(managerId, queryDto);
+    return this.relationService.getManagerMembers(managerId, queryDto, req.user.id, req.user.role);
   }
 
   /**
@@ -253,8 +261,12 @@ export class RelationController {
     status: 404,
     description: '关系不存在',
   })
-  async updateMembership(@Param('id') id: string, @Body() updateDto: UpdateMembershipDto) {
-    return this.relationService.updateMembership(id, updateDto);
+  async updateMembership(
+    @Param('id') id: string,
+    @Body() updateDto: UpdateMembershipDto,
+    @Request() req: RequestWithUser,
+  ) {
+    return this.relationService.updateMembership(id, updateDto, req.user.id, req.user.role);
   }
 
   /**
