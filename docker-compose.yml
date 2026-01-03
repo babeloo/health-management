@@ -120,7 +120,7 @@ services:
     depends_on:
       - postgres
     healthcheck:
-      test: ['CMD-SHELL', 'pgrep -f "beam.*emqx" > /dev/null || exit 1']
+      test: ['CMD-SHELL', 'curl -f http://localhost:18083/api/v5/status || exit 1']
       interval: 30s
       timeout: 10s
       retries: 3

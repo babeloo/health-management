@@ -305,6 +305,15 @@
   - **影响范围**: 所有使用 PrismaClient 的模块（auth, user, health）
   - **向后兼容**: API 接口无变化，仅内部实现调整
   - **验证结果**: ✅ 所有单元测试通过（85/85）、E2E 测试通过（21/21）、CI 检查通过
+- [x] 修复 AI 服务 CI/CD 测试环境配置问题 ✅ 完成于 2026-01-03
+  - [x] 增强 AI 服务配置管理（settings.py）✅
+  - [x] 导出 MetricsMiddleware 到 middleware 模块 ✅
+  - [x] 导出 Redis、Metrics、Cache 服务到 services 模块 ✅
+  - [x] 优化 EMQX 健康检查使用 API 端点 ✅
+  - [x] 新增模块化文件结构（api、core、services）✅
+  - **问题编号**: Issue #5
+  - **分支**: babeloo/issue5
+  - **负责人**: @ai-python
 
 **实现细节**：
 
@@ -2068,7 +2077,7 @@
 - [x] 统一 CORS 配置 ✅ 完成于 2026-01-03
   - [x] 通过环境变量 CORS_ORIGINS 统一管理✅
   - [x] 后端和 AI 服务均支持逗号分隔的域名列表✅
-  - [x] 关闭 credentials 避免与 "*" 组合的安全问题✅
+  - [x] 关闭 credentials 避免与 "\*" 组合的安全问题✅
 - [ ] 实现数据加密
   - [ ] 创建 EncryptionService（参考 design.md 7.1）
   - [ ] 加密存储身份证号
@@ -2093,6 +2102,7 @@
 **关联需求**：需求 #18（数据安全与隐私保护）
 
 **本次完成内容**（2026-01-03）：
+
 - ✅ 实现 relation 模块越权防护，医生只能操作自己的关系
 - ✅ 实现跨服务 JWT 鉴权透传，确保 AI 服务调用的身份验证
 - ✅ 统一 CORS 配置，通过环境变量管理允许的来源
