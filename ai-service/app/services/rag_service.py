@@ -1,9 +1,17 @@
 """
 RAG Knowledge Base Service
 """
+
 from typing import List, Dict, Any, Optional
 from qdrant_client import QdrantClient
-from qdrant_client.models import Distance, VectorParams, PointStruct, Filter, FieldCondition, MatchValue
+from qdrant_client.models import (
+    Distance,
+    VectorParams,
+    PointStruct,
+    Filter,
+    FieldCondition,
+    MatchValue,
+)
 import hashlib
 from app.config import settings
 
@@ -54,8 +62,7 @@ class RAGService:
         query_filter = None
         if filters:
             conditions = [
-                FieldCondition(key=k, match=MatchValue(value=v))
-                for k, v in filters.items()
+                FieldCondition(key=k, match=MatchValue(value=v)) for k, v in filters.items()
             ]
             query_filter = Filter(must=conditions)
 

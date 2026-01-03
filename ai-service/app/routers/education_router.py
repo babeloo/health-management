@@ -1,6 +1,7 @@
 """
 Education Article Router
 """
+
 from fastapi import APIRouter, HTTPException, Query, Depends
 from app.models import Article, ArticleListResponse, FavoriteRequest
 from app.services import article_service
@@ -27,9 +28,7 @@ async def get_articles(
             category=category, page=page, page_size=page_size
         )
 
-        return ArticleListResponse(
-            total=total, items=articles, page=page, page_size=page_size
-        )
+        return ArticleListResponse(total=total, items=articles, page=page, page_size=page_size)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"获取文章列表失败: {str(e)}")
 
@@ -55,9 +54,7 @@ async def get_article(article_id: str):
 
 
 @router.post("/articles/{article_id}/favorite")
-async def favorite_article(
-    article_id: str, current_user: JWTUser = Depends(get_current_user)
-):
+async def favorite_article(article_id: str, current_user: JWTUser = Depends(get_current_user)):
     """
     收藏文章
 
@@ -73,9 +70,7 @@ async def favorite_article(
 
 
 @router.delete("/articles/{article_id}/favorite")
-async def unfavorite_article(
-    article_id: str, current_user: JWTUser = Depends(get_current_user)
-):
+async def unfavorite_article(article_id: str, current_user: JWTUser = Depends(get_current_user)):
     """
     取消收藏文章
 
@@ -106,8 +101,6 @@ async def get_user_favorites(
             user_id, page=page, page_size=page_size
         )
 
-        return ArticleListResponse(
-            total=total, items=articles, page=page, page_size=page_size
-        )
+        return ArticleListResponse(total=total, items=articles, page=page, page_size=page_size)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"获取收藏列表失败: {str(e)}")

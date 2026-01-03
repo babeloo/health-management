@@ -1,6 +1,7 @@
 """
 Test Conversation Service
 """
+
 import pytest
 from unittest.mock import AsyncMock, MagicMock, patch
 from app.services.conversation_service import ConversationService
@@ -54,9 +55,7 @@ async def test_add_message(conversation_service):
     mock_result = MagicMock()
     mock_result.modified_count = 1
     conversation_service.collection.update_one = AsyncMock(return_value=mock_result)
-    conversation_service.get_conversation = AsyncMock(
-        return_value=MagicMock(id="conv123")
-    )
+    conversation_service.get_conversation = AsyncMock(return_value=MagicMock(id="conv123"))
 
     message = ChatMessage(role="user", content="测试消息")
     result = await conversation_service.add_message("conv123", message)

@@ -1,6 +1,7 @@
 """
 AI Chat Router
 """
+
 from fastapi import APIRouter, HTTPException, Depends
 from app.models import ChatRequest, ChatResponse, ChatMessage, Conversation, ErrorResponse
 from app.services import ai_service, conversation_service
@@ -24,9 +25,7 @@ async def chat(request: ChatRequest, current_user: JWTUser = Depends(get_current
 
         # 获取或创建对话
         if request.conversation_id:
-            conversation = await conversation_service.get_conversation(
-                request.conversation_id
-            )
+            conversation = await conversation_service.get_conversation(request.conversation_id)
             if not conversation:
                 raise HTTPException(status_code=404, detail="对话不存在")
         else:
@@ -37,23 +36,16 @@ async def chat(request: ChatRequest, current_user: JWTUser = Depends(get_current
         await conversation_service.add_message(conversation.id, user_message)
 
         # 构建对话历史
-        messages = [
-            ChatMessage(role=m.role, content=m.content)
-            for m in conversation.messages
-        ]
+        messages = [ChatMessage(role=m.role, content=m.content) for m in conversation.messages]
 
         # 调用AI服务
-        reply, sources = await ai_service.chat(
-            messages=messages, use_rag=request.use_rag
-        )
+        reply, sources = await ai_service.chat(messages=messages, use_rag=request.use_rag)
 
         # 保存AI回复
         assistant_message = ChatMessage(role="assistant", content=reply)
         await conversation_service.add_message(conversation.id, assistant_message)
 
-        return ChatResponse(
-            conversation_id=conversation.id, message=reply, sources=sources
-        )
+        return ChatResponse(conversation_id=conversation.id, message=reply, sources=sources)
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"对话失败: {str(e)}")
@@ -81,9 +73,7 @@ async def get_conversations(
 
 
 @router.get("/conversations/{conversation_id}", response_model=Conversation)
-async def get_conversation(
-    conversation_id: str, current_user: JWTUser = Depends(get_current_user)
-):
+async def get_conversation(conversation_id: str, current_user: JWTUser = Depends(get_current_user)):
     """
     获取对话详情
 

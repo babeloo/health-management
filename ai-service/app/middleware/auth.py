@@ -1,6 +1,7 @@
 """
 JWT 认证中间件
 """
+
 from fastapi import Request, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from jose import JWTError, jwt
@@ -33,9 +34,7 @@ def decode_jwt(token: str) -> Dict[str, Any]:
         HTTPException: Token 无效或过期
     """
     try:
-        payload = jwt.decode(
-            token, settings.jwt_secret, algorithms=[settings.jwt_algorithm]
-        )
+        payload = jwt.decode(token, settings.jwt_secret, algorithms=[settings.jwt_algorithm])
         return payload
     except JWTError as e:
         raise HTTPException(

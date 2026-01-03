@@ -1,6 +1,7 @@
 """
 JWT 认证中间件单元测试
 """
+
 import pytest
 from jose import jwt
 from datetime import datetime, timedelta
@@ -18,8 +19,7 @@ def create_test_token(user_id: str, role: str = "patient", expired: bool = False
         "role": role,
         "email": "test@example.com",
         "iat": datetime.utcnow(),
-        "exp": datetime.utcnow()
-        + timedelta(seconds=-1 if expired else settings.jwt_expires_in),
+        "exp": datetime.utcnow() + timedelta(seconds=-1 if expired else settings.jwt_expires_in),
     }
     return jwt.encode(payload, settings.jwt_secret, algorithm=settings.jwt_algorithm)
 
@@ -119,9 +119,7 @@ class TestGetCurrentUser:
 
         for role in roles:
             token = create_test_token(f"user_{role}", role)
-            credentials = HTTPAuthorizationCredentials(
-                scheme="Bearer", credentials=token
-            )
+            credentials = HTTPAuthorizationCredentials(scheme="Bearer", credentials=token)
 
             user = await get_current_user(credentials)
 
