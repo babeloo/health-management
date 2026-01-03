@@ -38,12 +38,21 @@ export class RelationService {
   /**
    * 创建医患关系
    * @param createDto 创建 DTO
+   * @param requestUserId 操作用户 ID
+   * @param requestUserRole 操作用户角色
    * @returns 创建的医患关系
    */
   async createDoctorPatientRelation(
     createDto: CreateDoctorPatientRelationDto,
+    requestUserId: string,
+    requestUserRole: UserRole,
   ): Promise<DoctorPatientRelation> {
     const { doctorId, patientId, notes } = createDto;
+
+    // 权限检查：医生只能创建自己的关系，管理员可以创建任何关系
+    if (requestUserRole !== UserRole.ADMIN && requestUserId !== doctorId) {
+      throw new ForbiddenException('无权创建该医患关系');
+    }
 
     // 验证医生存在且角色正确
     const doctor = await this.prisma.user.findUnique({
@@ -114,11 +123,15 @@ export class RelationService {
    * 获取医生的患者列表（分页）
    * @param doctorId 医生 ID
    * @param queryDto 查询参数
+   * @param requestUserId 操作用户 ID
+   * @param requestUserRole 操作用户角色
    * @returns 患者列表（包含分页信息）
    */
   async getDoctorPatients(
     doctorId: string,
     queryDto: QueryRelationsDto,
+    requestUserId: string,
+    requestUserRole: UserRole,
   ): Promise<{
     data: DoctorPatientRelation[];
     total: number;
@@ -126,6 +139,11 @@ export class RelationService {
     limit: number;
     totalPages: number;
   }> {
+    // 权限检查：医生只能查看自己的患者列表，管理员可以查看任何医生
+    if (requestUserRole !== UserRole.ADMIN && requestUserId !== doctorId) {
+      throw new ForbiddenException('无权访问该医生的患者列表');
+    }
+
     const { status, page = 1, limit = 20 } = queryDto;
 
     const where: { doctorId: string; status?: RelationStatus } = {
@@ -174,9 +192,20 @@ export class RelationService {
   /**
    * 获取患者的医生列表
    * @param patientId 患者 ID
+   * @param requestUserId 操作用户 ID
+   * @param requestUserRole 操作用户角色
    * @returns 医生列表
    */
-  async getPatientDoctors(patientId: string): Promise<DoctorPatientRelation[]> {
+  async getPatientDoctors(
+    patientId: string,
+    requestUserId: string,
+    requestUserRole: UserRole,
+  ): Promise<DoctorPatientRelation[]> {
+    // 权限检查：患者只能查看自己的医生列表，管理员可以查看任何患者
+    if (requestUserRole !== UserRole.ADMIN && requestUserId !== patientId) {
+      throw new ForbiddenException('无权访问该患者的医生列表');
+    }
+
     const relations = await this.prisma.doctorPatientRelation.findMany({
       where: {
         patientId,
@@ -218,7 +247,7 @@ export class RelationService {
     }
 
     // 权限检查：医生只能删除自己的关系，管理员可以删除任何关系
-    if (userRole === UserRole.DOCTOR && relation.doctorId !== userId) {
+    if (userRole !== UserRole.ADMIN && relation.doctorId !== userId) {
       throw new ForbiddenException('无权操作此关系');
     }
 
@@ -246,12 +275,21 @@ export class RelationService {
   /**
    * 创建健康管理师会员关系
    * @param createDto 创建 DTO
+   * @param requestUserId 操作用户 ID
+   * @param requestUserRole 操作用户角色
    * @returns 创建的会员关系
    */
   async createManagerMemberRelation(
     createDto: CreateManagerMemberRelationDto,
+    requestUserId: string,
+    requestUserRole: UserRole,
   ): Promise<ManagerMemberRelation> {
     const { managerId, memberId, membershipType } = createDto;
+
+    // 权限检查：健康管理师只能创建自己的关系，管理员可以创建任何关系
+    if (requestUserRole !== UserRole.ADMIN && requestUserId !== managerId) {
+      throw new ForbiddenException('无权创建该健康管理师会员关系');
+    }
 
     // 验证健康管理师存在且角色正确
     const manager = await this.prisma.user.findUnique({
@@ -318,11 +356,15 @@ export class RelationService {
    * 获取健康管理师的会员列表（分页）
    * @param managerId 健康管理师 ID
    * @param queryDto 查询参数
+   * @param requestUserId 操作用户 ID
+   * @param requestUserRole 操作用户角色
    * @returns 会员列表（包含分页信息）
    */
   async getManagerMembers(
     managerId: string,
     queryDto: QueryRelationsDto,
+    requestUserId: string,
+    requestUserRole: UserRole,
   ): Promise<{
     data: ManagerMemberRelation[];
     total: number;
@@ -330,6 +372,11 @@ export class RelationService {
     limit: number;
     totalPages: number;
   }> {
+    // 权限检查：健康管理师只能查看自己的会员列表，管理员可以查看任何健康管理师
+    if (requestUserRole !== UserRole.ADMIN && requestUserId !== managerId) {
+      throw new ForbiddenException('无权访问该健康管理师的会员列表');
+    }
+
     const { status, page = 1, limit = 20 } = queryDto;
 
     const where: { managerId: string; status?: RelationStatus } = {
@@ -379,11 +426,15 @@ export class RelationService {
    * 更新会员类型
    * @param relationId 关系 ID
    * @param updateDto 更新 DTO
+   * @param requestUserId 操作用户 ID
+   * @param requestUserRole 操作用户角色
    * @returns 更新后的关系
    */
   async updateMembership(
     relationId: string,
     updateDto: UpdateMembershipDto,
+    requestUserId: string,
+    requestUserRole: UserRole,
   ): Promise<ManagerMemberRelation> {
     const { membershipType } = updateDto;
 
@@ -394,6 +445,11 @@ export class RelationService {
 
     if (!relation) {
       throw new NotFoundException('关系不存在');
+    }
+
+    // 权限检查：健康管理师只能更新自己的关系，管理员可以更新任何关系
+    if (requestUserRole !== UserRole.ADMIN && relation.managerId !== requestUserId) {
+      throw new ForbiddenException('无权更新此会员关系');
     }
 
     // 更新会员类型
@@ -440,7 +496,7 @@ export class RelationService {
     }
 
     // 权限检查：健康管理师只能删除自己的关系，管理员可以删除任何关系
-    if (userRole === UserRole.HEALTH_MANAGER && relation.managerId !== userId) {
+    if (userRole !== UserRole.ADMIN && relation.managerId !== userId) {
       throw new ForbiddenException('无权操作此关系');
     }
 

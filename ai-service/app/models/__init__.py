@@ -1,4 +1,5 @@
 """Models package"""
+
 from .schemas import (
     ChatMessage,
     ChatRequest,

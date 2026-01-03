@@ -1,6 +1,7 @@
 """
 Education Article Service
 """
+
 from typing import List, Optional
 from datetime import datetime
 from motor.motor_asyncio import AsyncIOMotorClient
@@ -43,10 +44,7 @@ class ArticleService:
         # 分页查询
         skip = (page - 1) * page_size
         cursor = (
-            self.articles_collection.find(query)
-            .sort("created_at", -1)
-            .skip(skip)
-            .limit(page_size)
+            self.articles_collection.find(query).sort("created_at", -1).skip(skip).limit(page_size)
         )
 
         articles = []
@@ -69,15 +67,11 @@ class ArticleService:
             article = Article(**doc)
 
             # 增加浏览量
-            await self.articles_collection.update_one(
-                {"id": article_id}, {"$inc": {"views": 1}}
-            )
+            await self.articles_collection.update_one({"id": article_id}, {"$inc": {"views": 1}})
             article.views += 1
 
             # 缓存
-            await self.redis.setex(
-                cache_key, settings.REDIS_CACHE_TTL, article.model_dump_json()
-            )
+            await self.redis.setex(cache_key, settings.REDIS_CACHE_TTL, article.model_dump_json())
 
             return article
 

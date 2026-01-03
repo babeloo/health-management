@@ -1,6 +1,7 @@
 """
 Test AI Service
 """
+
 import pytest
 from unittest.mock import AsyncMock, patch, MagicMock
 from app.services.ai_service import AIService
@@ -34,9 +35,7 @@ async def test_chat_without_rag(ai_service):
     """测试不使用RAG的对话"""
     # Mock OpenAI response
     mock_response = MagicMock()
-    mock_response.choices = [
-        MagicMock(message=MagicMock(content="这是AI的回复"))
-    ]
+    mock_response.choices = [MagicMock(message=MagicMock(content="这是AI的回复"))]
     ai_service.client.chat.completions.create = AsyncMock(return_value=mock_response)
 
     messages = [ChatMessage(role="user", content="你好")]
@@ -55,18 +54,12 @@ async def test_chat_with_rag(ai_service):
 
     # Mock RAG search
     with patch("app.services.ai_service.rag_service") as mock_rag:
-        mock_rag.search = AsyncMock(
-            return_value=[{"content": "健康知识", "score": 0.9}]
-        )
+        mock_rag.search = AsyncMock(return_value=[{"content": "健康知识", "score": 0.9}])
 
         # Mock OpenAI response
         mock_response = MagicMock()
-        mock_response.choices = [
-            MagicMock(message=MagicMock(content="基于知识库的回复"))
-        ]
-        ai_service.client.chat.completions.create = AsyncMock(
-            return_value=mock_response
-        )
+        mock_response.choices = [MagicMock(message=MagicMock(content="基于知识库的回复"))]
+        ai_service.client.chat.completions.create = AsyncMock(return_value=mock_response)
 
         messages = [ChatMessage(role="user", content="高血压怎么办")]
         reply, sources = await ai_service.chat(messages, use_rag=True)
@@ -81,9 +74,7 @@ async def test_chat_with_rag(ai_service):
 async def test_chat_adds_disclaimer(ai_service):
     """测试确保回复包含免责声明"""
     mock_response = MagicMock()
-    mock_response.choices = [
-        MagicMock(message=MagicMock(content="没有免责声明的回复"))
-    ]
+    mock_response.choices = [MagicMock(message=MagicMock(content="没有免责声明的回复"))]
     ai_service.client.chat.completions.create = AsyncMock(return_value=mock_response)
 
     messages = [ChatMessage(role="user", content="测试")]

@@ -1,6 +1,7 @@
 """
 Test API Routers
 """
+
 import pytest
 from fastapi.testclient import TestClient
 from unittest.mock import AsyncMock, patch, MagicMock
@@ -13,11 +14,11 @@ client = TestClient(app)
 @pytest.fixture
 def mock_services():
     """Mock所有服务"""
-    with patch("app.routers.ai_router.ai_service") as mock_ai, patch(
-        "app.routers.ai_router.conversation_service"
-    ) as mock_conv, patch(
-        "app.routers.education_router.article_service"
-    ) as mock_article:
+    with (
+        patch("app.routers.ai_router.ai_service") as mock_ai,
+        patch("app.routers.ai_router.conversation_service") as mock_conv,
+        patch("app.routers.education_router.article_service") as mock_article,
+    ):
         yield mock_ai, mock_conv, mock_article
 
 
@@ -34,15 +35,17 @@ def test_chat_endpoint(mock_services):
 
     # Mock conversation service
     mock_conversation = Conversation(
-        id="conv123", user_id="user123", messages=[], created_at="2024-01-01T00:00:00", updated_at="2024-01-01T00:00:00"
+        id="conv123",
+        user_id="user123",
+        messages=[],
+        created_at="2024-01-01T00:00:00",
+        updated_at="2024-01-01T00:00:00",
     )
     mock_conv.create_conversation = AsyncMock(return_value=mock_conversation)
     mock_conv.add_message = AsyncMock(return_value=mock_conversation)
 
     # Mock AI service
-    mock_ai.chat = AsyncMock(
-        return_value=("AI回复。此建议仅供参考，请咨询专业医生。", None)
-    )
+    mock_ai.chat = AsyncMock(return_value=("AI回复。此建议仅供参考，请咨询专业医生。", None))
 
     response = client.post(
         "/api/v1/ai/chat",
@@ -61,7 +64,11 @@ def test_get_conversations_endpoint(mock_services):
 
     mock_conversations = [
         Conversation(
-            id="conv1", user_id="user123", messages=[], created_at="2024-01-01T00:00:00", updated_at="2024-01-01T00:00:00"
+            id="conv1",
+            user_id="user123",
+            messages=[],
+            created_at="2024-01-01T00:00:00",
+            updated_at="2024-01-01T00:00:00",
         )
     ]
     mock_conv.get_user_conversations = AsyncMock(return_value=mock_conversations)
@@ -146,9 +153,7 @@ def test_unfavorite_article_endpoint(mock_services):
 
     mock_article.remove_favorite = AsyncMock(return_value=True)
 
-    response = client.delete(
-        "/api/v1/education/articles/article1/favorite?user_id=user123"
-    )
+    response = client.delete("/api/v1/education/articles/article1/favorite?user_id=user123")
 
     assert response.status_code == 200
     data = response.json()

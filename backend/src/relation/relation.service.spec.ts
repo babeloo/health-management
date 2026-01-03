@@ -109,7 +109,11 @@ describe('RelationService', () => {
       mockPrismaService.doctorPatientRelation.findFirst.mockResolvedValue(null);
       mockPrismaService.doctorPatientRelation.create.mockResolvedValue(expectedRelation);
 
-      const result = await service.createDoctorPatientRelation(createDto);
+      const result = await service.createDoctorPatientRelation(
+        createDto,
+        createDto.doctorId,
+        UserRole.DOCTOR,
+      );
 
       expect(result).toEqual(expectedRelation);
       expect(mockPrismaService.user.findUnique).toHaveBeenCalledTimes(2);
@@ -127,9 +131,9 @@ describe('RelationService', () => {
     it('应该抛出 NotFoundException 当医生不存在时', async () => {
       mockPrismaService.user.findUnique.mockResolvedValueOnce(null);
 
-      await expect(service.createDoctorPatientRelation(createDto)).rejects.toThrow(
-        NotFoundException,
-      );
+      await expect(
+        service.createDoctorPatientRelation(createDto, createDto.doctorId, UserRole.DOCTOR),
+      ).rejects.toThrow(NotFoundException);
     });
 
     it('应该抛出 BadRequestException 当医生角色不正确时', async () => {
@@ -141,9 +145,9 @@ describe('RelationService', () => {
 
       mockPrismaService.user.findUnique.mockResolvedValueOnce(mockDoctor);
 
-      await expect(service.createDoctorPatientRelation(createDto)).rejects.toThrow(
-        BadRequestException,
-      );
+      await expect(
+        service.createDoctorPatientRelation(createDto, createDto.doctorId, UserRole.DOCTOR),
+      ).rejects.toThrow(BadRequestException);
     });
 
     it('应该抛出 NotFoundException 当患者不存在时', async () => {
@@ -157,9 +161,9 @@ describe('RelationService', () => {
         .mockResolvedValueOnce(mockDoctor)
         .mockResolvedValueOnce(null);
 
-      await expect(service.createDoctorPatientRelation(createDto)).rejects.toThrow(
-        NotFoundException,
-      );
+      await expect(
+        service.createDoctorPatientRelation(createDto, createDto.doctorId, UserRole.DOCTOR),
+      ).rejects.toThrow(NotFoundException);
     });
 
     it('应该抛出 BadRequestException 当患者角色不正确时', async () => {
@@ -178,9 +182,9 @@ describe('RelationService', () => {
         .mockResolvedValueOnce(mockDoctor)
         .mockResolvedValueOnce(mockPatient);
 
-      await expect(service.createDoctorPatientRelation(createDto)).rejects.toThrow(
-        BadRequestException,
-      );
+      await expect(
+        service.createDoctorPatientRelation(createDto, createDto.doctorId, UserRole.DOCTOR),
+      ).rejects.toThrow(BadRequestException);
     });
 
     it('应该抛出 ConflictException 当关系已存在时', async () => {
@@ -209,9 +213,9 @@ describe('RelationService', () => {
         .mockResolvedValueOnce(mockPatient);
       mockPrismaService.doctorPatientRelation.findFirst.mockResolvedValue(existingRelation);
 
-      await expect(service.createDoctorPatientRelation(createDto)).rejects.toThrow(
-        ConflictException,
-      );
+      await expect(
+        service.createDoctorPatientRelation(createDto, createDto.doctorId, UserRole.DOCTOR),
+      ).rejects.toThrow(ConflictException);
     });
   });
 
@@ -249,7 +253,7 @@ describe('RelationService', () => {
       mockPrismaService.doctorPatientRelation.findMany.mockResolvedValue(mockRelations);
       mockPrismaService.doctorPatientRelation.count.mockResolvedValue(total);
 
-      const result = await service.getDoctorPatients(doctorId, queryDto);
+      const result = await service.getDoctorPatients(doctorId, queryDto, doctorId, UserRole.DOCTOR);
 
       expect(result).toEqual({
         data: mockRelations,
@@ -294,7 +298,7 @@ describe('RelationService', () => {
       mockPrismaService.doctorPatientRelation.findMany.mockResolvedValue([]);
       mockPrismaService.doctorPatientRelation.count.mockResolvedValue(0);
 
-      await service.getDoctorPatients(doctorId, queryWithoutStatus);
+      await service.getDoctorPatients(doctorId, queryWithoutStatus, doctorId, UserRole.DOCTOR);
 
       expect(mockPrismaService.doctorPatientRelation.findMany).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -324,7 +328,7 @@ describe('RelationService', () => {
 
       mockPrismaService.doctorPatientRelation.findMany.mockResolvedValue(mockRelations);
 
-      const result = await service.getPatientDoctors(patientId);
+      const result = await service.getPatientDoctors(patientId, patientId, UserRole.PATIENT);
 
       expect(result).toEqual(mockRelations);
       expect(mockPrismaService.doctorPatientRelation.findMany).toHaveBeenCalledWith({
@@ -464,7 +468,11 @@ describe('RelationService', () => {
       mockPrismaService.managerMemberRelation.findFirst.mockResolvedValue(null);
       mockPrismaService.managerMemberRelation.create.mockResolvedValue(expectedRelation);
 
-      const result = await service.createManagerMemberRelation(createDto);
+      const result = await service.createManagerMemberRelation(
+        createDto,
+        createDto.managerId,
+        UserRole.HEALTH_MANAGER,
+      );
 
       expect(result).toEqual(expectedRelation);
       expect(mockPrismaService.managerMemberRelation.create).toHaveBeenCalledWith({
@@ -480,9 +488,13 @@ describe('RelationService', () => {
     it('应该抛出 NotFoundException 当健康管理师不存在时', async () => {
       mockPrismaService.user.findUnique.mockResolvedValueOnce(null);
 
-      await expect(service.createManagerMemberRelation(createDto)).rejects.toThrow(
-        NotFoundException,
-      );
+      await expect(
+        service.createManagerMemberRelation(
+          createDto,
+          createDto.managerId,
+          UserRole.HEALTH_MANAGER,
+        ),
+      ).rejects.toThrow(NotFoundException);
     });
 
     it('应该抛出 ConflictException 当关系已存在时', async () => {
@@ -515,9 +527,13 @@ describe('RelationService', () => {
         .mockResolvedValueOnce(mockMember);
       mockPrismaService.managerMemberRelation.findFirst.mockResolvedValue(existingRelation);
 
-      await expect(service.createManagerMemberRelation(createDto)).rejects.toThrow(
-        ConflictException,
-      );
+      await expect(
+        service.createManagerMemberRelation(
+          createDto,
+          createDto.managerId,
+          UserRole.HEALTH_MANAGER,
+        ),
+      ).rejects.toThrow(ConflictException);
     });
   });
 
@@ -549,7 +565,12 @@ describe('RelationService', () => {
       mockPrismaService.managerMemberRelation.findUnique.mockResolvedValue(mockRelation);
       mockPrismaService.managerMemberRelation.update.mockResolvedValue(updatedRelation);
 
-      const result = await service.updateMembership(relationId, updateDto);
+      const result = await service.updateMembership(
+        relationId,
+        updateDto,
+        'manager-123',
+        UserRole.HEALTH_MANAGER,
+      );
 
       expect(result).toEqual(updatedRelation);
       expect(mockPrismaService.managerMemberRelation.update).toHaveBeenCalledWith({
@@ -561,10 +582,12 @@ describe('RelationService', () => {
     it('应该抛出 NotFoundException 当关系不存在时', async () => {
       mockPrismaService.managerMemberRelation.findUnique.mockResolvedValue(null);
 
-      await expect(service.updateMembership(relationId, updateDto)).rejects.toThrow(
-        NotFoundException,
-      );
-      await expect(service.updateMembership(relationId, updateDto)).rejects.toThrow('关系不存在');
+      await expect(
+        service.updateMembership(relationId, updateDto, 'manager-123', UserRole.HEALTH_MANAGER),
+      ).rejects.toThrow(NotFoundException);
+      await expect(
+        service.updateMembership(relationId, updateDto, 'manager-123', UserRole.HEALTH_MANAGER),
+      ).rejects.toThrow('关系不存在');
     });
   });
 });

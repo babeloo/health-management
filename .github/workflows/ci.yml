@@ -111,7 +111,7 @@ jobs:
       - name: Push database schema
         run: |
           cd backend
-          pnpm prisma db push --skip-generate --accept-data-loss
+          pnpm prisma db push --accept-data-loss
 
       - name: Lint backend
         run: |

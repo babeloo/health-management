@@ -1,6 +1,7 @@
 """
 DeepSeek AI Chat Service
 """
+
 from typing import List, Dict, Any, Optional
 from openai import AsyncOpenAI
 from app.config import settings

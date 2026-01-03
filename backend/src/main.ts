@@ -23,7 +23,16 @@ async function bootstrap() {
   );
 
   // CORS配置
-  app.enableCors();
+  const corsOriginsEnv = process.env.CORS_ORIGINS || '';
+  const corsOrigins = corsOriginsEnv
+    .split(',')
+    .map((o) => o.trim())
+    .filter(Boolean);
+
+  app.enableCors({
+    origin: corsOrigins.length > 0 ? corsOrigins : '*',
+    credentials: false,
+  });
 
   // API前缀
   app.setGlobalPrefix('api/v1');

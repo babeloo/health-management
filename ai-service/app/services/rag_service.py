@@ -1,9 +1,17 @@
 """
 RAG Knowledge Base Service
 """
+
 from typing import List, Dict, Any, Optional
 from qdrant_client import QdrantClient
-from qdrant_client.models import Distance, VectorParams, PointStruct, Filter, FieldCondition, MatchValue
+from qdrant_client.models import (
+    Distance,
+    VectorParams,
+    PointStruct,
+    Filter,
+    FieldCondition,
+    MatchValue,
+)
 import hashlib
 from app.config import settings
 
@@ -12,12 +20,8 @@ class RAGService:
     """RAG检索服务"""
 
     def __init__(self):
-        self.client = QdrantClient(
-            host=settings.QDRANT_HOST,
-            port=settings.QDRANT_PORT,
-            api_key=settings.QDRANT_API_KEY,
-        )
-        self.collection_name = settings.QDRANT_COLLECTION_NAME
+        self.client = QdrantClient(url=settings.qdrant_url)
+        self.collection_name = settings.qdrant_collection
         self._ensure_collection()
 
     def _ensure_collection(self):
@@ -54,8 +58,7 @@ class RAGService:
         query_filter = None
         if filters:
             conditions = [
-                FieldCondition(key=k, match=MatchValue(value=v))
-                for k, v in filters.items()
+                FieldCondition(key=k, match=MatchValue(value=v)) for k, v in filters.items()
             ]
             query_filter = Filter(must=conditions)
 

@@ -1,6 +1,7 @@
 """
 Test Article Service
 """
+
 import pytest
 from unittest.mock import AsyncMock, MagicMock, patch
 from app.services.article_service import ArticleService
@@ -9,8 +10,9 @@ from app.services.article_service import ArticleService
 @pytest.fixture
 def article_service():
     """文章服务fixture"""
-    with patch("app.services.article_service.AsyncIOMotorClient"), patch(
-        "app.services.article_service.aioredis"
+    with (
+        patch("app.services.article_service.AsyncIOMotorClient"),
+        patch("app.services.article_service.aioredis"),
     ):
         service = ArticleService()
         service.articles_collection = MagicMock()
@@ -83,9 +85,7 @@ async def test_add_favorite(article_service):
     mock_result = MagicMock()
     mock_result.upserted_id = "fav123"
     mock_result.modified_count = 0
-    article_service.favorites_collection.update_one = AsyncMock(
-        return_value=mock_result
-    )
+    article_service.favorites_collection.update_one = AsyncMock(return_value=mock_result)
 
     success = await article_service.add_favorite("user123", "article1")
 
@@ -98,9 +98,7 @@ async def test_remove_favorite(article_service):
     """测试取消收藏"""
     mock_result = MagicMock()
     mock_result.deleted_count = 1
-    article_service.favorites_collection.delete_one = AsyncMock(
-        return_value=mock_result
-    )
+    article_service.favorites_collection.delete_one = AsyncMock(return_value=mock_result)
 
     success = await article_service.remove_favorite("user123", "article1")
 
@@ -121,9 +119,7 @@ async def test_get_user_favorites(article_service):
         yield {"user_id": "user123", "article_id": "article1"}
 
     mock_fav_cursor.__aiter__ = mock_fav_iter
-    article_service.favorites_collection.find = MagicMock(
-        return_value=mock_fav_cursor
-    )
+    article_service.favorites_collection.find = MagicMock(return_value=mock_fav_cursor)
 
     # Mock articles cursor
     mock_article_cursor = MagicMock()
@@ -141,9 +137,7 @@ async def test_get_user_favorites(article_service):
         }
 
     mock_article_cursor.__aiter__ = mock_article_iter
-    article_service.articles_collection.find = MagicMock(
-        return_value=mock_article_cursor
-    )
+    article_service.articles_collection.find = MagicMock(return_value=mock_article_cursor)
 
     article_service.favorites_collection.count_documents = AsyncMock(return_value=1)
 
