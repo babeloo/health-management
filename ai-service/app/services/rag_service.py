@@ -20,12 +20,8 @@ class RAGService:
     """RAG检索服务"""
 
     def __init__(self):
-        self.client = QdrantClient(
-            host=settings.QDRANT_HOST,
-            port=settings.QDRANT_PORT,
-            api_key=settings.QDRANT_API_KEY,
-        )
-        self.collection_name = settings.QDRANT_COLLECTION_NAME
+        self.client = QdrantClient(url=settings.qdrant_url)
+        self.collection_name = settings.qdrant_collection
         self._ensure_collection()
 
     def _ensure_collection(self):
