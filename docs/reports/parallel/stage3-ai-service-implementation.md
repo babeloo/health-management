@@ -3,7 +3,7 @@
 > **创建日期**：2026-01-05
 > **工作分支**：`feature/stage3-ai-service-reimpl`
 > **Worktree 位置**：`D:\Code\ai-gen\intl-health-mgmt-parallel\.ccg\intl-health-mgmt\feature-stage3-ai-service-reimpl`
-> **参考文档**：`docs/reference/stage3-ai-features-reference.md`
+> **参考文档**：`docs/reports/parallel/stage3-ai-features-reference.md`
 > **备份分支**：`archive/stage3-ai-service-2026-01-05`
 
 ## 一、现状评估
@@ -536,7 +536,7 @@ git show archive/stage3-ai-service-2026-01-05:ai-service/app/services/deepseek_c
 - 需求文档：`.claude/specs/chronic-disease-management/requirements.md`
 - 设计文档：`.claude/specs/chronic-disease-management/design.md`
 - 任务清单：`.claude/specs/chronic-disease-management/tasks.md`
-- 参考文档：`docs/reference/stage3-ai-features-reference.md`
+- 参考文档：`docs/reports/parallel/stage3-ai-features-reference.md`
 
 ---
 

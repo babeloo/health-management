@@ -18,7 +18,6 @@ docs/
 │   │   ├── review-report.md            # 架构审查报告
 │   │   ├── review-request.md           # 架构审查请求
 │   │   └── review-summary.md           # 架构审查总结
-│   ├── stage3-ai-features-reference.md # Stage3 AI 功能参考文档
 │   └── api/                            # API 文档（预留）
 ├── reports/                            # 📊 项目报告
 │   ├── completion/                     # 完成报告
@@ -46,6 +45,7 @@ docs/
 │       ├── execution-plan.md           # 执行计划
 │       ├── parallel-tasks-execution-plan.md # 并行任务执行计划
 │       ├── stage3-ai-service-implementation.md # Stage3 AI 服务实施计划
+│       ├── stage3-ai-features-reference.md # Stage3 AI 功能参考文档
 │       ├── worktree-consolidation.md   # Worktree 整合报告
 │       ├── worktree-consolidation-review.md # Worktree 整合审查
 │       ├── worktree-cleanup-strategy.md # Worktree 清理策略
@@ -150,6 +150,7 @@ docs/
 **文档管理负责人**：PM Agent
 **最后更新时间**：2026-01-05
 **最近更新**：
+
 - 合并 worktree-management 文件夹到 parallel 文件夹
 - 统一任务报告命名规范（添加功能描述）
 - 优化 completion 文件夹结构（分离 modules/stages/tasks）
