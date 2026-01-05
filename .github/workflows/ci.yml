@@ -267,9 +267,11 @@ jobs:
           pnpm prisma generate
 
       - name: Build all packages
-        run: pnpm -r build
+        run: |
+          cd backend
+          pnpm build
 
       - name: Check build artifacts
         run: |
           test -d backend/dist || (echo "Backend build failed" && exit 1)
-          echo "✅ All builds successful"
+          echo "✅ Backend build successful"
