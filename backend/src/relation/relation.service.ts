@@ -36,6 +36,25 @@ export class RelationService {
   ) {}
 
   /**
+   * 检查资源访问权限
+   * @param requestUserId 请求用户 ID
+   * @param requestUserRole 请求用户角色
+   * @param resourceOwnerId 资源所有者 ID
+   * @param errorMessage 错误消息
+   * @throws ForbiddenException 当用户无权访问资源时
+   */
+  private checkResourceAccess(
+    requestUserId: string,
+    requestUserRole: UserRole,
+    resourceOwnerId: string,
+    errorMessage: string,
+  ): void {
+    if (requestUserRole !== UserRole.ADMIN && requestUserId !== resourceOwnerId) {
+      throw new ForbiddenException(errorMessage);
+    }
+  }
+
+  /**
    * 创建医患关系
    * @param createDto 创建 DTO
    * @param requestUserId 操作用户 ID
@@ -49,11 +68,6 @@ export class RelationService {
   ): Promise<DoctorPatientRelation> {
     const { doctorId, patientId, notes } = createDto;
 
-    // 权限检查：医生只能创建自己的关系，管理员可以创建任何关系
-    if (requestUserRole !== UserRole.ADMIN && requestUserId !== doctorId) {
-      throw new ForbiddenException('无权创建该医患关系');
-    }
-
     // 验证医生存在且角色正确
     const doctor = await this.prisma.user.findUnique({
       where: { id: doctorId },
@@ -66,6 +80,9 @@ export class RelationService {
     if (doctor.role !== UserRole.DOCTOR) {
       throw new BadRequestException('指定用户不是医生');
     }
+
+    // 权限检查：医生只能创建自己的关系，管理员可以创建任何关系
+    this.checkResourceAccess(requestUserId, requestUserRole, doctorId, '无权创建该医患关系');
 
     // 验证患者存在且角色正确
     const patient = await this.prisma.user.findUnique({
@@ -140,9 +157,7 @@ export class RelationService {
     totalPages: number;
   }> {
     // 权限检查：医生只能查看自己的患者列表，管理员可以查看任何医生
-    if (requestUserRole !== UserRole.ADMIN && requestUserId !== doctorId) {
-      throw new ForbiddenException('无权访问该医生的患者列表');
-    }
+    this.checkResourceAccess(requestUserId, requestUserRole, doctorId, '无权访问该医生的患者列表');
 
     const { status, page = 1, limit = 20 } = queryDto;
 
@@ -202,9 +217,7 @@ export class RelationService {
     requestUserRole: UserRole,
   ): Promise<DoctorPatientRelation[]> {
     // 权限检查：患者只能查看自己的医生列表，管理员可以查看任何患者
-    if (requestUserRole !== UserRole.ADMIN && requestUserId !== patientId) {
-      throw new ForbiddenException('无权访问该患者的医生列表');
-    }
+    this.checkResourceAccess(requestUserId, requestUserRole, patientId, '无权访问该患者的医生列表');
 
     const relations = await this.prisma.doctorPatientRelation.findMany({
       where: {
@@ -247,9 +260,7 @@ export class RelationService {
     }
 
     // 权限检查：医生只能删除自己的关系，管理员可以删除任何关系
-    if (userRole !== UserRole.ADMIN && relation.doctorId !== userId) {
-      throw new ForbiddenException('无权操作此关系');
-    }
+    this.checkResourceAccess(userId, userRole, relation.doctorId, '无权操作此关系');
 
     // 软删除：设置状态为 INACTIVE
     await this.prisma.doctorPatientRelation.update({
@@ -286,11 +297,6 @@ export class RelationService {
   ): Promise<ManagerMemberRelation> {
     const { managerId, memberId, membershipType } = createDto;
 
-    // 权限检查：健康管理师只能创建自己的关系，管理员可以创建任何关系
-    if (requestUserRole !== UserRole.ADMIN && requestUserId !== managerId) {
-      throw new ForbiddenException('无权创建该健康管理师会员关系');
-    }
-
     // 验证健康管理师存在且角色正确
     const manager = await this.prisma.user.findUnique({
       where: { id: managerId },
@@ -303,6 +309,14 @@ export class RelationService {
     if (manager.role !== UserRole.HEALTH_MANAGER) {
       throw new BadRequestException('指定用户不是健康管理师');
     }
+
+    // 权限检查：健康管理师只能创建自己的关系，管理员可以创建任何关系
+    this.checkResourceAccess(
+      requestUserId,
+      requestUserRole,
+      managerId,
+      '无权创建该健康管理师会员关系',
+    );
 
     // 验证会员存在
     const member = await this.prisma.user.findUnique({
@@ -373,9 +387,12 @@ export class RelationService {
     totalPages: number;
   }> {
     // 权限检查：健康管理师只能查看自己的会员列表，管理员可以查看任何健康管理师
-    if (requestUserRole !== UserRole.ADMIN && requestUserId !== managerId) {
-      throw new ForbiddenException('无权访问该健康管理师的会员列表');
-    }
+    this.checkResourceAccess(
+      requestUserId,
+      requestUserRole,
+      managerId,
+      '无权访问该健康管理师的会员列表',
+    );
 
     const { status, page = 1, limit = 20 } = queryDto;
 
@@ -448,9 +465,12 @@ export class RelationService {
     }
 
     // 权限检查：健康管理师只能更新自己的关系，管理员可以更新任何关系
-    if (requestUserRole !== UserRole.ADMIN && relation.managerId !== requestUserId) {
-      throw new ForbiddenException('无权更新此会员关系');
-    }
+    this.checkResourceAccess(
+      requestUserId,
+      requestUserRole,
+      relation.managerId,
+      '无权更新此会员关系',
+    );
 
     // 更新会员类型
     const updatedRelation = await this.prisma.managerMemberRelation.update({
@@ -496,9 +516,7 @@ export class RelationService {
     }
 
     // 权限检查：健康管理师只能删除自己的关系，管理员可以删除任何关系
-    if (userRole !== UserRole.ADMIN && relation.managerId !== userId) {
-      throw new ForbiddenException('无权操作此关系');
-    }
+    this.checkResourceAccess(userId, userRole, relation.managerId, '无权操作此关系');
 
     // 软删除：设置状态为 INACTIVE
     await this.prisma.managerMemberRelation.update({

@@ -25,7 +25,9 @@ export class AiService {
   /**
    * AI 聊天
    */
-  async chat(_userId: string, chatRequest: ChatRequestDto, authorization?: string) {
+  async chat(userId: string, chatRequest: ChatRequestDto, authorization?: string) {
+    this.logger.log(`User ${userId} initiated AI chat`);
+
     try {
       const response = await firstValueFrom(
         this.httpService.post<any>(
@@ -54,7 +56,8 @@ export class AiService {
         {
           success: false,
           message: 'AI服务暂时不可用，请稍后再试',
-          error: error.message,
+          // 生产环境不返回详细错误信息
+          ...(process.env.NODE_ENV !== 'production' && { error: error.message }),
         },
         HttpStatus.SERVICE_UNAVAILABLE,
       );
@@ -82,7 +85,7 @@ export class AiService {
         {
           success: false,
           message: '获取对话历史失败',
-          error: error.message,
+          ...(process.env.NODE_ENV !== 'production' && { error: error.message }),
         },
         HttpStatus.SERVICE_UNAVAILABLE,
       );
@@ -119,7 +122,7 @@ export class AiService {
         {
           success: false,
           message: '获取文章列表失败',
-          error: error.message,
+          ...(process.env.NODE_ENV !== 'production' && { error: error.message }),
         },
         HttpStatus.SERVICE_UNAVAILABLE,
       );
@@ -144,7 +147,7 @@ export class AiService {
         {
           success: false,
           message: '获取文章详情失败',
-          error: error.message,
+          ...(process.env.NODE_ENV !== 'production' && { error: error.message }),
         },
         error.response?.status || HttpStatus.SERVICE_UNAVAILABLE,
       );
@@ -154,7 +157,9 @@ export class AiService {
   /**
    * 收藏文章
    */
-  async favoriteArticle(_userId: string, articleId: string, authorization?: string) {
+  async favoriteArticle(userId: string, articleId: string, authorization?: string) {
+    this.logger.log(`User ${userId} favoriting article ${articleId}`);
+
     try {
       const response = await firstValueFrom(
         this.httpService.post<any>(
@@ -173,7 +178,7 @@ export class AiService {
         {
           success: false,
           message: '收藏文章失败',
-          error: error.message,
+          ...(process.env.NODE_ENV !== 'production' && { error: error.message }),
         },
         HttpStatus.SERVICE_UNAVAILABLE,
       );
@@ -183,7 +188,9 @@ export class AiService {
   /**
    * 取消收藏文章
    */
-  async unfavoriteArticle(_userId: string, articleId: string, authorization?: string) {
+  async unfavoriteArticle(userId: string, articleId: string, authorization?: string) {
+    this.logger.log(`User ${userId} unfavoriting article ${articleId}`);
+
     try {
       const response = await firstValueFrom(
         this.httpService.delete<any>(
@@ -201,7 +208,7 @@ export class AiService {
         {
           success: false,
           message: '取消收藏失败',
-          error: error.message,
+          ...(process.env.NODE_ENV !== 'production' && { error: error.message }),
         },
         HttpStatus.SERVICE_UNAVAILABLE,
       );

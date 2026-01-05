@@ -28,6 +28,12 @@ cors_origins = (
     else [o.strip() for o in (settings.cors_origins or "").split(",") if o.strip()]
 )
 
+# 生产环境必须配置 CORS_ORIGINS（检查环境变量）
+import os
+
+if os.getenv("NODE_ENV") == "production" and len(cors_origins) == 0:
+    raise ValueError("CORS_ORIGINS must be configured in production environment")
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=cors_origins,

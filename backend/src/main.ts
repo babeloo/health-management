@@ -29,6 +29,11 @@ async function bootstrap() {
     .map((o) => o.trim())
     .filter(Boolean);
 
+  // 生产环境必须配置 CORS_ORIGINS
+  if (process.env.NODE_ENV === 'production' && corsOrigins.length === 0) {
+    throw new Error('CORS_ORIGINS must be configured in production environment');
+  }
+
   app.enableCors({
     origin: corsOrigins.length > 0 ? corsOrigins : '*',
     credentials: false,
