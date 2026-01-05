@@ -159,6 +159,23 @@ class RedisService:
             logger.error(f"Redis expire error for key {key}: {str(e)}")
             return False
 
+    async def ping(self) -> bool:
+        """
+        测试 Redis 连接
+
+        Returns:
+            bool: 连接正常返回 True
+        """
+        if self.client is None:
+            await self.connect()
+
+        try:
+            await self.client.ping()
+            return True
+        except Exception as e:
+            logger.error(f"Redis ping failed: {str(e)}")
+            return False
+
 
 # 全局单例
 _redis_service: Optional[RedisService] = None
@@ -175,3 +192,7 @@ def get_redis_service() -> RedisService:
     if _redis_service is None:
         _redis_service = RedisService()
     return _redis_service
+
+
+# 全局实例（用于向后兼容）
+redis_service = RedisService()

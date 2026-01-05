@@ -16,10 +16,19 @@ class Settings(BaseSettings):
 
     # DeepSeek API
     deepseek_api_key: Optional[str] = None
-    deepseek_base_url: str = "https://api.deepseek.com/v1"
+    deepseek_api_base: str = "https://api.deepseek.com/v1"
     deepseek_timeout: int = 60
     deepseek_max_retries: int = 3
     deepseek_model: str = "deepseek-chat"
+    deepseek_temperature: float = 0.7
+    deepseek_max_tokens: int = 2000
+
+    # Embedding 配置
+    embedding_provider: str = "openai"  # openai 或 local
+    embedding_model: str = "text-embedding-ada-002"  # OpenAI 模型
+    embedding_local_model: str = "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"  # 本地模型
+    embedding_dimension: int = 1536  # text-embedding-ada-002 的维度
+    embedding_cache_enabled: bool = True
 
     # Qdrant
     qdrant_url: str = "http://localhost:6333"

@@ -15,7 +15,7 @@ class AIService:
     def __init__(self):
         self.client = AsyncOpenAI(
             api_key=settings.deepseek_api_key,
-            base_url=settings.deepseek_base_url,
+            base_url=settings.deepseek_api_base,
             timeout=settings.deepseek_timeout,
             max_retries=settings.deepseek_max_retries,
         )
@@ -68,7 +68,7 @@ class AIService:
                     )
                     messages = [system_message] + messages
             except Exception as e:
-                print(f"RAG检索失败: {e}")
+                logger.error(f"RAG检索失败: {e}")
 
         # 调用DeepSeek API
         response = await self.client.chat.completions.create(
