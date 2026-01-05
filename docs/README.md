@@ -22,15 +22,17 @@ docs/
 │   └── api/                            # API 文档（预留）
 ├── reports/                            # 📊 项目报告
 │   ├── completion/                     # 完成报告
-│   │   ├── stage1-summary.md           # 第一阶段总结
-│   │   ├── admin-frontend.md           # 管理端完成报告
-│   │   ├── ai-service.md               # AI 服务完成报告
-│   │   ├── patient-frontend.md         # 患者端完成报告
-│   │   ├── encryption-implementation.md # 加密实现报告
-│   │   ├── jwt-auth-implementation.md  # JWT 认证实现报告
+│   │   ├── modules/                    # 模块完成报告
+│   │   │   ├── admin-frontend.md       # 管理端完成报告
+│   │   │   ├── ai-service.md           # AI 服务完成报告
+│   │   │   ├── patient-frontend.md     # 患者端完成报告
+│   │   │   ├── encryption-implementation.md # 加密实现报告
+│   │   │   └── jwt-auth-implementation.md  # JWT 认证实现报告
+│   │   ├── stages/                     # 阶段总结报告
+│   │   │   └── stage1-summary.md       # 第一阶段总结
 │   │   └── tasks/                      # 任务完成报告
 │   │       ├── backend/                # 后端任务（4个）
-│   │       ├── frontend-patient/       # 患者端任务（6个）
+│   │       ├── frontend-patient/       # 患者端任务（7个）
 │   │       ├── frontend-web/           # 管理端任务（1个）
 │   │       └── infrastructure/         # 基础设施任务（2个）
 │   ├── progress/                       # 进度报告
@@ -38,17 +40,17 @@ docs/
 │   │   ├── 2025-12-31.md               # 2025-12-31 进度
 │   │   ├── project-completion-summary.md    # 项目完成总结
 │   │   └── project-management-summary.md    # 项目管理总结
-│   ├── parallel/                       # 并行开发报告
-│   │   ├── kickoff.md                  # 并行开发启动
-│   │   ├── tasks-analysis.md           # 任务分析
-│   │   ├── execution-plan.md           # 执行计划
-│   │   ├── parallel-tasks-execution-plan.md # 并行任务执行计划
-│   │   ├── worktree-consolidation.md   # Worktree 整合报告
-│   │   └── worktree-consolidation-review.md # Worktree 整合审查
-│   └── worktree-management/            # Git Worktree 管理
-│       ├── cleanup-strategy.md         # 清理策略
-│       ├── status-report.md            # 状态报告
-│       └── cleanup-report-2026-01-01.md # 2026-01-01 清理报告
+│   └── parallel/                       # 并行开发报告（含 Worktree 管理）
+│       ├── kickoff.md                  # 并行开发启动
+│       ├── tasks-analysis.md           # 任务分析
+│       ├── execution-plan.md           # 执行计划
+│       ├── parallel-tasks-execution-plan.md # 并行任务执行计划
+│       ├── stage3-ai-service-implementation.md # Stage3 AI 服务实施计划
+│       ├── worktree-consolidation.md   # Worktree 整合报告
+│       ├── worktree-consolidation-review.md # Worktree 整合审查
+│       ├── worktree-cleanup-strategy.md # Worktree 清理策略
+│       ├── worktree-cleanup-report-2026-01-01.md # 2026-01-01 清理报告
+│       └── worktree-status-report.md   # Worktree 状态报告
 └── development/                        # 🛠️ 开发文档
     └── prisma-7-upgrade.md             # Prisma 7 升级指南
 ```
@@ -83,10 +85,12 @@ docs/
 
 由 PM Agent 和技术 Agents 生成的项目报告：
 
-- **完成报告**（`completion/`）：功能模块、阶段、任务的完成报告
+- **完成报告**（`completion/`）：
+  - `modules/`：功能模块完成报告（前端、后端、AI 服务等）
+  - `stages/`：阶段总结报告（Stage 1, Stage 2 等）
+  - `tasks/`：具体任务完成报告（按技术栈分类）
 - **进度报告**（`progress/`）：项目整体进度和管理总结
-- **并行开发**（`parallel/`）：并行开发过程的规划和总结
-- **Worktree 管理**（`worktree-management/`）：Git Worktree 管理和清理报告
+- **并行开发**（`parallel/`）：并行开发过程的规划、总结和 Git Worktree 管理报告
 
 ### 开发文档（`development/`）
 
@@ -145,3 +149,8 @@ docs/
 
 **文档管理负责人**：PM Agent
 **最后更新时间**：2026-01-05
+**最近更新**：
+- 合并 worktree-management 文件夹到 parallel 文件夹
+- 统一任务报告命名规范（添加功能描述）
+- 优化 completion 文件夹结构（分离 modules/stages/tasks）
+- 添加任务索引文件（4个子文件夹）

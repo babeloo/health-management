@@ -9,7 +9,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import HTTPBearer
 from app.routers import ai_router, education_router
 from app.middleware.metrics_middleware import MetricsMiddleware
-from app.api.v1 import metrics
+from app.api.v1 import metrics, rag, agent, health
 from app.config import settings
 
 app = FastAPI(
@@ -48,6 +48,9 @@ app.add_middleware(MetricsMiddleware)
 app.include_router(ai_router)
 app.include_router(education_router)
 app.include_router(metrics.router)
+app.include_router(rag.router, prefix="/api/v1")
+app.include_router(agent.router, prefix="/api/v1")
+app.include_router(health.router, prefix="/api/v1")
 
 
 @app.get("/")
