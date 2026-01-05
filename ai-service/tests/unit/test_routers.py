@@ -7,9 +7,17 @@ from fastapi.testclient import TestClient
 from unittest.mock import AsyncMock, patch
 from app.main import app
 from app.models import Conversation, Article
-from app.middleware import JWTUser
+from app.middleware import JWTUser, get_current_user
 
 client = TestClient(app)
+
+
+# Override dependency for all tests
+def override_get_current_user():
+    return JWTUser(user_id="user123", role="patient")
+
+
+app.dependency_overrides[get_current_user] = override_get_current_user
 
 
 @pytest.fixture
@@ -23,20 +31,6 @@ def mock_services():
         yield mock_ai, mock_conv, mock_article
 
 
-@pytest.fixture
-def mock_auth():
-    """Mock JWT认证"""
-    # 需要 patch 每个 router 中导入的 get_current_user
-    with (
-        patch("app.routers.ai_router.get_current_user") as mock_ai_auth,
-        patch("app.routers.education_router.get_current_user") as mock_edu_auth,
-    ):
-        mock_user = JWTUser(user_id="user123", role="patient")
-        mock_ai_auth.return_value = mock_user
-        mock_edu_auth.return_value = mock_user
-        yield mock_user
-
-
 def test_health_check():
     """测试健康检查端点"""
     response = client.get("/health")
@@ -44,7 +38,7 @@ def test_health_check():
     assert response.json() == {"status": "ok"}
 
 
-def test_chat_endpoint(mock_services, mock_auth):
+def test_chat_endpoint(mock_services):
     """测试AI对话端点"""
     mock_ai, mock_conv, _ = mock_services
 
@@ -65,7 +59,6 @@ def test_chat_endpoint(mock_services, mock_auth):
     response = client.post(
         "/api/v1/ai/chat",
         json={"user_id": "user123", "message": "你好", "use_rag": True},
-        headers={"Authorization": "Bearer fake-token"},
     )
 
     assert response.status_code == 200
@@ -74,7 +67,7 @@ def test_chat_endpoint(mock_services, mock_auth):
     assert "此建议仅供参考" in data["message"]
 
 
-def test_get_conversations_endpoint(mock_services, mock_auth):
+def test_get_conversations_endpoint(mock_services):
     """测试获取对话历史端点"""
     _, mock_conv, _ = mock_services
 
@@ -89,10 +82,7 @@ def test_get_conversations_endpoint(mock_services, mock_auth):
     ]
     mock_conv.get_user_conversations = AsyncMock(return_value=mock_conversations)
 
-    response = client.get(
-        "/api/v1/ai/conversations/user123",
-        headers={"Authorization": "Bearer fake-token"},
-    )
+    response = client.get("/api/v1/ai/conversations/user123")
 
     assert response.status_code == 200
     data = response.json()
@@ -150,32 +140,26 @@ def test_get_article_detail_endpoint(mock_services):
     assert data["views"] == 10
 
 
-def test_favorite_article_endpoint(mock_services, mock_auth):
+def test_favorite_article_endpoint(mock_services):
     """测试收藏文章端点"""
     _, _, mock_article = mock_services
 
     mock_article.add_favorite = AsyncMock(return_value=True)
 
-    response = client.post(
-        "/api/v1/education/articles/article1/favorite",
-        headers={"Authorization": "Bearer fake-token"},
-    )
+    response = client.post("/api/v1/education/articles/article1/favorite")
 
     assert response.status_code == 200
     data = response.json()
     assert data["success"] is True
 
 
-def test_unfavorite_article_endpoint(mock_services, mock_auth):
+def test_unfavorite_article_endpoint(mock_services):
     """测试取消收藏端点"""
     _, _, mock_article = mock_services
 
     mock_article.remove_favorite = AsyncMock(return_value=True)
 
-    response = client.delete(
-        "/api/v1/education/articles/article1/favorite",
-        headers={"Authorization": "Bearer fake-token"},
-    )
+    response = client.delete("/api/v1/education/articles/article1/favorite")
 
     assert response.status_code == 200
     data = response.json()
