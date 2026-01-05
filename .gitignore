@@ -76,3 +76,4 @@ lerna-debug.log*
 
 # Local settings
 .claude/settings.local.json
+.ace-tool/
