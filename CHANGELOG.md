@@ -8,6 +8,20 @@
 
 ## [Unreleased]
 
+### Changed
+
+- **Git 分支清理和 AI 功能归档** - 2026-01-05 @pm
+  - 删除已合并分支：
+    - `babeloo/issue5` - 所有内容已通过 PR #7 合并到 master
+    - `feature/stage4-patient-app` - 患者端功能已合并，分支版本过旧
+    - `feature/stage5-admin-web` - 管理后台功能已合并，分支版本过旧
+  - 保留并归档 `feature/stage3-ai-service`：
+    - 创建备份 tag：`archive/stage3-ai-service-2026-01-05`
+    - 包含未合并的 AI 功能：Agent 对话、辅助诊断、RAG 知识库
+    - 生成功能参考文档：`docs/STAGE3_AI_FEATURES_REFERENCE.md`
+  - 原因：stage3 与 master 存在 16 个文件冲突，建议参考文档重新实现
+  - 影响范围：Git 仓库管理，AI 功能开发参考
+
 ### In Progress
 
 - **任务24：患者端AI健康科普后端集成** - 2026-01-01 @ai-python + @mobile
