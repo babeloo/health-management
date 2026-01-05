@@ -305,13 +305,49 @@
   - **影响范围**: 所有使用 PrismaClient 的模块（auth, user, health）
   - **向后兼容**: API 接口无变化，仅内部实现调整
   - **验证结果**: ✅ 所有单元测试通过（85/85）、E2E 测试通过（21/21）、CI 检查通过
+- [x] 修复 AI 服务 CI/CD 测试环境配置问题 ✅ 完成于 2026-01-03
+  - [x] 增强 AI 服务配置管理（settings.py）✅
+  - [x] 导出 MetricsMiddleware 到 middleware 模块 ✅
+  - [x] 导出 Redis、Metrics、Cache 服务到 services 模块 ✅
+  - [x] 优化 EMQX 健康检查使用 API 端点 ✅
+  - [x] 新增模块化文件结构（api、core、services）✅
+  - **问题编号**: Issue #5
+  - **分支**: babeloo/issue5
+  - **负责人**: @ai-python
+- [x] 修复 CI 环境 Node.js 版本兼容性问题 ✅ 完成于 2026-01-04
+  - [x] 从 CI 配置中移除 Node.js 18.x（Prisma 7 要求 >= 20.19.0）✅
+  - [x] 仅保留 Node.js 20.x 进行 CI 测试 ✅
+  - [x] 使用 Black 格式化 Python 文件（添加文件末尾换行符）✅
+  - **问题描述**: Prisma 7.2.0 要求 Node.js >= 20.19.0，但 CI 配置中包含 Node.js 18.x
+  - **修改文件**: `.github/workflows/ci.yml`, `ai-service/app/api/__init__.py`, `ai-service/app/api/v1/__init__.py`
+  - **问题编号**: Issue #5
+  - **分支**: babeloo/issue5
+  - **负责人**: @ai-python
+  - **关键决策**: 移除 Node.js 18.x 测试矩阵，确保 CI 环境与 Prisma 7 兼容
+- [x] 修复 CI 代码质量检查失败问题 ✅ 完成于 2026-01-05
+  - [x] 修复 Python 语法错误（metrics_service.py:49 注释格式）✅
+  - [x] 移除 Python 未使用的导入（7个 F401 错误）✅
+  - [x] 修复后端 ESLint no-plusplus 错误（3处）✅
+  - **问题描述**: CI 检查失败，包含 Python 语法错误、未使用导入和 ESLint 错误
+  - **修改文件**:
+    - `ai-service/app/services/metrics_service.py`（修复注释格式）
+    - `ai-service/app/routers/ai_router.py`（移除 ErrorResponse）
+    - `ai-service/app/routers/education_router.py`（移除 FavoriteRequest）
+    - `ai-service/app/services/ai_service.py`（移除 asyncio）
+    - `ai-service/tests/unit/test_routers.py`（移除 MagicMock, ChatMessage）
+    - `backend/src/points/services/streak-calculation.service.ts`（替换 ++ 为 += 1）
+  - **问题编号**: Issue #5
+  - **分支**: babeloo/issue5
+  - **负责人**: @architect
+  - **关键决策**: 修复所有代码质量问题，确保 CI 检查通过
 
 **实现细节**：
 
-- ✅ 多版本 Node.js 并行测试
+- ✅ Node.js 20.x 单版本测试（移除 18.x，确保 Prisma 7 兼容）
 - ✅ 依赖缓存加速构建
 - ✅ 测试覆盖率报告
 - ✅ 同时支持 master 和 main 分支
+- ✅ Python 代码格式化（Black）
 
 ### 7. AI 服务基础框架 ✅ 100% 完成
 
@@ -2068,7 +2104,7 @@
 - [x] 统一 CORS 配置 ✅ 完成于 2026-01-03
   - [x] 通过环境变量 CORS_ORIGINS 统一管理✅
   - [x] 后端和 AI 服务均支持逗号分隔的域名列表✅
-  - [x] 关闭 credentials 避免与 "*" 组合的安全问题✅
+  - [x] 关闭 credentials 避免与 "\*" 组合的安全问题✅
 - [ ] 实现数据加密
   - [ ] 创建 EncryptionService（参考 design.md 7.1）
   - [ ] 加密存储身份证号
@@ -2093,6 +2129,7 @@
 **关联需求**：需求 #18（数据安全与隐私保护）
 
 **本次完成内容**（2026-01-03）：
+
 - ✅ 实现 relation 模块越权防护，医生只能操作自己的关系
 - ✅ 实现跨服务 JWT 鉴权透传，确保 AI 服务调用的身份验证
 - ✅ 统一 CORS 配置，通过环境变量管理允许的来源

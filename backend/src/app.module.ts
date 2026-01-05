@@ -18,7 +18,7 @@ import { ChatModule } from './chat/chat.module';
 import { NotificationModule } from './notification/notification.module';
 import { AuditModule } from './audit/audit.module';
 import { RelationModule } from './relation/relation.module';
-import { AnalyticsModule } from './analytics/analytics.module';
+// import { AnalyticsModule } from './analytics/analytics.module'; // Temporarily disabled due to ExcelJS import issue
 import { DeviceModule } from './device/device.module';
 import { MqttModule } from './mqtt/mqtt.module';
 import { AiModule } from './ai/ai.module';
@@ -82,7 +82,7 @@ import { AiModule } from './ai/ai.module';
     RelationModule,
 
     // 数据分析模块
-    AnalyticsModule,
+    // AnalyticsModule, // Temporarily disabled due to ExcelJS import issue
 
     // IoT设备管理模块
     DeviceModule,

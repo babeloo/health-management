@@ -3,7 +3,7 @@ Education Article Router
 """
 
 from fastapi import APIRouter, HTTPException, Query, Depends
-from app.models import Article, ArticleListResponse, FavoriteRequest
+from app.models import Article, ArticleListResponse
 from app.services import article_service
 from app.middleware import get_current_user, JWTUser
 

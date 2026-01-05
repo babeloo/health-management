@@ -60,6 +60,9 @@ jobs:
       - name: Check bundle size
         run: |
           cd backend
+          cp .env.example .env
+          echo "DATABASE_URL=postgresql://admin:admin123@localhost:5432/health_mgmt?schema=public" >> .env
+          pnpm prisma generate
           pnpm build
           echo "📦 Checking bundle size..."
           du -sh dist/

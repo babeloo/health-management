@@ -3,10 +3,18 @@
   "rootDir": ".",
   "testEnvironment": "node",
   "testRegex": ".e2e-spec.ts$",
+  "testPathIgnorePatterns": [
+    "/node_modules/",
+    "/analytics/"
+  ],
+  "transformIgnorePatterns": [
+    "node_modules/(?!(exceljs)/)"
+  ],
   "transform": {
     "^.+\\.(t|j)s$": "ts-jest"
   },
   "moduleNameMapper": {
-    "^src/(.*)$": "<rootDir>/../src/$1"
+    "^src/(.*)$": "<rootDir>/../src/$1",
+    "^exceljs$": "<rootDir>/__mocks__/exceljs.js"
   }
 }

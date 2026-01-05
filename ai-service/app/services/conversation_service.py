@@ -14,8 +14,8 @@ class ConversationService:
     """对话历史存储服务"""
 
     def __init__(self):
-        self.client = AsyncIOMotorClient(settings.MONGODB_URL)
-        self.db = self.client[settings.MONGODB_DB_NAME]
+        self.client = AsyncIOMotorClient(settings.mongodb_url)
+        self.db = self.client[settings.mongodb_db_name]
         self.collection = self.db["conversations"]
 
     async def create_conversation(self, user_id: str) -> Conversation:

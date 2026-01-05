@@ -72,7 +72,7 @@ async def test_get_user_conversations(conversation_service):
     mock_cursor.skip.return_value = mock_cursor
     mock_cursor.limit.return_value = mock_cursor
 
-    async def mock_async_iter():
+    async def mock_async_iter(self):
         yield {
             "id": "conv1",
             "user_id": "user123",
@@ -81,7 +81,7 @@ async def test_get_user_conversations(conversation_service):
             "updated_at": "2024-01-01T00:00:00",
         }
 
-    mock_cursor.__aiter__ = mock_async_iter
+    mock_cursor.__aiter__ = lambda self: mock_async_iter(self)
     conversation_service.collection.find = MagicMock(return_value=mock_cursor)
 
     conversations = await conversation_service.get_user_conversations("user123")

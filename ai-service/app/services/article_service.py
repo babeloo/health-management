@@ -15,15 +15,15 @@ class ArticleService:
     """科普文章管理服务"""
 
     def __init__(self):
-        self.mongo_client = AsyncIOMotorClient(settings.MONGODB_URL)
-        self.db = self.mongo_client[settings.MONGODB_DB_NAME]
+        self.mongo_client = AsyncIOMotorClient(settings.mongodb_url)
+        self.db = self.mongo_client[settings.mongodb_db_name]
         self.articles_collection = self.db["articles"]
         self.favorites_collection = self.db["favorites"]
 
         # Redis缓存
         self.redis = aioredis.from_url(
-            f"redis://{settings.REDIS_HOST}:{settings.REDIS_PORT}/{settings.REDIS_DB}",
-            password=settings.REDIS_PASSWORD,
+            f"redis://{settings.redis_host}:{settings.redis_port}/{settings.redis_db}",
+            password=settings.redis_password,
             decode_responses=True,
         )
 
@@ -71,7 +71,7 @@ class ArticleService:
             article.views += 1
 
             # 缓存
-            await self.redis.setex(cache_key, settings.REDIS_CACHE_TTL, article.model_dump_json())
+            await self.redis.setex(cache_key, settings.redis_cache_ttl, article.model_dump_json())
 
             return article
 

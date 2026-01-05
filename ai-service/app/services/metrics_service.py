@@ -46,7 +46,7 @@ class MetricsService:
         self.deepseek_tokens_total = Counter(
             name="deepseek_tokens_total",
             documentation="DeepSeek API 使用的 Token 总数",
-            labelnames=["model", "type"],  # type: prompt, completion
+            labelnames=["model", "type"],  # token_type: prompt or completion
         )
 
         # 向量检索次数计数器

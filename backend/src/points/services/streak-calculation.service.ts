@@ -51,7 +51,7 @@ export class StreakCalculationService {
       while (true) {
         const dateStr = this.formatDate(currentDate);
         if (uniqueDates.has(dateStr)) {
-          streakDays++;
+          streakDays += 1;
           currentDate.setDate(currentDate.getDate() - 1);
         } else {
           break;
@@ -101,7 +101,7 @@ export class StreakCalculationService {
       while (true) {
         const dateStr = this.formatDate(currentDate);
         if (uniqueDates.has(dateStr)) {
-          currentStreak++;
+          currentStreak += 1;
           currentDate.setDate(currentDate.getDate() - 1);
         } else {
           break;
@@ -118,7 +118,7 @@ export class StreakCalculationService {
         const daysDiff = Math.floor((current.getTime() - next.getTime()) / (1000 * 60 * 60 * 24));
 
         if (daysDiff === 1) {
-          tempStreak++;
+          tempStreak += 1;
         } else {
           longestStreak = Math.max(longestStreak, tempStreak);
           tempStreak = 1;
