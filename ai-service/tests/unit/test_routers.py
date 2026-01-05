@@ -13,7 +13,7 @@ client = TestClient(app)
 
 
 # Override dependency for all tests
-def override_get_current_user():
+async def override_get_current_user():
     return JWTUser(user_id="user123", role="patient")
 
 
