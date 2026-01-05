@@ -26,9 +26,14 @@ def mock_services():
 @pytest.fixture
 def mock_auth():
     """Mock JWT认证"""
-    with patch("app.middleware.get_current_user") as mock_get_user:
+    # 需要 patch 每个 router 中导入的 get_current_user
+    with (
+        patch("app.routers.ai_router.get_current_user") as mock_ai_auth,
+        patch("app.routers.education_router.get_current_user") as mock_edu_auth,
+    ):
         mock_user = JWTUser(user_id="user123", role="patient")
-        mock_get_user.return_value = mock_user
+        mock_ai_auth.return_value = mock_user
+        mock_edu_auth.return_value = mock_user
         yield mock_user
 
 

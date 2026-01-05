@@ -105,6 +105,10 @@
     ],
     "rootDir": "src",
     "testRegex": ".*\\.spec\\.ts$",
+    "testPathIgnorePatterns": [
+      "/node_modules/",
+      "/analytics/"
+    ],
     "transform": {
       "^.+\\.(t|j)s$": "ts-jest"
     },
