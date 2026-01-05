@@ -33,7 +33,7 @@ async def test_get_articles(article_service):
     mock_cursor.skip.return_value = mock_cursor
     mock_cursor.limit.return_value = mock_cursor
 
-    async def mock_async_iter():
+    async def mock_async_iter(self):
         yield {
             "id": "article1",
             "title": "测试文章",
@@ -45,7 +45,7 @@ async def test_get_articles(article_service):
             "created_at": "2024-01-01T00:00:00",
         }
 
-    mock_cursor.__aiter__ = mock_async_iter
+    mock_cursor.__aiter__ = lambda self: mock_async_iter(self)
     article_service.articles_collection.find = MagicMock(return_value=mock_cursor)
 
     articles, total = await article_service.get_articles(page=1, page_size=20)
@@ -115,16 +115,16 @@ async def test_get_user_favorites(article_service):
     mock_fav_cursor.skip.return_value = mock_fav_cursor
     mock_fav_cursor.limit.return_value = mock_fav_cursor
 
-    async def mock_fav_iter():
+    async def mock_fav_iter(self):
         yield {"user_id": "user123", "article_id": "article1"}
 
-    mock_fav_cursor.__aiter__ = mock_fav_iter
+    mock_fav_cursor.__aiter__ = lambda self: mock_fav_iter(self)
     article_service.favorites_collection.find = MagicMock(return_value=mock_fav_cursor)
 
     # Mock articles cursor
     mock_article_cursor = MagicMock()
 
-    async def mock_article_iter():
+    async def mock_article_iter(self):
         yield {
             "id": "article1",
             "title": "收藏的文章",
@@ -136,7 +136,7 @@ async def test_get_user_favorites(article_service):
             "created_at": "2024-01-01T00:00:00",
         }
 
-    mock_article_cursor.__aiter__ = mock_article_iter
+    mock_article_cursor.__aiter__ = lambda self: mock_article_iter(self)
     article_service.articles_collection.find = MagicMock(return_value=mock_article_cursor)
 
     article_service.favorites_collection.count_documents = AsyncMock(return_value=1)
