@@ -255,6 +255,12 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Setup environment variables
+        run: |
+          cd backend
+          cp .env.example .env
+          echo "DATABASE_URL=postgresql://admin:admin123@localhost:5432/health_mgmt?schema=public" >> .env
+
       - name: Generate Prisma Client
         run: |
           cd backend
