@@ -336,6 +336,58 @@ Redis
 2. `design.md` 中对应的技术设计
 3. 确认实现符合两份文档的要求
 
+## 文档管理规范
+
+### 文档存储结构
+
+本项目采用双层文档管理结构：
+
+**核心规约文档**（`.claude/specs/chronic-disease-management/`）：
+
+- `requirements.md` - 需求文档
+- `design.md` - 系统设计文档
+- `tasks.md` - 任务清单
+
+**项目文档**（`docs/`）：
+
+- `guides/` - 操作指南（快速入门、部署指南等）
+- `reference/` - 技术参考（架构设计、API 文档等）
+- `reports/` - 项目报告（完成报告、进度报告等）
+- `development/` - 开发文档（升级指南、配置说明等）
+
+**详细说明**：查看 [`docs/README.md`](./docs/README.md) 了解完整的文档目录结构和分类说明。
+
+### 文档命名规范
+
+本项目采用统一的文档命名规范：
+
+**核心规则**：
+
+- 根目录重要文件使用大写（`README.md`, `CHANGELOG.md`, `CLAUDE.md`）
+- 所有其他文档使用小写 kebab-case（`quick-start.md`, `docker-deployment.md`）
+- 日期格式使用 ISO 8601（`2025-12-30.md`）
+- 技术名词在文件名中统一小写（`prisma-7-upgrade.md`, `docker-deployment.md`）
+
+**详细规范**：查看 [`docs/NAMING-CONVENTIONS.md`](./docs/NAMING-CONVENTIONS.md) 了解完整的命名规范和示例。
+
+### 文档创建规则
+
+⚠️ **重要约束**：
+
+1. **不要在 `.claude/specs/` 目录下创建新文档**
+   - 该目录只保留三个核心规约文档
+   - 所有其他文档都应放到 `docs/` 目录下
+
+2. **新建文档前必须**：
+   - 阅读 `docs/NAMING-CONVENTIONS.md` 确认命名规范
+   - 确定文档应该放在 `docs/` 的哪个子目录下
+   - 使用 `git mv` 重命名文件以保留历史
+
+3. **文档更新责任**：
+   - PM Agent：自动维护进度报告、阶段总结、任务完成报告
+   - 技术 Agents：协作维护操作指南、技术参考、开发文档
+   - 所有 Agents：任务完成后立即更新 `CHANGELOG.md`
+
 ## 开发工作流
 
 ### 项目管理流程
