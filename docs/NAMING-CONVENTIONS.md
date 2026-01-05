@@ -137,8 +137,8 @@ architecture-review-report.md
 admin-frontend-completion.md
 worktree-guide.md
 worktree-consolidation.md
-task-24-completion.md
-influxdb-integration-completion.md
+task-24-ai-integration.md
+influxdb-integration.md
 ```
 
 ## 特殊情况
@@ -171,3 +171,148 @@ influxdb-integration-completion.md
 - `git-worktree-management.md` ✅
 - `docker-compose-configuration.md` ✅
 - `patient-frontend-completion.md` ✅
+
+## 文件后缀规范
+
+为了保持文档命名的一致性，不同类型的文档应使用统一的后缀。
+
+### 1. 任务完成报告
+
+**格式**：`task-{编号}-{简短描述}.md`
+
+**后缀规则**：使用具体的功能描述，避免使用通用词（如 completion, summary）
+
+**示例**：
+
+- `task-22-health-checkin.md` ✅（健康打卡功能）
+- `task-23-health-records.md` ✅（健康档案功能）
+- `task-24-ai-integration.md` ✅（AI 集成功能）
+- `task-25-points-system.md` ✅（积分系统功能）
+
+**避免**：
+
+- `task-22-completion.md` ❌（过于通用）
+- `task-22-summary.md` ❌（不一致）
+- `task-22.md` ❌（缺少描述）
+
+### 2. 模块完成报告
+
+**格式**：`{模块名}-completion.md`
+
+**后缀规则**：统一使用 `-completion` 后缀
+
+**示例**：
+
+- `admin-frontend-completion.md` ✅
+- `ai-service-completion.md` ✅
+- `patient-frontend-completion.md` ✅
+- `encryption-implementation-completion.md` ✅
+
+### 3. 阶段总结报告
+
+**格式**：`stage{编号}-summary.md` 或 `{主题}-summary.md`
+
+**后缀规则**：统一使用 `-summary` 后缀
+
+**示例**：
+
+- `stage1-summary.md` ✅
+- `stage2-summary.md` ✅
+- `project-completion-summary.md` ✅
+- `project-management-summary.md` ✅
+
+### 4. 技术实现报告
+
+**格式**：`{技术/功能}-implementation.md`
+
+**后缀规则**：统一使用 `-implementation` 后缀
+
+**示例**：
+
+- `jwt-auth-implementation.md` ✅
+- `encryption-implementation.md` ✅
+- `rag-implementation.md` ✅
+
+### 5. 操作指南
+
+**格式**：`{主题}-guide.md`
+
+**后缀规则**：统一使用 `-guide` 后缀
+
+**示例**：
+
+- `worktree-guide.md` ✅
+- `deployment-guide.md` ✅
+- `testing-guide.md` ✅
+
+### 6. 参考文档
+
+**格式**：`{主题}-reference.md`
+
+**后缀规则**：统一使用 `-reference` 后缀
+
+**示例**：
+
+- `api-reference.md` ✅
+- `stage3-ai-features-reference.md` ✅
+- `database-schema-reference.md` ✅
+
+### 7. 审查报告
+
+**格式**：`{主题}-review.md` 或 `{主题}-review-{类型}.md`
+
+**后缀规则**：统一使用 `-review` 后缀
+
+**示例**：
+
+- `architecture-review-report.md` ✅
+- `code-review-summary.md` ✅
+- `worktree-consolidation-review.md` ✅
+
+### 8. 策略和计划文档
+
+**格式**：`{主题}-{类型}.md`
+
+**后缀规则**：
+- 策略文档使用 `-strategy`
+- 计划文档使用 `-plan`
+- 执行计划使用 `-execution-plan`
+
+**示例**：
+
+- `worktree-cleanup-strategy.md` ✅
+- `deployment-strategy.md` ✅
+- `execution-plan.md` ✅
+- `parallel-tasks-execution-plan.md` ✅
+
+### 9. 状态和进度报告
+
+**格式**：`{主题}-{类型}-report.md` 或 `YYYY-MM-DD.md`
+
+**后缀规则**：
+- 状态报告使用 `-status-report`
+- 清理报告使用 `-cleanup-report`
+- 进度报告使用日期格式
+
+**示例**：
+
+- `worktree-status-report.md` ✅
+- `worktree-cleanup-report-2026-01-01.md` ✅
+- `2025-12-30.md` ✅（进度报告）
+
+## 后缀选择决策树
+
+```
+文档类型？
+├─ 任务报告 → task-{编号}-{功能描述}.md
+├─ 模块完成 → {模块名}-completion.md
+├─ 阶段总结 → stage{编号}-summary.md
+├─ 技术实现 → {技术}-implementation.md
+├─ 操作指南 → {主题}-guide.md
+├─ 参考文档 → {主题}-reference.md
+├─ 审查报告 → {主题}-review.md
+├─ 策略文档 → {主题}-strategy.md
+├─ 计划文档 → {主题}-plan.md
+└─ 状态报告 → {主题}-status-report.md
+```
+
