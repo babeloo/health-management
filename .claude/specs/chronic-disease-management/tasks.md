@@ -324,6 +324,22 @@
   - **分支**: babeloo/issue5
   - **负责人**: @ai-python
   - **关键决策**: 移除 Node.js 18.x 测试矩阵，确保 CI 环境与 Prisma 7 兼容
+- [x] 修复 CI 代码质量检查失败问题 ✅ 完成于 2026-01-05
+  - [x] 修复 Python 语法错误（metrics_service.py:49 注释格式）✅
+  - [x] 移除 Python 未使用的导入（7个 F401 错误）✅
+  - [x] 修复后端 ESLint no-plusplus 错误（3处）✅
+  - **问题描述**: CI 检查失败，包含 Python 语法错误、未使用导入和 ESLint 错误
+  - **修改文件**:
+    - `ai-service/app/services/metrics_service.py`（修复注释格式）
+    - `ai-service/app/routers/ai_router.py`（移除 ErrorResponse）
+    - `ai-service/app/routers/education_router.py`（移除 FavoriteRequest）
+    - `ai-service/app/services/ai_service.py`（移除 asyncio）
+    - `ai-service/tests/unit/test_routers.py`（移除 MagicMock, ChatMessage）
+    - `backend/src/points/services/streak-calculation.service.ts`（替换 ++ 为 += 1）
+  - **问题编号**: Issue #5
+  - **分支**: babeloo/issue5
+  - **负责人**: @architect
+  - **关键决策**: 修复所有代码质量问题，确保 CI 检查通过
 
 **实现细节**：
 

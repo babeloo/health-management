@@ -3,7 +3,7 @@ AI Chat Router
 """
 
 from fastapi import APIRouter, HTTPException, Depends
-from app.models import ChatRequest, ChatResponse, ChatMessage, Conversation, ErrorResponse
+from app.models import ChatRequest, ChatResponse, ChatMessage, Conversation
 from app.services import ai_service, conversation_service
 from app.middleware import get_current_user, JWTUser
 

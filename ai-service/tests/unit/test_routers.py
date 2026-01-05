@@ -4,9 +4,9 @@ Test API Routers
 
 import pytest
 from fastapi.testclient import TestClient
-from unittest.mock import AsyncMock, patch, MagicMock
+from unittest.mock import AsyncMock, patch
 from app.main import app
-from app.models import Conversation, ChatMessage, Article
+from app.models import Conversation, Article
 
 client = TestClient(app)
 

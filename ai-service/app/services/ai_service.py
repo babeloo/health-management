@@ -7,7 +7,6 @@ from openai import AsyncOpenAI
 from app.config import settings
 from app.models import ChatMessage
 from app.services.rag_service import rag_service
-import asyncio
 
 
 class AIService:
