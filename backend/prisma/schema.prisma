@@ -15,27 +15,27 @@ model User {
   id String @id @default(uuid())
 
   // 认证信息
-  username String @unique
+  username String   @unique
   password String
-  email    String? @unique
-  phone    String? @unique
+  email    String?  @unique
+  phone    String?  @unique
   role     UserRole
 
   // 个人信息
-  fullName  String?
-  gender    Gender?
-  birthDate DateTime?
+  fullName        String?
+  gender          Gender?
+  birthDate       DateTime?
   idCardEncrypted String? // 加密存储
-  avatarUrl String?
+  avatarUrl       String?
 
   // 状态
   status        UserStatus @default(ACTIVE)
-  emailVerified Boolean @default(false)
-  phoneVerified Boolean @default(false)
+  emailVerified Boolean    @default(false)
+  phoneVerified Boolean    @default(false)
 
   // 时间戳
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
   lastLoginAt DateTime?
 
   // 关系
@@ -55,6 +55,8 @@ model User {
   @@index([role])
   @@index([status])
   @@index([createdAt])
+  @@index([role, status])
+  @@index([status, createdAt])
   @@map("users")
 }
 
@@ -65,9 +67,9 @@ model HealthRecord {
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   // 基础信息
-  height     Float?
-  weight     Float?
-  bloodType  String?
+  height    Float?
+  weight    Float?
+  bloodType String?
 
   // 病史 (JSON)
   chronicDiseases Json?
@@ -91,18 +93,20 @@ model CheckIn {
   userId String
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  type          CheckInType
-  data          Json
-  notes         String?
-  pointsEarned  Int @default(0)
+  type         CheckInType
+  data         Json
+  notes        String?
+  pointsEarned Int         @default(0)
 
-  checkInDate   DateTime @db.Date
-  createdAt     DateTime @default(now())
+  checkInDate DateTime @db.Date
+  createdAt   DateTime @default(now())
 
   @@unique([userId, type, checkInDate])
   @@index([userId, checkInDate])
   @@index([type])
   @@index([createdAt])
+  @@index([userId, type])
+  @@index([type, checkInDate])
   @@map("check_ins")
 }
 
@@ -112,20 +116,22 @@ model RiskAssessment {
   userId String
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  type                String
-  questionnaireData   Json?
-  deviceData          Json?
+  type              String
+  questionnaireData Json?
+  deviceData        Json?
 
-  riskLevel           RiskLevel
-  riskScore           Float?
-  resultDetails       Json?
-  aiRecommendations   String?
+  riskLevel         RiskLevel
+  riskScore         Float?
+  resultDetails     Json?
+  aiRecommendations String?
 
   assessedAt DateTime @default(now())
 
   @@index([userId, type])
   @@index([riskLevel])
   @@index([assessedAt])
+  @@index([userId, riskLevel])
+  @@index([riskLevel, assessedAt])
   @@map("risk_assessments")
 }
 
@@ -145,17 +151,19 @@ model PointsTransaction {
 
   @@index([userId, createdAt])
   @@index([type])
+  @@index([userId, type])
+  @@index([type, createdAt])
   @@map("points_transactions")
 }
 
 // 连续打卡奖励记录表
 model StreakBonusRecord {
-  id            String   @id @default(uuid())
-  userId        String
-  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id     String @id @default(uuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  streakDays    Int      // 连续天数（7、30、90等）
-  pointsAwarded Int      // 奖励积分
+  streakDays    Int // 连续天数（7、30、90等）
+  pointsAwarded Int // 奖励积分
   awardedAt     DateTime @default(now())
 
   @@index([userId, awardedAt])
@@ -169,11 +177,11 @@ model DoctorPatientRelation {
   doctorId  String
   patientId String
 
-  doctor    User @relation("DoctorRelations", fields: [doctorId], references: [id])
-  patient   User @relation("PatientRelations", fields: [patientId], references: [id])
+  doctor  User @relation("DoctorRelations", fields: [doctorId], references: [id])
+  patient User @relation("PatientRelations", fields: [patientId], references: [id])
 
-  status    RelationStatus @default(ACTIVE)
-  notes     String?
+  status RelationStatus @default(ACTIVE)
+  notes  String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -181,6 +189,8 @@ model DoctorPatientRelation {
   @@unique([doctorId, patientId])
   @@index([doctorId])
   @@index([patientId])
+  @@index([doctorId, status])
+  @@index([patientId, status])
   @@map("doctor_patient_relations")
 }
 
@@ -190,23 +200,25 @@ model ManagerMemberRelation {
   managerId String
   memberId  String
 
-  manager   User @relation("ManagerRelations", fields: [managerId], references: [id])
-  member    User @relation("MemberRelations", fields: [memberId], references: [id])
+  manager User @relation("ManagerRelations", fields: [managerId], references: [id])
+  member  User @relation("MemberRelations", fields: [memberId], references: [id])
 
-  membershipType     String? // basic, premium, vip
-  serviceCount       Int @default(0)
-  totalServiceHours  Float @default(0)
+  membershipType    String? // basic, premium, vip
+  serviceCount      Int     @default(0)
+  totalServiceHours Float   @default(0)
 
-  status    RelationStatus @default(ACTIVE)
+  status RelationStatus @default(ACTIVE)
 
-  startedAt DateTime @default(now())
+  startedAt DateTime  @default(now())
   endedAt   DateTime?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 
   @@unique([managerId, memberId])
   @@index([managerId])
   @@index([memberId])
+  @@index([managerId, status])
+  @@index([memberId, status])
   @@map("manager_member_relations")
 }
 
@@ -216,6 +228,7 @@ enum UserRole {
   DOCTOR
   HEALTH_MANAGER
   ADMIN
+
   @@map("user_role")
 }
 
@@ -223,6 +236,7 @@ enum UserStatus {
   ACTIVE
   INACTIVE
   BANNED
+
   @@map("user_status")
 }
 
@@ -230,6 +244,7 @@ enum Gender {
   MALE
   FEMALE
   OTHER
+
   @@map("gender_type")
 }
 
@@ -240,6 +255,7 @@ enum CheckInType {
   EXERCISE
   DIET
   THERAPY
+
   @@map("check_in_type")
 }
 
@@ -247,6 +263,7 @@ enum RiskLevel {
   LOW
   MEDIUM
   HIGH
+
   @@map("risk_level")
 }
 
@@ -255,12 +272,14 @@ enum TransactionType {
   REDEEM
   BONUS
   PENALTY
+
   @@map("transaction_type")
 }
 
 enum RelationStatus {
   ACTIVE
   INACTIVE
+
   @@map("relation_status")
 }
 
@@ -275,7 +294,7 @@ model Notification {
   content String
   data    Json?
 
-  isRead Boolean @default(false)
+  isRead Boolean   @default(false)
   readAt DateTime?
 
   createdAt DateTime @default(now())
@@ -293,21 +312,22 @@ enum NotificationType {
   HEALTH_ABNORMAL
   SYSTEM_NOTIFICATION
   MESSAGE
+
   @@map("notification_type")
 }
 
 // 审计日志表
 model AuditLog {
-  id     String @id @default(uuid())
+  id     String  @id @default(uuid())
   userId String?
-  user   User?  @relation(fields: [userId], references: [id], onDelete: SetNull)
+  user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
 
-  action      AuditAction
-  resource    String      // 资源类型(如 health_record, user, check_in)
-  resourceId  String?     // 资源ID
-  details     Json?       // 操作详情
-  ipAddress   String?
-  userAgent   String?
+  action     AuditAction
+  resource   String // 资源类型(如 health_record, user, check_in)
+  resourceId String? // 资源ID
+  details    Json? // 操作详情
+  ipAddress  String?
+  userAgent  String?
 
   createdAt DateTime @default(now())
 
@@ -326,6 +346,7 @@ enum AuditAction {
   LOGIN
   LOGOUT
   PERMISSION_CHANGE
+
   @@map("audit_action")
 }
 
@@ -334,30 +355,30 @@ model Device {
   id String @id @default(uuid())
 
   // 设备信息
-  deviceId      String      @unique // 设备唯一标识符（如MAC地址）
-  deviceType    DeviceType  // 设备类型
-  deviceName    String?     // 设备名称
-  manufacturer  String?     // 制造商
-  model         String?     // 型号
-  firmwareVersion String?   // 固件版本
+  deviceId        String     @unique // 设备唯一标识符（如MAC地址）
+  deviceType      DeviceType // 设备类型
+  deviceName      String? // 设备名称
+  manufacturer    String? // 制造商
+  model           String? // 型号
+  firmwareVersion String? // 固件版本
 
   // 用户绑定
-  userId    String?
-  user      User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+  userId     String?
+  user       User?      @relation(fields: [userId], references: [id], onDelete: SetNull)
   bindStatus BindStatus @default(UNBOUND)
 
   // MQTT认证信息
-  mqttUsername String? @unique
+  mqttUsername     String? @unique
   mqttPasswordHash String?
-  mqttClientId String? @unique
+  mqttClientId     String? @unique
 
   // 设备状态
-  status      DeviceStatus @default(INACTIVE)
+  status       DeviceStatus @default(INACTIVE)
   lastOnlineAt DateTime?
   lastDataAt   DateTime? // 最后一次数据上报时间
 
   // 元数据
-  metadata  Json? // 设备额外信息（如序列号、生产日期等）
+  metadata Json? // 设备额外信息（如序列号、生产日期等）
 
   // 时间戳
   createdAt DateTime @default(now())
@@ -368,34 +389,40 @@ model Device {
   @@index([status])
   @@index([bindStatus])
   @@index([createdAt])
+  @@index([userId, deviceType])
+  @@index([userId, status])
+  @@index([deviceType, status])
   @@map("devices")
 }
 
 // 设备类型枚举
 enum DeviceType {
-  BLOOD_PRESSURE_MONITOR  // 血压计
-  BLOOD_GLUCOSE_METER     // 血糖仪
-  WEIGHT_SCALE            // 体重秤
-  THERMOMETER             // 体温计
-  OXIMETER                // 血氧仪
-  ECG_MONITOR             // 心电仪
-  OTHER                   // 其他
+  BLOOD_PRESSURE_MONITOR // 血压计
+  BLOOD_GLUCOSE_METER // 血糖仪
+  WEIGHT_SCALE // 体重秤
+  THERMOMETER // 体温计
+  OXIMETER // 血氧仪
+  ECG_MONITOR // 心电仪
+  OTHER // 其他
+
   @@map("device_type")
 }
 
 // 设备状态枚举
 enum DeviceStatus {
-  ACTIVE      // 活跃
-  INACTIVE    // 未激活
-  OFFLINE     // 离线
+  ACTIVE // 活跃
+  INACTIVE // 未激活
+  OFFLINE // 离线
   MAINTENANCE // 维护中
-  DISABLED    // 已禁用
+  DISABLED // 已禁用
+
   @@map("device_status")
 }
 
 // 绑定状态枚举
 enum BindStatus {
-  BOUND       // 已绑定
-  UNBOUND     // 未绑定
+  BOUND // 已绑定
+  UNBOUND // 未绑定
+
   @@map("bind_status")
 }

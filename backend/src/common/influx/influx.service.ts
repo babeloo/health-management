@@ -177,7 +177,7 @@ export class InfluxService {
       const result: BloodPressureDataPoint[] = [];
       const rows = await this.queryApi.collectRows(query);
 
-      rows.forEach((row: InfluxRow) => {
+      (rows as InfluxRow[]).forEach((row: InfluxRow) => {
         // eslint-disable-next-line no-underscore-dangle
         result.push({
           // eslint-disable-next-line no-underscore-dangle
@@ -220,7 +220,7 @@ export class InfluxService {
       const result: BloodSugarDataPoint[] = [];
       const rows = await this.queryApi.collectRows(query);
 
-      rows.forEach((row: InfluxRow) => {
+      (rows as InfluxRow[]).forEach((row: InfluxRow) => {
         // eslint-disable-next-line no-underscore-dangle
         result.push({
           // eslint-disable-next-line no-underscore-dangle
@@ -267,7 +267,7 @@ export class InfluxService {
       const result: TimeSeriesDataPoint[] = [];
       const rows = await this.queryApi.collectRows(query);
 
-      rows.forEach((row: InfluxRow) => {
+      (rows as InfluxRow[]).forEach((row: InfluxRow) => {
         // eslint-disable-next-line no-underscore-dangle
         result.push({
           // eslint-disable-next-line no-underscore-dangle
@@ -317,7 +317,7 @@ export class InfluxService {
 
     try {
       const rows = await this.queryApi.collectRows(fluxQuery);
-      return rows.map((row: InfluxRow) => ({
+      return (rows as InfluxRow[]).map((row: InfluxRow) => ({
         // eslint-disable-next-line no-underscore-dangle
         time: row._time,
         systolic: parseFloat(((row.systolic as number) || 0).toFixed(1)),
@@ -356,7 +356,7 @@ export class InfluxService {
 
     try {
       const rows = await this.queryApi.collectRows(fluxQuery);
-      return rows.map((row: InfluxRow) => ({
+      return (rows as InfluxRow[]).map((row: InfluxRow) => ({
         timing: (row.timing as string) || 'unknown',
         avgValue: parseFloat(((row.avg_value as number) || 0).toFixed(1)),
       }));
@@ -405,7 +405,7 @@ export class InfluxService {
 
     try {
       const rows = await this.queryApi.collectRows(fluxQuery);
-      return rows.map((row: InfluxRow) => ({
+      return (rows as InfluxRow[]).map((row: InfluxRow) => ({
         // eslint-disable-next-line no-underscore-dangle
         field: (row._field as string) || 'unknown',
         mean: parseFloat(((row.mean as number) || 0).toFixed(1)),
@@ -462,7 +462,7 @@ export class InfluxService {
 
     try {
       const rows = await this.queryApi.collectRows(fluxQuery);
-      return rows.map((row: InfluxRow) => ({
+      return (rows as InfluxRow[]).map((row: InfluxRow) => ({
         timing: (row.timing as string) || 'unknown',
         mean: parseFloat(((row.mean as number) || 0).toFixed(1)),
         max: parseFloat(((row.max as number) || 0).toFixed(1)),
@@ -599,7 +599,7 @@ export class InfluxService {
 
     try {
       const rows = await this.queryApi.collectRows(fluxQuery);
-      return rows.map((row: InfluxRow) => ({
+      return (rows as InfluxRow[]).map((row: InfluxRow) => ({
         // eslint-disable-next-line no-underscore-dangle
         time: row._time,
         checkInId: (row.check_in_id as string) || '',
@@ -646,7 +646,7 @@ export class InfluxService {
 
     try {
       const rows = await this.queryApi.collectRows(fluxQuery);
-      return rows.map((row: InfluxRow) => ({
+      return (rows as InfluxRow[]).map((row: InfluxRow) => ({
         // eslint-disable-next-line no-underscore-dangle
         time: row._time,
         checkInId: (row.check_in_id as string) || '',

@@ -2228,6 +2228,24 @@
 - ✅ **测试验证**：所有测试通过（285 passed, 18 test suites）
 - **修改文件**：4 个文件（relation.service.ts, ai.service.ts, main.ts, ai-service/app/main.py）
 
+**类型安全与性能优化**（2026-01-05）：
+
+进行代码质量和性能优化改进：
+
+- ✅ **TypeScript 严格模式**：
+  - 启用 strict mode 和相关严格检查（strictFunctionTypes, strictBindCallApply）
+  - 修复 InfluxDB 服务中的类型断言问题（collectRows 返回值类型）
+  - 添加通用错误处理工具类（backend/src/common/utils/error.util.ts）
+- ✅ **数据库性能优化**：
+  - 为 Prisma schema 添加 12 个复合索引，优化多条件查询性能
+  - 优化索引：users(role, status)、check_ins(userId, type)、devices(userId, deviceType) 等
+  - 提升查询性能，特别是医患关系、打卡记录、设备管理等高频查询
+- ✅ **AI 服务配置改进**：
+  - 添加 ENVIRONMENT 环境变量配置（development/staging/production）
+  - 改进生产环境 CORS 检查逻辑，使用 settings.environment 替代 NODE_ENV
+  - 更新 .env.example 文档，明确生产环境配置要求
+- **修改文件**：6 个文件（tsconfig.json, influx.service.ts, schema.prisma, .env.example, main.py, error.util.ts）
+
 ---
 
 ## 第八阶段：测试与上线（Week 11-12）
