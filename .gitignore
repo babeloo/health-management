@@ -71,6 +71,12 @@ lerna-debug.log*
 *.temp
 .cache/
 
+# Test files (临时测试文件)
+test_*.py
+test-*.json
+test_*.log
+ai-chat-*.json
+
 # References
 .ref/
 
