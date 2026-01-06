@@ -4,6 +4,7 @@ DeepSeek AI Chat Service
 
 from typing import List, Dict, Any, Optional
 from openai import AsyncOpenAI
+from loguru import logger
 from app.config import settings
 from app.models import ChatMessage
 from app.services.rag_service import rag_service
@@ -15,7 +16,7 @@ class AIService:
     def __init__(self):
         self.client = AsyncOpenAI(
             api_key=settings.deepseek_api_key,
-            base_url=settings.deepseek_api_base,
+            base_url=settings.deepseek_base_url,
             timeout=settings.deepseek_timeout,
             max_retries=settings.deepseek_max_retries,
         )

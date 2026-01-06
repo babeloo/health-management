@@ -21,6 +21,11 @@
   - 删除根目录下 8 个临时测试 JSON 文件
   - 更新 .gitignore 防止此类文件再次被提交
   - 详见：`docs/reports/file-cleanup-report-2026-01-07.md`
+- 重组项目文件结构 - 2026-01-07 @pm
+  - 移动 `test_ai_integration.py` → `scripts/integration-tests/ai-integration-test.py`
+  - 移动 `test_ai_integration.sh` → `scripts/integration-tests/ai-integration-test.sh`
+  - 移动 `ai-service/MONITORING_GUIDE.md` → `docs/guides/ai-service-monitoring.md`
+  - 添加 `scripts/integration-tests/README.md` 说明文档
 
 ### Added
 

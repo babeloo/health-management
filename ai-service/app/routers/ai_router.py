@@ -33,7 +33,9 @@ async def chat(request: ChatRequest, current_user: JWTUser = Depends(get_current
 
         # 添加用户消息
         user_message = ChatMessage(role="user", content=request.message)
-        await conversation_service.add_message(conversation.id, user_message)
+        conversation = await conversation_service.add_message(conversation.id, user_message)
+        if not conversation:
+            raise HTTPException(status_code=500, detail="添加消息失败")
 
         # 构建对话历史
         messages = [ChatMessage(role=m.role, content=m.content) for m in conversation.messages]

@@ -5,14 +5,14 @@ FROM node:18-alpine AS deps
 
 WORKDIR /app
 
-# 安装 pnpm（使用 corepack 更高效）
-RUN corepack enable && corepack prepare pnpm@latest --activate
+# 安装 pnpm（使用 corepack，指定与仓库 packageManager 一致的 pnpm 版本）
+RUN corepack enable && corepack prepare pnpm@10.27.0 --activate
 
 # 复制依赖文件
 COPY package.json pnpm-lock.yaml ./
 COPY prisma ./prisma/
 
-# 安装所有依赖（用于构建）
+# 安装所有依赖（用于构建），使用 frozen lockfile 确保可复现构建
 RUN pnpm install --frozen-lockfile
 
 # ================================
@@ -40,14 +40,14 @@ FROM node:18-alpine AS prod-deps
 
 WORKDIR /app
 
-RUN corepack enable && corepack prepare pnpm@latest --activate
+RUN corepack enable && corepack prepare pnpm@10.27.0 --activate
 
 COPY package.json pnpm-lock.yaml ./
 COPY prisma ./prisma/
 
-# 仅安装生产依赖
+# 仅安装生产依赖（使用 frozen lockfile 确保可复现构建）
 RUN pnpm install --prod --frozen-lockfile && \
-    npx prisma generate
+  npx prisma generate
 
 # ================================
 # Stage 4: 生产运行阶段

@@ -5,14 +5,15 @@ FROM node:18-alpine AS deps
 
 WORKDIR /app
 
-# 安装 pnpm（使用 corepack）
-RUN corepack enable && corepack prepare pnpm@latest --activate
+# 安装 pnpm（使用 corepack，指定与仓库 packageManager 一致的 pnpm 版本）
+RUN corepack enable && corepack prepare pnpm@10.27.0 --activate
 
-# 复制依赖文件
-COPY package.json pnpm-lock.yaml ./
+# 复制 workspace 依赖文件（锁文件在仓库根目录）
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY frontend-web/package.json ./frontend-web/package.json
 
-# 安装依赖
-RUN pnpm install --frozen-lockfile
+# 仅安装 web 端依赖
+RUN pnpm install --frozen-lockfile --filter ./frontend-web...
 
 # ================================
 # Stage 2: 构建阶段
@@ -21,14 +22,16 @@ FROM node:18-alpine AS builder
 
 WORKDIR /app
 
-# 从 deps 阶段复制 node_modules
+# 从 deps 阶段复制依赖
 COPY --from=deps /app/node_modules ./node_modules
-COPY --from=deps /app/package.json ./package.json
+COPY --from=deps /app/frontend-web/node_modules ./frontend-web/node_modules
+COPY --from=deps /app/frontend-web/package.json ./frontend-web/package.json
 
 # 复制源代码
-COPY . .
+COPY frontend-web ./frontend-web
 
 # 构建应用
+WORKDIR /app/frontend-web
 RUN npm run build
 
 # ================================
@@ -37,23 +40,21 @@ RUN npm run build
 FROM nginx:alpine AS production
 
 # 复制自定义 Nginx 配置
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY frontend-web/nginx.conf /etc/nginx/conf.d/default.conf
 
 # 从构建阶段复制构建产物
-COPY --from=builder /app/dist /usr/share/nginx/html
+COPY --from=builder /app/frontend-web/dist /usr/share/nginx/html
 
 # 创建健康检查端点
 RUN echo '<!DOCTYPE html><html><body>OK</body></html>' > /usr/share/nginx/html/health
 
 # 设置权限
-RUN chown -R nginx:nginx /usr/share/nginx/html && \
-    chmod -R 755 /usr/share/nginx/html
+RUN chown -R nginx:nginx /usr/share/nginx/html &&     chmod -R 755 /usr/share/nginx/html
 
 EXPOSE 80
 
 # 健康检查
-HEALTHCHECK --interval=30s --timeout=10s --start-period=10s --retries=3 \
-  CMD wget --quiet --tries=1 --spider http://localhost/health || exit 1
+HEALTHCHECK --interval=30s --timeout=10s --start-period=10s --retries=3   CMD wget --quiet --tries=1 --spider http://localhost/health || exit 1
 
 # 启动 Nginx
 CMD ["nginx", "-g", "daemon off;"]

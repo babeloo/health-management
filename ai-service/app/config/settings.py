@@ -16,7 +16,7 @@ class Settings(BaseSettings):
 
     # DeepSeek API
     deepseek_api_key: Optional[str] = None
-    deepseek_api_base: str = "https://api.deepseek.com/v1"
+    deepseek_base_url: str = "https://api.deepseek.com/v1"
     deepseek_timeout: int = 60
     deepseek_max_retries: int = 3
     deepseek_model: str = "deepseek-chat"
@@ -66,6 +66,7 @@ class Settings(BaseSettings):
     class Config:
         env_file = ".env"
         case_sensitive = False
+        extra = "ignore"
 
 
 settings = Settings()

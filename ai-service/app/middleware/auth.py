@@ -2,7 +2,7 @@
 JWT 认证中间件
 """
 
-from fastapi import Request, HTTPException, status
+from fastapi import Request, HTTPException, status, Depends
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from jose import JWTError, jwt
 from typing import Optional, Dict, Any
@@ -45,7 +45,7 @@ def decode_jwt(token: str) -> Dict[str, Any]:
 
 
 async def get_current_user(
-    credentials: HTTPAuthorizationCredentials = security,
+    credentials: HTTPAuthorizationCredentials = Depends(security),
 ) -> JWTUser:
     """
     从请求中提取并验证 JWT，返回用户信息
