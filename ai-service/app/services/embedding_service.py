@@ -28,13 +28,17 @@ class EmbeddingService:
         self._cache: dict = {}  # 简单的内存缓存
 
         if self.provider == "openai":
+            # 使用独立的 embedding API 配置,如果未设置则回退到 DeepSeek
+            api_key = settings.embedding_api_key or settings.deepseek_api_key
+            base_url = settings.embedding_base_url
+
             self.client = AsyncOpenAI(
-                api_key=settings.deepseek_api_key,
-                base_url=settings.deepseek_base_url,
+                api_key=api_key,
+                base_url=base_url,
                 timeout=settings.deepseek_timeout,
             )
             self.model = settings.embedding_model
-            logger.info(f"Embedding service initialized with OpenAI: {self.model}")
+            logger.info(f"Embedding service initialized with OpenAI API: {self.model}, base_url={base_url}")
         else:
             # 本地模型懒加载
             self._local_model = None

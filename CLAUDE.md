@@ -207,6 +207,125 @@ pnpm test
 - GitHub Actions 页面：`https://github.com/{org}/{repo}/actions`
 - 检查失败时会在 PR 中显示详细错误信息
 
+## 环境变量配置机制
+
+本项目采用分层环境变量配置机制，支持全局配置和模块配置的继承与覆盖。
+
+### 配置优先级（从低到高）
+
+```
+1. 代码中的默认值（最低优先级）
+   ↓
+2. 根目录 .env 文件（全局配置）
+   ↓
+3. 模块目录 .env 文件（模块配置，覆盖全局）
+   ↓
+4. 环境变量（最高优先级）
+```
+
+### AI Service 配置示例
+
+**根目录 `.env`（全局配置）**：
+
+```bash
+# 全局默认配置，所有服务共享
+DEEPSEEK_API_KEY=global-deepseek-key
+REDIS_HOST=localhost
+REDIS_PORT=6379
+```
+
+**ai-service/.env（模块配置）**：
+
+```bash
+# 只需配置需要覆盖的项
+EMBEDDING_PROVIDER=openai
+EMBEDDING_API_KEY=openai-key-for-ai-service
+LOG_LEVEL=DEBUG
+
+# 未配置的项（如 REDIS_HOST）自动从根目录 .env 继承
+```
+
+### 配置文件说明
+
+| 文件                               | 用途             | 是否提交 Git |
+| ---------------------------------- | ---------------- | ------------ |
+| `.env.example`                     | 全局配置模板     | ✅ 提交      |
+| `.env`, `.env.local`               | 全局实际配置     | ❌ 不提交    |
+| `ai-service/.env.example`          | AI 服务配置模板  | ✅ 提交      |
+| `ai-service/.env`                  | AI 服务实际配置  | ❌ 不提交    |
+| `ai-service/.env.override-example` | 覆盖配置示例     | ✅ 提交      |
+| `backend/.env.development`         | 后端开发环境配置 | ✅ 提交      |
+| `backend/.env.production`          | 后端生产环境配置 | ✅ 提交      |
+
+### 调试配置加载
+
+**测试配置加载顺序**：
+
+```bash
+cd ai-service
+python test_config.py
+```
+
+输出示例：
+
+```
+==============================================================
+Configuration Loading Info
+==============================================================
+1. ✓ Found: D:\project\intl-health-mgmt\.env
+2. ✓ Found: D:\project\intl-health-mgmt\ai-service\.env
+--------------------------------------------------------------
+Key Configuration Values:
+  Environment: development
+  DeepSeek Base URL: https://api.deepseek.com/v1
+  DeepSeek API Key: **********
+  Embedding Provider: openai
+  Embedding Base URL: https://api.openai.com/v1
+  Embedding API Key: ********** (fallback to DeepSeek)
+==============================================================
+```
+
+**测试环境变量覆盖**：
+
+```bash
+# 环境变量具有最高优先级
+EMBEDDING_PROVIDER=local python test_config.py
+```
+
+### 最佳实践
+
+1. **全局配置**：在根目录 `.env` 设置所有服务共享的默认配置
+2. **模块覆盖**：在模块 `.env` 只配置需要覆盖的特定项
+3. **敏感信息**：使用 `.env.local` 存储本地开发的敏感配置（不提交 Git）
+4. **生产部署**：通过环境变量注入配置，不依赖 `.env` 文件
+
+### 常见场景
+
+**场景1：AI 服务使用独立的 Embedding API**
+
+```bash
+# ai-service/.env
+EMBEDDING_PROVIDER=openai
+EMBEDDING_API_KEY=sk-your-openai-key
+EMBEDDING_BASE_URL=https://api.openai.com/v1
+```
+
+**场景2：本地开发使用 Mock 服务**
+
+```bash
+# .env.local（不提交 Git）
+DEEPSEEK_API_KEY=mock-key-for-testing
+DEEPSEEK_BASE_URL=http://localhost:8080/mock
+```
+
+**场景3：Docker Compose 部署**
+
+```bash
+# 环境变量优先级最高
+export EMBEDDING_API_KEY=production-openai-key
+docker-compose -f docker-compose.prod.yml up -d
+```
+
 ## 架构关键点
 
 ### 1. 微服务通信架构

@@ -1115,6 +1115,12 @@
   - [x] 集成测试：Qdrant 数据写入和查询
   - [x] 集成测试：RAG 问答流程
   - [x] 准备测试数据（10+ 篇医疗科普文章）
+- [x] Embedding API 配置优化 ✅ 完成于 2026-01-07
+  - [x] 实现独立的 Embedding API 配置支持
+  - [x] 实现多层级配置继承机制（全局配置 + 模块配置）
+  - [x] 创建 Embedding 服务完整测试套件（7个测试，100%通过率）
+  - [x] 验证 RAG 流程中的向量一致性
+  - [x] 补充配置机制说明文档
 
 **完成成果**:
 
@@ -1122,6 +1128,20 @@
 - ✅ RAG 检索增强生成实现
 - ✅ 科普文档管理接口完成
 - ✅ 完整的测试覆盖
+- ✅ Embedding API 独立配置支持（2026-01-07）
+- ✅ 配置继承机制实现（2026-01-07）
+- ✅ Embedding 服务测试覆盖率 100%（2026-01-07）
+
+**关联文档**:
+
+- `ai-service/app/config/settings.py` - 配置管理（添加 embedding_api_key, embedding_base_url 字段；实现多文件配置加载）
+- `ai-service/app/services/embedding_service.py` - Embedding 服务（使用独立 API 配置）
+- `.env.example`, `ai-service/.env.example` - 环境变量模板（添加 Embedding 配置）
+- `docker-compose.prod.yml` - 生产部署配置（添加 Embedding 环境变量）
+- `CLAUDE.md` - 项目指南（添加环境变量配置机制文档）
+- `ai-service/tests/test_config.py` - 配置加载测试
+- `ai-service/tests/test_embedding.py` - Embedding 功能测试（7个测试用例）
+- `ai-service/tests/test_rag_embedding_simple.py` - RAG 集成测试
 
 **关联需求**：需求 #5（患者端 - AI 健康科普）
 
