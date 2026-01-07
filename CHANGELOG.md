@@ -10,6 +10,12 @@
 
 ### Changed
 
+- 升级 Qdrant 向量数据库到最新稳定版本 - 2026-01-07 @backend-ts
+  - Qdrant 服务器：v1.7.4 → v1.16.2
+  - qdrant-client：1.7.0 → 1.16.2
+  - 修复 API 兼容性问题（`search` → `query_points`）
+  - 修复 `get_collection_info` 方法适配新版本 API
+  - 影响：RAG 知识库功能正常工作
 - 修复后端 AI 服务 URL 配置：从 8000 改为 8001 - 2026-01-06 @pm
 - 同步 DeepSeek API Key 配置到 AI 服务 - 2026-01-06 @pm
 - 调整任务策略：将 AI 功能联调作为独立任务跟踪 - 2026-01-06 @pm
@@ -37,6 +43,14 @@
 
 ### Fixed
 
+- 修复 Qdrant 集成 API 版本兼容性问题 - 2026-01-07 @backend-ts
+  - 根本原因：客户端 1.7.0 与服务器 1.7.4 版本差距太大，API 已发生变化
+  - 解决方案：统一升级到 v1.16.2，使用最新稳定版本
+  - 修复内容：
+    - `collection_exists` 方法不存在 → 升级客户端版本
+    - `info.vectors_count` 属性不存在 → 使用 `indexed_vectors_count`
+    - `client.search()` 方法不存在 → 改用 `client.query_points()`
+  - 验证：完整集成测试通过（文档添加、检索、删除、统计）
 - 修复后端 `.env` 中 AI_SERVICE_URL 端口配置错误 - 2026-01-06 @pm
 - 修复后端依赖安装问题（重新安装 node_modules） - 2026-01-06 @pm
 

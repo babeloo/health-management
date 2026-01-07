@@ -1121,6 +1121,10 @@
   - [x] 创建 Embedding 服务完整测试套件（7个测试，100%通过率）
   - [x] 验证 RAG 流程中的向量一致性
   - [x] 补充配置机制说明文档
+- [x] Qdrant 向量数据库版本升级 ✅ 完成于 2026-01-07
+  - [x] 升级 Qdrant 服务器和客户端到 v1.16.2
+  - [x] 修复 API 兼容性问题（适配新版本 query_points）
+  - [x] 验证 RAG 功能完整集成测试通过
 
 **完成成果**:
 
@@ -1136,12 +1140,16 @@
 
 - `ai-service/app/config/settings.py` - 配置管理（添加 embedding_api_key, embedding_base_url 字段；实现多文件配置加载）
 - `ai-service/app/services/embedding_service.py` - Embedding 服务（使用独立 API 配置）
+- `ai-service/app/services/qdrant_service.py` - Qdrant 向量数据库服务（升级到 v1.16.2 API）
 - `.env.example`, `ai-service/.env.example` - 环境变量模板（添加 Embedding 配置）
-- `docker-compose.prod.yml` - 生产部署配置（添加 Embedding 环境变量）
+- `docker-compose.prod.yml`, `docker-compose.yml` - Docker 配置（Qdrant 镜像升级到 v1.16.2）
+- `ai-service/pyproject.toml`, `ai-service/requirements.txt` - Python 依赖（qdrant-client 升级到 1.16.2）
 - `CLAUDE.md` - 项目指南（添加环境变量配置机制文档）
 - `ai-service/tests/test_config.py` - 配置加载测试
 - `ai-service/tests/test_embedding.py` - Embedding 功能测试（7个测试用例）
 - `ai-service/tests/test_rag_embedding_simple.py` - RAG 集成测试
+- `docs/guides/qdrant-upgrade-guide.md` - Qdrant 升级实施指南
+- `docs/reference/qdrant-version-reference.md` - Qdrant 版本对比分析
 
 **关联需求**：需求 #5（患者端 - AI 健康科普）
 
