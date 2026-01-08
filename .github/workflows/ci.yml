@@ -87,7 +87,9 @@ jobs:
           cache: 'pnpm'
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: |
+          pnpm install --frozen-lockfile
+          cd backend && pnpm rebuild bcrypt || true
 
       - name: Setup environment variables
         run: |
@@ -253,7 +255,9 @@ jobs:
           cache: 'pnpm'
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: |
+          pnpm install --frozen-lockfile
+          cd backend && pnpm rebuild bcrypt || true
 
       - name: Setup environment variables
         run: |
