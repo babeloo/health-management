@@ -89,7 +89,7 @@ jobs:
       - name: Install dependencies
         run: |
           pnpm install --frozen-lockfile
-          cd backend && pnpm rebuild bcrypt || true
+          pnpm rebuild bcrypt
 
       - name: Setup environment variables
         run: |
@@ -257,7 +257,7 @@ jobs:
       - name: Install dependencies
         run: |
           pnpm install --frozen-lockfile
-          cd backend && pnpm rebuild bcrypt || true
+          pnpm rebuild bcrypt
 
       - name: Setup environment variables
         run: |
