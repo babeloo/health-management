@@ -107,9 +107,7 @@ class ConversationService:
         # 返回最近的 N 条消息
         return conversation.messages[-max_messages:]
 
-    async def clear_old_messages(
-        self, conversation_id: str, keep_recent: int = 10
-    ) -> bool:
+    async def clear_old_messages(self, conversation_id: str, keep_recent: int = 10) -> bool:
         """
         清理旧消息，只保留最近的 N 条
 
@@ -149,9 +147,7 @@ class ConversationService:
         """
         expiry_date = datetime.now() - timedelta(days=self.session_expiry_days)
 
-        result = await self.collection.delete_many(
-            {"updated_at": {"$lt": expiry_date}}
-        )
+        result = await self.collection.delete_many({"updated_at": {"$lt": expiry_date}})
 
         deleted_count = result.deleted_count
         if deleted_count > 0:

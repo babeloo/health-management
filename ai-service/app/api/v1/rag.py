@@ -82,8 +82,7 @@ async def ingest_documents_batch(request: BatchIngestRequest):
     """
     try:
         documents = [
-            {"content": doc.content, "metadata": doc.metadata}
-            for doc in request.documents
+            {"content": doc.content, "metadata": doc.metadata} for doc in request.documents
         ]
         doc_ids = await rag_service.add_documents_batch(
             documents=documents,
@@ -162,7 +161,7 @@ async def rag_query(request: RAGQueryRequest):
             answer = response["content"]
         else:
             # 2. 构建上下文
-            context = "\n\n".join([r["content"] for r in results[:request.top_k]])
+            context = "\n\n".join([r["content"] for r in results[: request.top_k]])
 
             # 3. 生成回答
             deepseek = get_deepseek_client()

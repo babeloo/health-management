@@ -48,11 +48,7 @@ class RAGEmbeddingTester:
             # 尝试获取 collection 信息
             is_healthy = await self.rag_service.health_check()
 
-            self.print_result(
-                "Qdrant 连接",
-                is_healthy,
-                f"Qdrant URL: {settings.qdrant_url}"
-            )
+            self.print_result("Qdrant 连接", is_healthy, f"Qdrant URL: {settings.qdrant_url}")
 
             return is_healthy
 
@@ -75,7 +71,7 @@ class RAGEmbeddingTester:
             self.print_result(
                 "Collection 初始化",
                 exists,
-                f"Collection: {settings.qdrant_collection} | 向量维度: {self.embedding_service.dimension}"
+                f"Collection: {settings.qdrant_collection} | 向量维度: {self.embedding_service.dimension}",
             )
 
             return exists
@@ -96,20 +92,20 @@ class RAGEmbeddingTester:
                     "id": "test_doc_1",
                     "text": "高血压是一种常见的慢性疾病，需要长期监测和管理",
                     "category": "疾病知识",
-                    "source": "测试数据"
+                    "source": "测试数据",
                 },
                 {
                     "id": "test_doc_2",
                     "text": "糖尿病患者应该控制饮食，避免高糖食物",
                     "category": "饮食建议",
-                    "source": "测试数据"
+                    "source": "测试数据",
                 },
                 {
                     "id": "test_doc_3",
                     "text": "规律运动有助于改善心血管健康，降低疾病风险",
                     "category": "运动建议",
-                    "source": "测试数据"
-                }
+                    "source": "测试数据",
+                },
             ]
 
             # 添加文档
@@ -119,10 +115,7 @@ class RAGEmbeddingTester:
                     await self.rag_service.add_document(
                         doc_id=doc["id"],
                         text=doc["text"],
-                        metadata={
-                            "category": doc["category"],
-                            "source": doc["source"]
-                        }
+                        metadata={"category": doc["category"], "source": doc["source"]},
                     )
                     success_count += 1
                 except Exception as e:
@@ -133,7 +126,7 @@ class RAGEmbeddingTester:
             self.print_result(
                 "添加文档到向量库",
                 all_added,
-                f"成功添加: {success_count}/{len(test_documents)} 个文档"
+                f"成功添加: {success_count}/{len(test_documents)} 个文档",
             )
 
             return all_added
@@ -151,18 +144,14 @@ class RAGEmbeddingTester:
             # 执行语义检索
             query = "如何管理高血压"
             results = await self.rag_service.search(
-                query=query,
-                top_k=3,
-                score_threshold=0.0  # 降低阈值以便测试
+                query=query, top_k=3, score_threshold=0.0  # 降低阈值以便测试
             )
 
             # 验证结果
             has_results = len(results) > 0
 
             self.print_result(
-                "语义检索",
-                has_results,
-                f"查询: '{query}' | 返回结果: {len(results)} 条"
+                "语义检索", has_results, f"查询: '{query}' | 返回结果: {len(results)} 条"
             )
 
             # 打印检索结果
@@ -196,7 +185,7 @@ class RAGEmbeddingTester:
             self.print_result(
                 "RAG 完整查询流程",
                 has_context,
-                f"查询: '{query}' | 上下文: {len(rag_result.get('context', []))} 条 | 来源: {len(rag_result.get('sources', []))} 条"
+                f"查询: '{query}' | 上下文: {len(rag_result.get('context', []))} 条 | 来源: {len(rag_result.get('sources', []))} 条",
             )
 
             # 打印 RAG 结果
@@ -232,7 +221,7 @@ class RAGEmbeddingTester:
             self.print_result(
                 "向量一致性验证",
                 vectors_match,
-                "Embedding Service 和 RAG Service 使用的向量化结果一致"
+                "Embedding Service 和 RAG Service 使用的向量化结果一致",
             )
 
             return vectors_match
@@ -253,7 +242,7 @@ class RAGEmbeddingTester:
                 ("batch_doc_2", "保持良好的作息习惯有助于健康"),
                 ("batch_doc_3", "合理使用降压药物需要遵医嘱"),
                 ("batch_doc_4", "饮食控制是慢病管理的基础"),
-                ("batch_doc_5", "适度运动可以改善心肺功能")
+                ("batch_doc_5", "适度运动可以改善心肺功能"),
             ]
 
             # 批量添加
@@ -266,7 +255,7 @@ class RAGEmbeddingTester:
             self.print_result(
                 "批量添加文档",
                 has_results,
-                f"添加了 {len(batch_docs)} 个文档 | 可检索: {len(results)} 条"
+                f"添加了 {len(batch_docs)} 个文档 | 可检索: {len(results)} 条",
             )
 
             return has_results

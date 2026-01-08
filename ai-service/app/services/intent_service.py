@@ -20,6 +20,7 @@ from app.services.prompt_templates import PromptTemplates
 
 class IntentType:
     """意图类型常量"""
+
     HEALTH_CONSULTATION = "health_consultation"
     CHECKIN = "checkin"
     MEDICATION_CONSULTATION = "medication_consultation"
@@ -70,18 +71,10 @@ class IntentService:
                     result = json.loads(json_str)
                 else:
                     # 如果没有找到 JSON，使用默认值
-                    result = {
-                        "intent": IntentType.OTHER,
-                        "confidence": 0.5,
-                        "entities": {}
-                    }
+                    result = {"intent": IntentType.OTHER, "confidence": 0.5, "entities": {}}
             except json.JSONDecodeError as e:
                 logger.warning(f"Failed to parse intent JSON: {str(e)}, content: {content}")
-                result = {
-                    "intent": IntentType.OTHER,
-                    "confidence": 0.5,
-                    "entities": {}
-                }
+                result = {"intent": IntentType.OTHER, "confidence": 0.5, "entities": {}}
 
             # 验证意图类型
             valid_intents = [
@@ -98,18 +91,15 @@ class IntentService:
                 logger.warning(f"Invalid intent: {result.get('intent')}, using OTHER")
                 result["intent"] = IntentType.OTHER
 
-            logger.info(f"Intent recognized: {result['intent']} (confidence: {result.get('confidence', 0)})")
+            logger.info(
+                f"Intent recognized: {result['intent']} (confidence: {result.get('confidence', 0)})"
+            )
             return result
 
         except Exception as e:
             logger.error(f"Intent recognition failed: {str(e)}")
             # 返回默认意图
-            return {
-                "intent": IntentType.OTHER,
-                "confidence": 0.0,
-                "entities": {},
-                "error": str(e)
-            }
+            return {"intent": IntentType.OTHER, "confidence": 0.0, "entities": {}, "error": str(e)}
 
     async def is_health_related(self, user_input: str) -> bool:
         """

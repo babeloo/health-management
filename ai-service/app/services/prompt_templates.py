@@ -16,6 +16,7 @@ from enum import Enum
 
 class PromptType(str, Enum):
     """Prompt 模板类型枚举"""
+
     HEALTH_CONSULTATION = "health_consultation"  # 健康咨询
     SYMPTOM_ANALYSIS = "symptom_analysis"  # 症状分析
     MEDICATION_CONSULTATION = "medication_consultation"  # 用药咨询
@@ -48,29 +49,22 @@ class PromptTemplates:
             PromptType.HEALTH_CONSULTATION: """你是一位专业的健康顾问，擅长慢病管理和健康咨询。
 请用温和、专业的语气回答用户的健康问题，提供准确、实用的建议。
 重点关注高血压、糖尿病等慢性病的预防和管理。""",
-
             PromptType.SYMPTOM_ANALYSIS: """你是一位有经验的健康顾问，能够根据患者描述的症状进行初步分析。
 请根据症状信息，提供可能的原因分析和初步建议。
 注意：你的建议仅供参考，不能替代医生诊断。如果症状严重，建议立即就医。""",
-
             PromptType.MEDICATION_CONSULTATION: """你是一位资深药师，熟悉常见慢性病药物的使用方法和注意事项。
 请根据药物名称，提供用法用量、注意事项、副作用等信息。
 强调遵医嘱用药的重要性，不要自行调整药量。""",
-
             PromptType.DIAGNOSIS_ADVICE: """你是一位慢性病管理专家，能够根据患者的健康数据提供诊断建议。
 请根据提供的数据，评估患者当前的健康状况，并给出个性化的管理建议。
 包括饮食、运动、用药、复查等方面的建议。""",
-
             PromptType.RAG_QUERY: """你是一位专业的健康顾问，擅长慢病管理和健康咨询。
 请基于提供的健康知识回答用户问题。
 如果知识中没有相关信息，请诚实告知，不要编造内容。""",
-
             PromptType.INTENT_RECOGNITION: """你是一个意图识别助手，能够准确识别用户的意图。
 请分析用户的输入，判断用户想要做什么。""",
-
             PromptType.DIET_ADVICE: """你是一位营养师，擅长为慢性病患者制定饮食方案。
 请根据患者的健康状况，提供个性化的饮食建议。""",
-
             PromptType.EXERCISE_ADVICE: """你是一位运动康复专家，擅长为慢性病患者制定运动方案。
 请根据患者的健康状况，提供安全、有效的运动建议。""",
         }
@@ -78,8 +72,7 @@ class PromptTemplates:
 
     @staticmethod
     def build_health_consultation_prompt(
-        question: str,
-        patient_context: Optional[Dict[str, Any]] = None
+        question: str, patient_context: Optional[Dict[str, Any]] = None
     ) -> List[Dict[str, str]]:
         """
         构建健康咨询 Prompt
@@ -183,8 +176,7 @@ class PromptTemplates:
 
     @staticmethod
     def build_symptom_analysis_prompt(
-        symptoms: str,
-        patient_data: Dict[str, Any]
+        symptoms: str, patient_data: Dict[str, Any]
     ) -> List[Dict[str, str]]:
         """
         构建症状分析 Prompt
@@ -222,8 +214,7 @@ class PromptTemplates:
 
     @staticmethod
     def build_medication_consultation_prompt(
-        medication_name: str,
-        patient_info: Optional[Dict[str, Any]] = None
+        medication_name: str, patient_info: Optional[Dict[str, Any]] = None
     ) -> List[Dict[str, str]]:
         """
         构建用药咨询 Prompt
@@ -262,8 +253,7 @@ class PromptTemplates:
 
     @staticmethod
     def build_diet_advice_prompt(
-        patient_data: Dict[str, Any],
-        specific_question: Optional[str] = None
+        patient_data: Dict[str, Any], specific_question: Optional[str] = None
     ) -> List[Dict[str, str]]:
         """
         构建饮食建议 Prompt
@@ -303,8 +293,7 @@ class PromptTemplates:
 
     @staticmethod
     def build_exercise_advice_prompt(
-        patient_data: Dict[str, Any],
-        specific_question: Optional[str] = None
+        patient_data: Dict[str, Any], specific_question: Optional[str] = None
     ) -> List[Dict[str, str]]:
         """
         构建运动建议 Prompt

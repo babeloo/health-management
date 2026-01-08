@@ -67,7 +67,7 @@ class EmbeddingTester:
             self.print_result(
                 "单文本向量化",
                 True,
-                f"文本: '{test_text}' | 维度: {actual_dim}/{expected_dim} | 耗时: {elapsed:.3f}s"
+                f"文本: '{test_text}' | 维度: {actual_dim}/{expected_dim} | 耗时: {elapsed:.3f}s",
             )
 
             # 打印向量片段
@@ -90,7 +90,7 @@ class EmbeddingTester:
                 "规律运动有助于降低血压",
                 "定期监测血糖水平很重要",
                 "保持良好的作息习惯",
-                "合理使用降压药物"
+                "合理使用降压药物",
             ]
 
             start_time = time.time()
@@ -110,7 +110,7 @@ class EmbeddingTester:
             self.print_result(
                 "批量文本向量化",
                 True,
-                f"文本数: {len(test_texts)} | 总耗时: {elapsed:.3f}s | 平均: {avg_time:.3f}s/文本"
+                f"文本数: {len(test_texts)} | 总耗时: {elapsed:.3f}s | 平均: {avg_time:.3f}s/文本",
             )
 
             return True
@@ -141,13 +141,13 @@ class EmbeddingTester:
             assert embedding1 == embedding2, "缓存返回的向量应该与原始向量一致"
 
             # 验证缓存效果
-            speedup = time1 / time2 if time2 > 0 else float('inf')
+            speedup = time1 / time2 if time2 > 0 else float("inf")
             cache_effective = speedup > 2  # 缓存应该至少快2倍
 
             self.print_result(
                 "缓存机制",
                 cache_effective,
-                f"首次: {time1:.4f}s | 缓存: {time2:.4f}s | 加速: {speedup:.1f}x"
+                f"首次: {time1:.4f}s | 缓存: {time2:.4f}s | 加速: {speedup:.1f}x",
             )
 
             # 清空缓存测试
@@ -198,12 +198,12 @@ class EmbeddingTester:
             actual_dim = len(embedding)
 
             # 验证一致性
-            dims_match = (configured_dim == service_dim == actual_dim)
+            dims_match = configured_dim == service_dim == actual_dim
 
             self.print_result(
                 "向量维度验证",
                 dims_match,
-                f"配置: {configured_dim} | 服务: {service_dim} | 实际: {actual_dim}"
+                f"配置: {configured_dim} | 服务: {service_dim} | 实际: {actual_dim}",
             )
 
             return dims_match
@@ -222,23 +222,18 @@ class EmbeddingTester:
                 "慢性疾病管理系统",
                 "人工智能健康助手",
                 "血压监测与分析",
-                "糖尿病饮食建议"
+                "糖尿病饮食建议",
             ]
 
             embeddings = await self.service.embed_texts(chinese_texts)
 
             # 验证所有向量都有效
             all_valid = all(
-                len(emb) == self.service.dimension and
-                any(x != 0 for x in emb)  # 至少有一个非零值
+                len(emb) == self.service.dimension and any(x != 0 for x in emb)  # 至少有一个非零值
                 for emb in embeddings
             )
 
-            self.print_result(
-                "中文文本处理",
-                all_valid,
-                f"测试了 {len(chinese_texts)} 个中文文本"
-            )
+            self.print_result("中文文本处理", all_valid, f"测试了 {len(chinese_texts)} 个中文文本")
 
             return all_valid
 
@@ -253,7 +248,8 @@ class EmbeddingTester:
 
         try:
             # 创建一个长文本（约500字）
-            long_text = """
+            long_text = (
+                """
             慢性病管理是现代医疗保健的重要组成部分。随着人口老龄化和生活方式的改变，
             慢性疾病如高血压、糖尿病、心血管疾病等的发病率持续上升。有效的慢性病管理
             不仅可以改善患者的生活质量，还能显著降低医疗成本。现代慢性病管理系统通常
@@ -262,23 +258,20 @@ class EmbeddingTester:
             通过大数据分析和机器学习算法，可以实现疾病风险预测、个性化治疗方案制定、
             用药提醒等功能，帮助患者更好地管理自己的健康。同时，远程医疗和移动健康
             应用的发展，使得患者可以随时随地获取医疗服务和健康指导。
-            """ * 2  # 重复一次使文本更长
+            """
+                * 2
+            )  # 重复一次使文本更长
 
             start_time = time.time()
             embedding = await self.service.embed_text(long_text)
             elapsed = time.time() - start_time
 
             # 验证向量有效性
-            is_valid = (
-                len(embedding) == self.service.dimension and
-                any(x != 0 for x in embedding)
-            )
+            is_valid = len(embedding) == self.service.dimension and any(x != 0 for x in embedding)
 
             text_length = len(long_text)
             self.print_result(
-                "长文本处理",
-                is_valid,
-                f"文本长度: {text_length} 字符 | 耗时: {elapsed:.3f}s"
+                "长文本处理", is_valid, f"文本长度: {text_length} 字符 | 耗时: {elapsed:.3f}s"
             )
 
             return is_valid

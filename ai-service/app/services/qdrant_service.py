@@ -184,7 +184,9 @@ class QdrantService:
         client = self._get_client()
 
         try:
-            logger.debug(f"Searching in {collection_name}, limit={limit}, threshold={score_threshold}")
+            logger.debug(
+                f"Searching in {collection_name}, limit={limit}, threshold={score_threshold}"
+            )
             # 新版本使用 query_points 替代 search
             response = client.query_points(
                 collection_name=collection_name,
@@ -194,7 +196,7 @@ class QdrantService:
                 query_filter=filter_conditions,
             )
 
-            results = response.points if hasattr(response, 'points') else []
+            results = response.points if hasattr(response, "points") else []
             logger.info(f"Found {len(results)} results")
             return results
 

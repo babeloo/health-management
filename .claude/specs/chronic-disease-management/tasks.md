@@ -415,6 +415,16 @@
   - **分支**: babeloo/issue5
   - **负责人**: @architect
   - **关键决策**: 修复所有代码质量问题，确保 CI 检查通过
+- [x] 修复 CI pnpm 版本和 Black 格式检查失败问题 ✅ 完成于 2026-01-08
+  - [x] 升级 CI 中的 pnpm 版本从 8 到 10 ✅
+  - [x] 使用 Black 格式化 17 个 Python 文件 ✅
+  - **问题描述**: CI 失败，pnpm 版本不匹配（要求 >=10.0.0，实际 8.15.9）和 Black 格式检查失败
+  - **修改文件**:
+    - `.github/workflows/ci.yml`（pnpm 版本升级到 10）
+    - `ai-service/` 下 17 个 Python 文件（Black 格式化）
+  - **分支**: fix
+  - **负责人**: @backend-ts
+  - **关键决策**: 升级 CI pnpm 版本匹配 package.json 要求，统一 Python 代码格式
 
 **实现细节**：
 
