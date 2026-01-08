@@ -26,6 +26,7 @@ export default function SettingsPage() {
 
   useEffect(() => {
     fetchConfigs();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleSave = async () => {

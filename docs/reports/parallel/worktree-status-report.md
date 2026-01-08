@@ -543,6 +543,7 @@ rm ai-service/TASK_18_SUMMARY.py
    ```
 
 2. **提交 pnpm-lock.yaml**
+
    ```bash
    git add pnpm-lock.yaml
    git commit -m "chore: 更新 pnpm-lock.yaml（添加 MQTT 依赖）"
@@ -551,18 +552,19 @@ rm ai-service/TASK_18_SUMMARY.py
 
 ### 优先级 2（今日完成）
 
-3. **提交患者端代码（Task 24）**
+1. **提交患者端代码（Task 24）**
    - 移动报告到正确位置
    - 提交 frontend-patient/ 目录
    - 推送到远程
 
-4. **提交医生端代码（Task 35）**
+2. **提交医生端代码（Task 35）**
    - 提交 frontend-web/ 目录
    - 推送到远程
 
 ### 优先级 3（清理工作）
 
-5. **清理 AI worktree 临时文件**
+1. **清理 AI worktree 临时文件**
+
    ```bash
    rm ai-service/TASK_18_SUMMARY.py
    ```

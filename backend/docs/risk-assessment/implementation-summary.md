@@ -281,15 +281,15 @@ if (query.risk_level) {
 
 ### 测试代码
 
-6. `backend/src/health/services/risk-calculation.service.spec.ts` (7KB)
-7. `backend/src/health/health.service.spec.ts` (更新)
-8. `backend/src/health/health.controller.spec.ts` (新增 10 个测试)
-9. `backend/test/health/risk-assessment.e2e-spec.ts` (20KB)
+1. `backend/src/health/services/risk-calculation.service.spec.ts` (7KB)
+2. `backend/src/health/health.service.spec.ts` (更新)
+3. `backend/src/health/health.controller.spec.ts` (新增 10 个测试)
+4. `backend/test/health/risk-assessment.e2e-spec.ts` (20KB)
 
 ### 文档
 
-10. `backend/docs/risk-assessment/service-implementation.md` (13KB)
-11. `backend/docs/risk-assessment/implementation-summary.md` (本文件)
+1. `backend/docs/risk-assessment/service-implementation.md` (13KB)
+2. `backend/docs/risk-assessment/implementation-summary.md` (本文件)
 
 **总代码行数**: 约 2500+ 行（含测试）
 
@@ -305,15 +305,15 @@ if (query.risk_level) {
 
 ### 中期（第三阶段）
 
-4. ⏰ 集成 DeepSeek AI，优化健康建议的个性化程度
-5. ⏰ 实现 vascular_age（血管年龄）和 heart_disease（心脏病）评估算法
-6. ⏰ 添加评估报告导出功能（PDF/Word）
+1. ⏰ 集成 DeepSeek AI，优化健康建议的个性化程度
+2. ⏰ 实现 vascular_age（血管年龄）和 heart_disease（心脏病）评估算法
+3. ⏰ 添加评估报告导出功能（PDF/Word）
 
 ### 长期（优化阶段）
 
-7. ⏰ 基于历史评估数据，训练机器学习模型预测风险趋势
-8. ⏰ 支持自定义评估模型（医疗机构可配置评分规则）
-9. ⏰ 国际化支持（多语言问卷和建议）
+1. ⏰ 基于历史评估数据，训练机器学习模型预测风险趋势
+2. ⏰ 支持自定义评估模型（医疗机构可配置评分规则）
+3. ⏰ 国际化支持（多语言问卷和建议）
 
 ---
 

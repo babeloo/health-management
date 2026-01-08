@@ -8,6 +8,12 @@ import { NotificationService } from '../notification/notification.service';
 import { DeviceDataType } from './dto';
 import { CheckInType } from '../generated/prisma/client';
 
+// Mock bcrypt 模块以避免 native 模块加载问题
+jest.mock('bcrypt', () => ({
+  hash: jest.fn(),
+  compare: jest.fn(),
+}));
+
 describe('MqttService', () => {
   let service: MqttService;
   let deviceService: DeviceService;

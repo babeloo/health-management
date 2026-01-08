@@ -129,7 +129,7 @@ docker-compose logs -f emqx
 
 ### 2. 访问 EMQX Dashboard
 
-- **URL**: http://localhost:18083
+- **URL**: <http://localhost:18083>
 - **用户名**: `admin`
 - **密码**: `emqx123` (可在 docker-compose.yml 中修改)
 
@@ -264,6 +264,7 @@ while True:
 
 - **Topic**: `devices/AA:BB:CC:DD:EE:FF/data`
 - **Payload**:
+
   ```json
   {
     "deviceId": "AA:BB:CC:DD:EE:FF",
@@ -307,6 +308,7 @@ while True:
    ```
 
 4. 查看 EMQX 认证日志:
+
    ```bash
    docker-compose logs emqx | grep -i auth
    ```
@@ -332,6 +334,7 @@ while True:
    ```
 
 3. 查看 EMQX ACL 日志:
+
    ```bash
    docker-compose logs emqx | grep -i acl
    ```

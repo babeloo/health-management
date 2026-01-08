@@ -113,11 +113,11 @@
 在 GitHub 仓库设置中配置以下环境：
 
 1. **staging** - 测试环境
-   - URL: https://staging.your-domain.com
+   - URL: <https://staging.your-domain.com>
    - 需要审批：否
 
 2. **production** - 生产环境
-   - URL: https://your-domain.com
+   - URL: <https://your-domain.com>
    - 需要审批：是（建议）
 
 ## 本地测试 CI 工作流

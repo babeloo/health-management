@@ -283,10 +283,10 @@ from(bucket: "health_data")
 
 ## 📚 相关资源
 
-- **InfluxDB 官方文档**：https://docs.influxdata.com/influxdb/v2.7/
-- **Flux 语法参考**：https://docs.influxdata.com/flux/v0.x/
-- **Node.js 客户端文档**：https://github.com/influxdata/influxdb-client-js
-- **性能优化指南**：https://docs.influxdata.com/influxdb/v2.7/write-data/best-practices/
+- **InfluxDB 官方文档**：<https://docs.influxdata.com/influxdb/v2.7/>
+- **Flux 语法参考**：<https://docs.influxdata.com/flux/v0.x/>
+- **Node.js 客户端文档**：<https://github.com/influxdata/influxdb-client-js>
+- **性能优化指南**：<https://docs.influxdata.com/influxdb/v2.7/write-data/best-practices/>
 
 ## 📝 待办事项
 

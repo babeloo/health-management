@@ -55,24 +55,23 @@ async def test_embedding_rag_integration():
     test_documents = [
         {
             "content": "高血压是一种常见的慢性疾病，需要长期监测和管理",
-            "metadata": {"category": "疾病知识", "source": "测试数据"}
+            "metadata": {"category": "疾病知识", "source": "测试数据"},
         },
         {
             "content": "糖尿病患者应该控制饮食，避免高糖食物",
-            "metadata": {"category": "饮食建议", "source": "测试数据"}
+            "metadata": {"category": "饮食建议", "source": "测试数据"},
         },
         {
             "content": "规律运动有助于改善心血管健康，降低疾病风险",
-            "metadata": {"category": "运动建议", "source": "测试数据"}
-        }
+            "metadata": {"category": "运动建议", "source": "测试数据"},
+        },
     ]
 
     try:
         added_docs = []
         for doc in test_documents:
             doc_id = await rag_service.add_document(
-                content=doc["content"],
-                metadata=doc["metadata"]
+                content=doc["content"], metadata=doc["metadata"]
             )
             added_docs.append(doc_id)
             print(f"     已添加文档: {doc_id[:16]}... | {doc['content'][:30]}...")
@@ -93,9 +92,7 @@ async def test_embedding_rag_integration():
         print(f"     查询: '{query}'")
 
         results = await rag_service.search_by_text(
-            query_text=query,
-            top_k=3,
-            score_threshold=0.0  # 降低阈值以便测试
+            query_text=query, top_k=3, score_threshold=0.0  # 降低阈值以便测试
         )
 
         print(f"[OK] 检索成功，返回 {len(results)} 条结果")
@@ -143,12 +140,13 @@ async def test_embedding_rag_integration():
     print("=" * 70)
     try:
         import time
+
         batch_docs = [
             ("定期监测血糖水平对糖尿病管理很重要", {"source": "批量测试"}),
             ("保持良好的作息习惯有助于健康", {"source": "批量测试"}),
             ("合理使用降压药物需要遵医嘱", {"source": "批量测试"}),
             ("饮食控制是慢病管理的基础", {"source": "批量测试"}),
-            ("适度运动可以改善心肺功能", {"source": "批量测试"})
+            ("适度运动可以改善心肺功能", {"source": "批量测试"}),
         ]
 
         start_time = time.time()
@@ -186,11 +184,7 @@ async def test_embedding_rag_integration():
     print("  测试 7: 中文文本检索")
     print("=" * 70)
     try:
-        chinese_queries = [
-            "糖尿病饮食注意事项",
-            "高血压如何控制",
-            "运动对健康的好处"
-        ]
+        chinese_queries = ["糖尿病饮食注意事项", "高血压如何控制", "运动对健康的好处"]
 
         all_success = True
         for query in chinese_queries:

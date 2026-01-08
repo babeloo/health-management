@@ -6,6 +6,12 @@ import { RegisterDto, LoginDto, RefreshTokenDto, AuthResponseDto } from './dto';
 import { Role } from './enums/role.enum';
 import { JwtAuthGuard } from './guards';
 
+// Mock bcrypt 模块以避免 native 模块加载问题
+jest.mock('bcrypt', () => ({
+  hash: jest.fn(),
+  compare: jest.fn(),
+}));
+
 describe('AuthController', () => {
   let controller: AuthController;
 

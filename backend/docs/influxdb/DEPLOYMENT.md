@@ -141,7 +141,7 @@ exit
 
 **方法 2：使用 InfluxDB Web UI**
 
-1. 打开浏览器访问：http://localhost:8086
+1. 打开浏览器访问：<http://localhost:8086>
 2. 使用管理员账户登录（用户名：admin，密码：influx123）
 3. 导航至 **Data Explorer** 验证 Bucket `health_data` 存在
 4. 导航至 **API Tokens** 验证 Token 配置正确
@@ -373,7 +373,7 @@ server {
 
 ### 9.1 InfluxDB 自带监控
 
-访问 InfluxDB Web UI：http://localhost:8086
+访问 InfluxDB Web UI：<http://localhost:8086>
 
 导航至 **Monitoring & Alerting** 查看：
 
@@ -588,10 +588,10 @@ openssl rand -hex 32
 
 ## 13. 参考资源
 
-- **InfluxDB 官方文档**：https://docs.influxdata.com/influxdb/v2.7/
-- **Flux 语法参考**：https://docs.influxdata.com/flux/v0.x/
-- **Node.js 客户端文档**：https://github.com/influxdata/influxdb-client-js
-- **性能优化指南**：https://docs.influxdata.com/influxdb/v2.7/write-data/best-practices/
+- **InfluxDB 官方文档**：<https://docs.influxdata.com/influxdb/v2.7/>
+- **Flux 语法参考**：<https://docs.influxdata.com/flux/v0.x/>
+- **Node.js 客户端文档**：<https://github.com/influxdata/influxdb-client-js>
+- **性能优化指南**：<https://docs.influxdata.com/influxdb/v2.7/write-data/best-practices/>
 
 ---
 

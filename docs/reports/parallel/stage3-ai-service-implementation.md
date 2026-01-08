@@ -11,6 +11,7 @@
 ### 1.1 已有代码（master 分支）
 
 **服务层**（`ai-service/app/services/`）：
+
 - ✅ `ai_service.py` - 基础 AI 对话服务（使用 DeepSeek API）
 - ✅ `conversation_service.py` - 会话管理服务（MongoDB）
 - ✅ `rag_service.py` - RAG 检索服务（Qdrant）
@@ -20,13 +21,16 @@
 - ✅ `metrics_service.py` - 指标服务
 
 **路由层**（`ai-service/app/routers/`）：
+
 - ✅ `ai_router.py` - AI 对话路由
 - ✅ `education_router.py` - 健康科普路由
 
 **模型层**（`ai-service/app/models/`）：
+
 - ✅ `schemas.py` - 基础数据模型（ChatMessage, ChatRequest, ChatResponse, Conversation, Article）
 
 **API 端点**（`ai-service/app/api/v1/`）：
+
 - ✅ `metrics.py` - 指标端点
 
 ### 1.2 缺失功能（需要实现）
@@ -34,6 +38,7 @@
 根据 `stage3-ai-features-reference.md`，需要补充以下功能：
 
 **P0 核心功能**：
+
 - ❌ `services/deepseek_client.py` - 独立的 DeepSeek API 客户端（带重试、流式响应）
 - ❌ `services/embedding_service.py` - 向量嵌入服务
 - ❌ `services/qdrant_service.py` - Qdrant 服务封装
@@ -41,18 +46,21 @@
 - ❌ `api/v1/rag.py` - RAG API 端点
 
 **P1 重要功能**：
+
 - ⚠️ `services/conversation_service.py` - 需要增强（上下文窗口管理）
 - ❌ `services/intent_service.py` - 意图识别服务
 - ❌ `services/agent_service.py` - Agent 核心服务
 - ❌ `api/v1/agent.py` - Agent API 端点
 
 **P2 扩展功能**：
+
 - ❌ `services/diagnosis_service.py` - 诊断服务（34KB，功能完整）
 - ❌ `services/checkin_parser.py` - 打卡解析器
 - ❌ `api/v1/diagnosis.py` - 诊断 API 端点
 - ❌ `api/v1/ai.py` - AI 通用服务 API 端点
 
 **其他必需组件**：
+
 - ❌ `api/v1/health.py` - 健康检查端点
 - ❌ `services/prompt_templates.py` - 提示词模板
 - ❌ `models/agent_models.py` - Agent 数据模型
@@ -262,6 +270,7 @@ SESSION_EXPIRY_DAYS = 30
 ### 3.4 安全要求
 
 1. **免责声明**：所有 AI 建议必须包含
+
    ```
    此建议仅供参考，请咨询专业医生。
    ```
@@ -337,12 +346,14 @@ DISCLAIMER_TEXT=此建议仅供参考，请咨询专业医生。
 **测试框架**：pytest
 
 **测试覆盖**：
+
 - 每个服务独立测试
 - Mock 外部依赖
 - 测试边界条件
 - 测试异常情况
 
 **示例**：
+
 ```python
 # tests/services/test_deepseek_client.py
 import pytest
@@ -363,11 +374,13 @@ async def test_chat_success():
 **测试环境**：Docker Compose
 
 **测试覆盖**：
+
 - 端到端 API 测试
 - 真实环境测试
 - 性能测试
 
 **示例**：
+
 ```python
 # tests/integration/test_rag_api.py
 import pytest
@@ -395,6 +408,7 @@ async def test_rag_query_e2e():
 **工具**：locust
 
 **测试指标**：
+
 - RAG 检索性能 < 500ms
 - 对话响应时间 < 2s
 - 并发支持：100 并发用户

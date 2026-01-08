@@ -12,6 +12,7 @@
 ## 任务分类
 
 ### 容器化部署
+
 - Task 38 v1: 初始 Docker 配置
 - Task 38 v2: Docker 配置优化（多阶段构建、健康检查）
 
@@ -25,12 +26,14 @@
 ## 部署架构
 
 ### 应用服务（4个）
+
 - NestJS 后端服务
 - Python AI 服务
 - React 管理端
 - Uni-app 患者端（H5）
 
 ### 基础设施服务（7个）
+
 - PostgreSQL 15
 - Redis 7
 - InfluxDB 2.7

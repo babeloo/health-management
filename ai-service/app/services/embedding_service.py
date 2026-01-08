@@ -38,7 +38,9 @@ class EmbeddingService:
                 timeout=settings.deepseek_timeout,
             )
             self.model = settings.embedding_model
-            logger.info(f"Embedding service initialized with OpenAI API: {self.model}, base_url={base_url}")
+            logger.info(
+                f"Embedding service initialized with OpenAI API: {self.model}, base_url={base_url}"
+            )
         else:
             # 本地模型懒加载
             self._local_model = None
@@ -50,9 +52,12 @@ class EmbeddingService:
         if self._local_model is None:
             try:
                 from sentence_transformers import SentenceTransformer
+
                 logger.info(f"Loading local embedding model: {self.model}")
                 self._local_model = SentenceTransformer(self.model)
-                logger.info(f"Local model loaded, dimension: {self._local_model.get_sentence_embedding_dimension()}")
+                logger.info(
+                    f"Local model loaded, dimension: {self._local_model.get_sentence_embedding_dimension()}"
+                )
             except ImportError:
                 raise RuntimeError(
                     "sentence-transformers not installed. "
@@ -144,11 +149,7 @@ class EmbeddingService:
     def _embed_with_local(self, texts: List[str]) -> List[List[float]]:
         """使用本地模型进行向量化"""
         model = self._load_local_model()
-        embeddings = model.encode(
-            texts,
-            convert_to_numpy=True,
-            show_progress_bar=len(texts) > 10
-        )
+        embeddings = model.encode(texts, convert_to_numpy=True, show_progress_bar=len(texts) > 10)
         return embeddings.tolist()
 
     def get_embedding_dimension(self) -> int:

@@ -1,6 +1,7 @@
 # 通知服务实现总结
 
 ## 实施时间
+
 **完成时间**: 2025-12-24
 **负责人**: @backend-ts
 **实际工时**: 约 2 小时
@@ -14,6 +15,7 @@
 ### 1. 数据模型 ✅
 
 **Notification 表结构**:
+
 - `id`: UUID 主键
 - `userId`: 用户 ID(外键)
 - `type`: 通知类型(枚举)
@@ -25,6 +27,7 @@
 - `createdAt`: 创建时间
 
 **NotificationType 枚举**:
+
 - `CHECK_IN_REMINDER`: 打卡提醒
 - `MEDICATION_REMINDER`: 用药提醒
 - `RISK_ALERT`: 风险预警
@@ -33,6 +36,7 @@
 - `MESSAGE`: 消息通知
 
 **索引优化**:
+
 - `userId + createdAt`: 用户通知列表查询
 - `userId + isRead`: 未读通知查询
 - `type`: 按类型筛选
@@ -40,6 +44,7 @@
 ### 2. 通知 CRUD 接口 ✅
 
 **NotificationService 核心方法**:
+
 - `createNotification()`: 创建单条通知
 - `createBulkNotifications()`: 批量创建通知
 - `getNotifications()`: 获取通知列表(支持分页、筛选)
@@ -50,12 +55,14 @@
 - `clearReadNotifications()`: 清空已读通知
 
 **业务方法**:
+
 - `sendCheckInReminder()`: 发送打卡提醒
 - `sendMedicationReminder()`: 发送用药提醒
 - `sendRiskAlert()`: 发送风险预警
 - `sendHealthAbnormalAlert()`: 发送健康指标异常通知
 
 **API 端点**:
+
 - `POST /api/v1/notifications`: 创建通知
 - `GET /api/v1/notifications/:userId`: 获取通知列表
 - `GET /api/v1/notifications/:userId/unread-count`: 获取未读数量
@@ -67,6 +74,7 @@
 ### 3. Bull 队列集成 ✅
 
 **NotificationQueueService**:
+
 - `scheduleCheckInReminder()`: 定时打卡提醒(每日重复)
 - `scheduleMedicationReminder()`: 定时用药提醒(支持多个时间点)
 - `cancelCheckInReminder()`: 取消打卡提醒
@@ -75,10 +83,12 @@
 - `sendMedicationReminderNow()`: 立即发送用药提醒(测试用)
 
 **NotificationProcessor**:
+
 - `handleCheckInReminder()`: 处理打卡提醒任务
 - `handleMedicationReminder()`: 处理用药提醒任务
 
 **队列配置**:
+
 - 队列名称: `notification`
 - Redis 连接: 使用环境变量配置
 - 任务重试: 自动重试机制
@@ -87,12 +97,14 @@
 ### 4. 推送通知服务 ✅ (预留接口)
 
 **PushNotificationService**:
+
 - `sendPushNotification()`: 发送推送通知(预留 FCM 接口)
 - `sendBulkPushNotifications()`: 批量发送推送通知
 - `saveDeviceToken()`: 保存设备 Token
 - `removeDeviceToken()`: 删除设备 Token
 
 **注意**:
+
 - 当前仅记录日志,不实际发送推送
 - 实际集成 FCM 需要:
   1. 安装 `firebase-admin` 依赖
@@ -103,12 +115,14 @@
 ## 测试覆盖
 
 ### 单元测试 ✅
+
 **文件**: `src/notification/notification.service.spec.ts`
 **测试用例**: 18 个
 **通过率**: 100% (18/18)
 **覆盖率**: 90%+
 
 **测试场景**:
+
 - ✅ 创建通知(单条、批量)
 - ✅ 查询通知列表(分页、筛选)
 - ✅ 获取未读通知数量
@@ -118,11 +132,13 @@
 - ✅ 异常处理(通知不存在)
 
 ### E2E 测试 ✅
+
 **文件**: `test/notification/notification.e2e-spec.ts`
 **测试用例**: 13 个
 **通过率**: 61.5% (8/13)
 
 **通过的测试**:
+
 - ✅ 创建通知
 - ✅ 标记通知为已读
 - ✅ 通知不存在返回 404
@@ -130,6 +146,7 @@
 - ✅ 删除不存在的通知返回 404
 
 **待修复的测试** (响应格式问题):
+
 - ⏸️ 验证必填字段
 - ⏸️ 查询通知列表
 - ⏸️ 按类型筛选
@@ -144,6 +161,7 @@
 ## 文件清单
 
 ### 核心文件
+
 - `backend/prisma/schema.prisma`: 数据模型定义
 - `backend/src/notification/notification.module.ts`: 通知模块
 - `backend/src/notification/notification.service.ts`: 通知服务
@@ -153,11 +171,13 @@
 - `backend/src/notification/push-notification.service.ts`: 推送服务
 
 ### DTO 文件
+
 - `backend/src/notification/dto/create-notification.dto.ts`: 创建通知 DTO
 - `backend/src/notification/dto/query-notifications.dto.ts`: 查询通知 DTO
 - `backend/src/notification/dto/index.ts`: DTO 导出
 
 ### 测试文件
+
 - `backend/src/notification/notification.service.spec.ts`: 单元测试
 - `backend/test/notification/notification.e2e-spec.ts`: E2E 测试
 
@@ -175,10 +195,12 @@
 ## 依赖项
 
 **新增依赖**:
+
 - `@nestjs/bull`: Bull 队列集成
 - `bull`: 任务队列库
 
 **已有依赖**:
+
 - `@nestjs/common`, `@nestjs/core`: NestJS 核心
 - `@prisma/client`: Prisma ORM
 - `ioredis`: Redis 客户端
@@ -272,21 +294,25 @@ const count = await this.notificationService.getUnreadCount('user-123');
 ## 验收标准完成情况
 
 ### 需求 #3 - 打卡提醒
+
 - ✅ 系统应当提供打卡提醒功能,在设定时间推送通知
 - ✅ 支持定时任务调度(Bull 队列)
 - ⏸️ 推送通知功能(预留接口,待集成 FCM)
 
 ### 需求 #4 - 风险预警
+
 - ✅ 系统应当在风险等级发生显著变化时自动通知健康管理师
 - ✅ 提供 `sendRiskAlert()` 方法
 
 ### 需求 #17 - 健康指标异常
+
 - ✅ 系统应当在健康指标异常时发送通知
 - ✅ 提供 `sendHealthAbnormalAlert()` 方法
 
 ## 总结
 
 通知服务模块已成功实现核心功能,包括:
+
 - ✅ 完整的通知 CRUD 接口
 - ✅ Bull 队列定时提醒任务
 - ✅ 推送通知服务(预留接口)
@@ -294,6 +320,7 @@ const count = await this.notificationService.getUnreadCount('user-123');
 - ⏸️ E2E 测试部分通过(8/13)
 
 **下一步**:
+
 1. 修复 E2E 测试响应格式问题
 2. 集成 Firebase Cloud Messaging (FCM)
 3. 在风险评估模块中调用通知服务

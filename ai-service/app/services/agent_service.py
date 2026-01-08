@@ -79,9 +79,7 @@ class AgentService:
                 )
             elif intent == IntentType.MEDICATION_CONSULTATION:
                 # 用药咨询
-                response = await self._handle_medication_consultation(
-                    message, patient_context
-                )
+                response = await self._handle_medication_consultation(message, patient_context)
             elif intent == IntentType.DIET_ADVICE:
                 # 饮食建议
                 response = await self._handle_diet_advice(message, patient_context)
@@ -218,10 +216,7 @@ class AgentService:
 
         # 添加历史上下文（最近 5 条）
         if context_messages:
-            history = [
-                {"role": msg.role, "content": msg.content}
-                for msg in context_messages[-5:]
-            ]
+            history = [{"role": msg.role, "content": msg.content} for msg in context_messages[-5:]]
             # 插入到 system 消息之后
             messages = [messages[0]] + history + [messages[1]]
 
@@ -244,9 +239,7 @@ class AgentService:
         """
         return await conversation_service.get_session_info(session_id)
 
-    async def get_session_history(
-        self, session_id: str, limit: int = 50
-    ) -> List[Dict[str, Any]]:
+    async def get_session_history(self, session_id: str, limit: int = 50) -> List[Dict[str, Any]]:
         """
         获取会话历史
 

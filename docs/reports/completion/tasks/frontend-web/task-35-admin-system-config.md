@@ -248,7 +248,7 @@ pnpm install
 pnpm dev
 ```
 
-访问 http://localhost:3000
+访问 <http://localhost:3000>
 
 ### 构建生产版本
 

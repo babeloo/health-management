@@ -35,7 +35,9 @@ class Settings(BaseSettings):
     embedding_api_key: Optional[str] = None  # OpenAI API Key (如使用openai provider)
     embedding_base_url: str = "https://api.openai.com/v1"  # OpenAI API 地址
     embedding_model: str = "text-embedding-ada-002"  # OpenAI 模型
-    embedding_local_model: str = "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"  # 本地模型
+    embedding_local_model: str = (
+        "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"  # 本地模型
+    )
     embedding_dimension: int = 1536  # text-embedding-ada-002 的维度
     embedding_cache_enabled: bool = True
 
@@ -80,7 +82,7 @@ class Settings(BaseSettings):
 
         env_file = [
             str(_project_root / ".env"),  # 1. 根目录全局配置
-            str(_base_dir / ".env"),      # 2. ai-service 模块配置（覆盖）
+            str(_base_dir / ".env"),  # 2. ai-service 模块配置（覆盖）
         ]
         env_file_encoding = "utf-8"
         case_sensitive = False
@@ -113,7 +115,9 @@ class Settings(BaseSettings):
         logger.info(f"  DeepSeek API Key: {'*' * 10 if self.deepseek_api_key else 'Not Set'}")
         logger.info(f"  Embedding Provider: {self.embedding_provider}")
         logger.info(f"  Embedding Base URL: {self.embedding_base_url}")
-        logger.info(f"  Embedding API Key: {'*' * 10 if self.embedding_api_key else 'Not Set (fallback to DeepSeek)'}")
+        logger.info(
+            f"  Embedding API Key: {'*' * 10 if self.embedding_api_key else 'Not Set (fallback to DeepSeek)'}"
+        )
         logger.info(f"  Qdrant URL: {self.qdrant_url}")
         logger.info(f"  Redis Host: {self.redis_host}")
         logger.info(f"  MongoDB URL: {self.mongodb_url[:50]}...")

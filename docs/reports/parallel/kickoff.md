@@ -23,6 +23,7 @@
 **并行任务组**: 5 组（分 3 个优先级波次启动）
 
 **关键决策**：
+
 1. ✅ 采用**分阶段并行策略**（先完成第二阶段剩余任务，再启动跨阶段并行）
 2. ✅ 使用 **Git Worktree** 隔离不同技术领域的开发工作
 3. ✅ 建立**每日同步机制**，确保代码集成顺畅
@@ -63,6 +64,7 @@ Day 3 (2025-12-27):
 #### 技术实现要点
 
 **任务 12：审计日志模块**（1 天）
+
 - 创建 `audit_logs` 表（Prisma Schema 已定义）
 - 实现 `AuditService`（记录敏感操作）
 - 实现 `AuditLogMiddleware`（自动捕获 HTTP 请求）
@@ -71,6 +73,7 @@ Day 3 (2025-12-27):
 - 验收标准：需求 #18（数据安全与隐私保护）
 
 **任务 10：医患关系管理模块**（2 天）
+
 - 实现 `RelationModule`, `RelationService`, `RelationController`
 - 创建医患关系接口（POST /api/v1/relations/doctor-patient）
 - 实现医生患者列表接口（GET /api/v1/relations/doctor/:doctorId/patients）
@@ -81,6 +84,7 @@ Day 3 (2025-12-27):
 - 验收标准：需求 #8（医生端 - 患者管理）、需求 #11（健康管理师端 - 会员管理）
 
 **任务 11：数据分析模块**（2 天）
+
 - 实现 `AnalyticsModule`, `AnalyticsService`, `AnalyticsController`
 - 实现仪表盘数据接口（GET /api/v1/analytics/dashboard）
 - 实现患者统计接口（GET /api/v1/analytics/patient-stats）
@@ -93,6 +97,7 @@ Day 3 (2025-12-27):
 #### 风险与缓解措施
 
 ⚠️ **风险 1：任务 11 依赖数据量**
+
 - **风险描述**: 数据分析模块需要一定的测试数据才能验证统计逻辑
 - **缓解措施**:
   - 在 Prisma seed 中生成模拟数据（50+ 用户、200+ 打卡记录）
@@ -100,6 +105,7 @@ Day 3 (2025-12-27):
   - 优先实现核心统计算法，后期再优化数据可视化
 
 ⚠️ **风险 2：审计日志性能影响**
+
 - **风险描述**: 审计日志中间件可能影响 API 响应时间
 - **缓解措施**:
   - 使用异步日志记录（不阻塞主流程）
@@ -109,6 +115,7 @@ Day 3 (2025-12-27):
 #### 验收标准
 
 ✅ **任务完成标准**：
+
 1. 所有 3 个模块的单元测试通过（覆盖率 > 80%）
 2. E2E 测试通过（完整业务流程验证）
 3. TypeScript 编译通过（Strict Mode）
@@ -191,6 +198,7 @@ Day 1 (2025-12-28):
 #### Worktree 使用指南
 
 **任务 13：Python FastAPI 项目初始化（@ai-python）**
+
 ```bash
 # 1. 切换到 AI 服务 worktree
 cd D:\Code\ai-gen\intl-health-mgmt-parallel\intl-health-mgmt-ai
@@ -218,6 +226,7 @@ gh pr create --title "feat: 完成 AI 服务项目初始化（任务13）" --bod
 ```
 
 **任务 19：Uni-app 项目初始化（@mobile）**
+
 ```bash
 # 1. 切换到患者端 worktree
 cd D:\Code\ai-gen\intl-health-mgmt-parallel\intl-health-mgmt-patient
@@ -245,6 +254,7 @@ gh pr create --title "feat: 完成患者端项目初始化（任务19）" --body
 ```
 
 **任务 28：React 项目初始化（@backend-ts）**
+
 ```bash
 # 1. 切换到医生端 worktree
 cd D:\Code\ai-gen\intl-health-mgmt-parallel\intl-health-mgmt-admin
@@ -274,6 +284,7 @@ gh pr create --title "feat: 完成医生端和管理端项目初始化（任务2
 #### 技术实现要点
 
 **任务 13：Python FastAPI 项目初始化**（1 天，@ai-python）
+
 - 创建 FastAPI 应用骨架（app/main.py）
 - 配置环境变量管理（python-dotenv）
 - 设置多环境配置（.env.development、.env.production）
@@ -286,6 +297,7 @@ gh pr create --title "feat: 完成医生端和管理端项目初始化（任务2
 - 验收标准：需求 #1（外部 AI API 集成）前置条件
 
 **任务 19：Uni-app 项目初始化**（1 天，@mobile）
+
 - 使用 HBuilderX 创建 Vue 3 项目
 - 配置编译目标（微信小程序 + H5）
 - 安装 uni-ui 或 uView UI 框架
@@ -298,6 +310,7 @@ gh pr create --title "feat: 完成医生端和管理端项目初始化（任务2
 - 验收标准：需求 #19（多端响应式设计）前置条件
 
 **任务 28：React 项目初始化**（1 天，@backend-ts）
+
 - 使用 Vite 创建 React + TypeScript 项目
 - 安装 Ant Design Pro 框架
 - 配置路由（React Router v6）
@@ -313,6 +326,7 @@ gh pr create --title "feat: 完成医生端和管理端项目初始化（任务2
 #### 风险与缓解措施
 
 ⚠️ **风险 1：跨 Worktree 配置文件冲突**
+
 - **风险描述**: `docker-compose.yml`, `README.md` 等共享文件可能在多个 worktree 中被修改
 - **缓解措施**:
   - 约定：共享文件仅在主工作目录（master 分支）修改
@@ -320,6 +334,7 @@ gh pr create --title "feat: 完成医生端和管理端项目初始化（任务2
   - 如需修改共享文件，先在主工作目录完成，再同步到其他 worktree
 
 ⚠️ **风险 2：依赖版本不一致**
+
 - **风险描述**: 不同 worktree 安装不同版本的依赖，导致集成问题
 - **缓解措施**:
   - 使用根目录的 `pnpm-lock.yaml` 锁定版本
@@ -327,6 +342,7 @@ gh pr create --title "feat: 完成医生端和管理端项目初始化（任务2
   - 定期同步依赖更新（每周五统一升级）
 
 ⚠️ **风险 3：API 契约不一致**
+
 - **风险描述**: 前端和后端 API 接口定义不一致
 - **缓解措施**:
   - 启动前端开发前，由 @architect 审查并锁定 API 契约
@@ -336,6 +352,7 @@ gh pr create --title "feat: 完成医生端和管理端项目初始化（任务2
 #### 验收标准
 
 ✅ **任务完成标准**：
+
 1. 所有 3 个项目初始化完成（能够正常启动开发服务器）
 2. 项目结构符合 `design.md` 规范
 3. 基础配置完成（环境变量、路由、状态管理、API 封装）
@@ -354,11 +371,13 @@ gh pr create --title "feat: 完成医生端和管理端项目初始化（任务2
 **时间**: 每日上午 10:00
 **形式**: 异步站会（GitHub Issues + 飞书/企业微信）
 **内容**:
+
 - 昨日完成：已完成的任务和关键成果
 - 今日计划：当前正在进行的任务
 - 遇到的阻塞：需要协调解决的问题
 
 **示例**：
+
 ```markdown
 ## 2025-12-25 每日站会
 
@@ -381,11 +400,13 @@ gh pr create --title "feat: 完成医生端和管理端项目初始化（任务2
 ### 2. 代码同步频率
 
 **同步规则**：
+
 - ✅ **每日启动前同步**：所有 worktree 在开始工作前必须先同步 master 分支
 - ✅ **任务完成后同步**：任务完成并合并到 master 后，其他 worktree 立即同步
 - ✅ **共享文件修改同步**：修改 `docker-compose.yml` 等共享文件后，通知所有团队成员同步
 
 **同步命令**：
+
 ```bash
 # 在当前 worktree 中
 git fetch origin master
@@ -399,11 +420,13 @@ git commit
 ### 3. 冲突解决策略
 
 **文件冲突优先级**：
+
 1. **代码文件冲突**：由冲突双方协商解决（技术 agent 直接沟通）
 2. **共享文件冲突**：由 @pm 裁决（基于业务优先级）
 3. **依赖文件冲突**：由 @architect 审查（确保版本兼容性）
 
 **冲突解决流程**：
+
 ```mermaid
 graph LR
     A[发现冲突] --> B[标记为阻塞]
@@ -421,11 +444,13 @@ graph LR
 ### 4. Pull Request 审查规则
 
 **审查人分配**：
+
 - **AI 服务**：@architect（架构一致性）+ @backend-ts（集成验证）
 - **患者端**：@mobile（代码质量）+ @backend-ts（API 集成验证）
 - **医生端**：@backend-ts（代码质量）+ @architect（架构审查）
 
 **审查检查项**：
+
 1. ✅ 代码符合 `design.md` 架构规范
 2. ✅ API 接口符合 Swagger 文档定义
 3. ✅ 单元测试覆盖率 > 80%
@@ -434,6 +459,7 @@ graph LR
 6. ✅ 验收标准已满足（对照 `requirements.md`）
 
 **审查时间限制**：
+
 - 🔴 关键路径任务：4 小时内完成审查
 - 🟡 普通任务：1 个工作日内完成审查
 - 🟢 优化任务：2 个工作日内完成审查
@@ -441,11 +467,13 @@ graph LR
 ### 5. 集成测试频率
 
 **集成测试时机**：
+
 1. **每日集成测试**：每天下班前运行一次（自动化 CI）
 2. **任务完成集成测试**：任务合并到 master 后立即运行
 3. **周度全量测试**：每周五运行完整的 E2E 测试套件
 
 **集成测试覆盖**：
+
 - ✅ 后端 API 集成测试（NestJS + Python FastAPI）
 - ✅ 前端 API 集成测试（Uni-app + React → NestJS）
 - ✅ 数据库集成测试（PostgreSQL + InfluxDB + Redis + Qdrant）
@@ -459,12 +487,14 @@ graph LR
 ### tasks.md 更新规范
 
 **更新时机**：
+
 1. **任务开始时**：更新状态为 `- [-]`（进行中）
 2. **任务完成时**：更新状态为 `- [x]`（已完成）
 3. **模块完成时**：更新一级任务模块标题进度（如 `### 10. 医患关系管理模块 ✅ 100% 完成`）
 4. **阶段完成时**：更新阶段总览表格
 
 **示例**：
+
 ```markdown
 ### 10. 医患关系管理模块 ✅ 100% 完成
 
@@ -481,6 +511,7 @@ graph LR
 **更新时机**：任务完成并合并到 master 后立即更新
 
 **示例**：
+
 ```markdown
 ## [Unreleased]
 
@@ -511,6 +542,7 @@ graph LR
 **存放位置**: `docs/reports/weekly/YYYY-Wnn.md`
 
 **周报内容**：
+
 1. **本周完成任务**：已完成的任务清单和关键成果
 2. **下周计划任务**：下周预计启动的任务
 3. **进度健康度**：实际进度 vs 计划进度对比
@@ -518,6 +550,7 @@ graph LR
 5. **团队协作情况**：并行开发的协调效果
 
 **示例**：
+
 ```markdown
 # 2025 年第 52 周项目周报（12-23 至 12-27）
 
@@ -611,6 +644,7 @@ graph LR
 **触发条件**: 关键路径任务延期 > 2 天
 
 **应对步骤**：
+
 1. @pm 立即评估影响范围和后续任务依赖
 2. 召开紧急协调会（30 分钟内）
 3. 调整任务优先级或增加资源（如外部支援）
@@ -622,6 +656,7 @@ graph LR
 **触发条件**: 代码冲突协商超过 4 小时未解决
 
 **应对步骤**：
+
 1. @pm 立即介入，召集冲突双方和 @architect
 2. @architect 提供技术方案（回滚/调整/重构）
 3. 由影响较小的一方调整代码
@@ -633,6 +668,7 @@ graph LR
 **触发条件**: 集成测试通过率 < 80%
 
 **应对步骤**：
+
 1. 立即停止新代码合并到 master
 2. @pm 组织全员排查失败原因
 3. 优先修复关键路径相关的失败测试
@@ -644,6 +680,7 @@ graph LR
 **触发条件**: DeepSeek API 连续失败 > 10 次
 
 **应对步骤**：
+
 1. @ai-python 立即切换到降级方案（本地模拟响应）
 2. 通知用户 AI 功能暂时不可用
 3. 联系 DeepSeek 技术支持
@@ -715,12 +752,14 @@ graph LR
 ### 下一步行动
 
 **立即执行**（今日）：
+
 1. @backend-ts 开始任务 12（审计日志模块）
 2. @pm 完成 worktree 使用培训（发送 WORKTREE-GUIDE.md）
 3. @ai-python 准备 AI 服务开发环境（安装 uv、配置 Python 3.11）
 4. @mobile 准备患者端开发环境（安装 HBuilderX、配置微信开发者工具）
 
 **Week 3 启动**（2025-12-28）：
+
 1. 三个 worktree 同时启动（任务 13、19、28）
 2. 建立每日同步机制（上午 10:00 异步站会）
 3. 启动集成测试自动化（每日下班前运行）
@@ -728,6 +767,7 @@ graph LR
 ### 预期成果
 
 通过并行开发策略，预计：
+
 - ✅ **总工期缩短 2 周**（从 12 周缩短至 10 周）
 - ✅ **并行加速比达到 2.5x - 3x**
 - ✅ **代码质量保持高水平**（测试覆盖率 > 80%，集成测试通过率 > 95%）

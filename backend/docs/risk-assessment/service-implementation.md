@@ -97,6 +97,7 @@ async createRiskAssessment(dto: CreateRiskAssessmentDto): Promise<RiskAssessment
    ```
 
 5. **检查风险等级变化**
+
    ```typescript
    await this.checkRiskLevelChange(userId, dto.assessment_type, level);
    ```
@@ -247,6 +248,7 @@ async compareRiskAssessments(
    ```
 
 4. **计算统计信息**
+
    ```typescript
    const avgScore = this.average(scores);
    const maxScore = Math.max(...scores);

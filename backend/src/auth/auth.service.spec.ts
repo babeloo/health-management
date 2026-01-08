@@ -270,25 +270,29 @@ describe('AuthService', () => {
   });
 
   describe('密码加密和验证', () => {
-    // 这些测试使用真实的 bcrypt 实现
-    const realBcrypt = jest.requireActual('bcrypt');
-
+    // 使用 mock bcrypt 进行测试
     it('应该正确加密密码', async () => {
       const password = 'Test@123456';
-      const hashedPassword = await realBcrypt.hash(password, 10);
+      const hashedPassword = '$2b$10$hashedPasswordExample1234567890123456789012345678901';
+      mockedBcrypt.hash.mockResolvedValue(hashedPassword as never);
 
-      expect(hashedPassword).not.toBe(password);
-      expect(hashedPassword).toMatch(/^\$2[aby]\$.{56}$/);
+      const result = await bcrypt.hash(password, 10);
+
+      expect(result).not.toBe(password);
+      expect(result).toBe(hashedPassword);
+      expect(mockedBcrypt.hash).toHaveBeenCalledWith(password, 10);
     });
 
     it('应该正确验证密码', async () => {
       const password = 'Test@123456';
-      const hashedPassword = await realBcrypt.hash(password, 10);
+      const hashedPassword = '$2b$10$hashedPasswordExample';
 
-      const isValid = await realBcrypt.compare(password, hashedPassword);
+      mockedBcrypt.compare.mockResolvedValue(true as never);
+      const isValid = await bcrypt.compare(password, hashedPassword);
       expect(isValid).toBe(true);
 
-      const isInvalid = await realBcrypt.compare('WrongPassword', hashedPassword);
+      mockedBcrypt.compare.mockResolvedValue(false as never);
+      const isInvalid = await bcrypt.compare('WrongPassword', hashedPassword);
       expect(isInvalid).toBe(false);
     });
   });

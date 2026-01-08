@@ -310,6 +310,7 @@ HEALTH_CONSULTATION_PROMPT = """
    ```
 
 2. 配置环境变量：
+
    ```bash
    DEEPSEEK_API_KEY=your_api_key
    QDRANT_URL=http://localhost:6333

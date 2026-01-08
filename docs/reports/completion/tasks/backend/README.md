@@ -14,11 +14,13 @@
 ## 任务分类
 
 ### IoT 设备集成
+
 - Task 36: MQTT Broker 配置
 - Task 37: 设备数据接收服务
 - InfluxDB: 时序数据存储
 
 ### AI 功能
+
 - Task 24: AI 健康科普功能实现
 
 ## 相关文档

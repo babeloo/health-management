@@ -40,6 +40,7 @@ async def check_dependencies():
     # 检查 Qdrant
     try:
         from app.services.qdrant_service import get_qdrant_service
+
         qdrant = get_qdrant_service()
         collections = qdrant.list_collections()
         dependencies_status["qdrant"] = {
@@ -57,6 +58,7 @@ async def check_dependencies():
     # 检查 MongoDB
     try:
         from app.services.conversation_service import conversation_service
+
         # 尝试执行一个简单的查询
         await conversation_service.collection.find_one({})
         dependencies_status["mongodb"] = {
@@ -74,6 +76,7 @@ async def check_dependencies():
     # 检查 Redis
     try:
         from app.services.redis_service import redis_service
+
         await redis_service.ping()
         dependencies_status["redis"] = {
             "status": "healthy",
@@ -90,6 +93,7 @@ async def check_dependencies():
     # 检查 DeepSeek API
     try:
         from app.services.deepseek_client import get_deepseek_client
+
         deepseek = get_deepseek_client()
         stats = deepseek.get_usage_stats()
         dependencies_status["deepseek"] = {
@@ -105,10 +109,7 @@ async def check_dependencies():
         }
 
     # 判断整体状态
-    all_healthy = all(
-        dep.get("status") == "healthy"
-        for dep in dependencies_status.values()
-    )
+    all_healthy = all(dep.get("status") == "healthy" for dep in dependencies_status.values())
 
     return {
         "status": "healthy" if all_healthy else "degraded",

@@ -126,7 +126,7 @@ class DeepSeekClient:
                 )
                 if attempt >= self.max_retries:
                     raise DeepSeekAPIError(f"API 请求超时，已重试 {self.max_retries} 次") from e
-                await asyncio.sleep(2 ** attempt)  # 指数退避
+                await asyncio.sleep(2**attempt)  # 指数退避
 
             except RateLimitError as e:
                 logger.warning(
@@ -142,7 +142,7 @@ class DeepSeekClient:
                 )
                 if attempt >= self.max_retries:
                     raise DeepSeekAPIError(f"API 调用失败: {str(e)}") from e
-                await asyncio.sleep(2 ** attempt)
+                await asyncio.sleep(2**attempt)
 
             except Exception as e:
                 logger.error(f"Unexpected error in DeepSeek API call: {str(e)}")
@@ -218,6 +218,7 @@ class DeepSeekClient:
 
 class DeepSeekAPIError(Exception):
     """DeepSeek API 调用异常"""
+
     pass
 
 

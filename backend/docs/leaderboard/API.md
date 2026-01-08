@@ -348,10 +348,12 @@ pnpm test points.service.spec.ts
 2. 启动后端服务：`pnpm dev`
 3. 获取 JWT Token（通过登录接口）
 4. 调用排行榜接口：
+
    ```bash
    curl -X GET "http://localhost:5000/api/v1/points/leaderboard" \
      -H "Authorization: Bearer YOUR_JWT_TOKEN"
    ```
+
 5. 验证返回数据格式正确
 6. 调用积分获得接口，验证排行榜实时更新
 

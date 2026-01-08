@@ -14,7 +14,7 @@ AI 服务监控与优化快速指南
 
 #
 
-# 在 ai-service 目录中运行：
+# 在 ai-service 目录中运行
 
 #
 
@@ -24,11 +24,11 @@ AI 服务监控与优化快速指南
 
 #
 
-# 服务将在以下端口启动：
+# 服务将在以下端口启动
 
-# - 主服务：http://localhost:8001
+# - 主服务：<http://localhost:8001>
 
-# - Metrics 服务：http://localhost:8002/metrics
+# - Metrics 服务：<http://localhost:8002/metrics>
 
 #
 
@@ -36,11 +36,11 @@ AI 服务监控与优化快速指南
 
 #
 
-# 打开浏览器访问：http://localhost:8002/metrics
+# 打开浏览器访问：<http://localhost:8002/metrics>
 
 #
 
-# 将看到所有监控指标，例如：
+# 将看到所有监控指标，例如
 
 #
 
@@ -52,7 +52,7 @@ AI 服务监控与优化快速指南
 
 # api_request_duration_seconds_bucket{endpoint="/health",method="GET",status="200",le="0.025"} 10.0
 
-# ...
+# 
 
 #
 
@@ -90,7 +90,7 @@ AI 服务监控与优化快速指南
 
 #
 
-# 当前配置的缓存类型（详见 cache_service.py）：
+# 当前配置的缓存类型（详见 cache_service.py）
 
 #
 
@@ -148,7 +148,7 @@ AI 服务监控与优化快速指南
 
 # @cache_result(ttl=3600, cache_type="rag_answer")
 
-# async def get_health_advice(question: str) -> str:
+# async def get_health_advice(question: str) -> str
 
 # # 调用 DeepSeek API 获取健康建议
 
@@ -158,7 +158,7 @@ AI 服务监控与优化快速指南
 
 #
 
-# 第一次调用时，结果会被缓存；后续相同问题会直接从缓存返回。
+# 第一次调用时，结果会被缓存；后续相同问题会直接从缓存返回
 
 #
 
@@ -178,7 +178,7 @@ AI 服务监控与优化快速指南
 
 # cached_result = await cache_manager.get("rag_answer", "问题内容")
 
-# if cached_result is not None:
+# if cached_result is not None
 
 # return cached_result
 
@@ -202,11 +202,11 @@ AI 服务监控与优化快速指南
 
 #
 
-# 当前实现使用 LRU（最近最少使用）策略。
+# 当前实现使用 LRU（最近最少使用）策略
 
 #
 
-# 手动清除缓存的方法：
+# 手动清除缓存的方法
 
 #
 
@@ -232,7 +232,7 @@ AI 服务监控与优化快速指南
 
 #
 
-# 运行监控和缓存的单元测试：
+# 运行监控和缓存的单元测试
 
 #
 
@@ -242,7 +242,7 @@ AI 服务监控与优化快速指南
 
 #
 
-# 或运行所有测试：
+# 或运行所有测试
 
 #
 
@@ -250,7 +250,7 @@ AI 服务监控与优化快速指南
 
 #
 
-# 测试覆盖项包括：
+# 测试覆盖项包括
 
 # - Metrics Service 初始化和指标记录
 
@@ -268,7 +268,7 @@ AI 服务监控与优化快速指南
 
 #
 
-# 运行完整的性能测试套件：
+# 运行完整的性能测试套件
 
 #
 
@@ -278,19 +278,19 @@ AI 服务监控与优化快速指南
 
 # # 启动 Locust Web UI（推荐交互式使用）
 
-# locust -f tests/performance_test.py --host http://localhost:8001
+# locust -f tests/performance_test.py --host <http://localhost:8001>
 
 #
 
 # # 无头测试（自动化脚本）
 
-# locust -f tests/performance_test.py --host http://localhost:8001 \
+# locust -f tests/performance_test.py --host <http://localhost:8001> \
 
 # -u 100 -r 10 --run-time 1m --headless
 
 #
 
-# 参数说明：
+# 参数说明
 
 # - -u 100: 100 个并发用户
 
@@ -306,7 +306,7 @@ AI 服务监控与优化快速指南
 
 #
 
-# 当前实现的测试场景：
+# 当前实现的测试场景
 
 #
 
@@ -364,17 +364,17 @@ AI 服务监控与优化快速指南
 
 #
 
-# 启动 Locust Web UI 后，在浏览器打开：http://localhost:8089
+# 启动 Locust Web UI 后，在浏览器打开：<http://localhost:8089>
 
 #
 
-# 在 Web 界面中：
+# 在 Web 界面中
 
 # 1. 设置 "Number of users"（并发用户数）和 "Spawn rate"（增长速率）
 
 # 2. 点击 "Start swarming" 开始测试
 
-# 3. 实时查看性能数据：
+# 3. 实时查看性能数据
 
 # - Response Times: 响应时间分布
 
@@ -388,7 +388,7 @@ AI 服务监控与优化快速指南
 
 #
 
-# 测试完成后，使用分析脚本生成报告：
+# 测试完成后，使用分析脚本生成报告
 
 #
 
@@ -406,13 +406,13 @@ AI 服务监控与优化快速指南
 
 # analyzer.record_endpoint_performance(
 
-# endpoint_name="health_check",
+# endpoint_name="health_check"
 
-# response_times=[30, 35, 40, 45, 50, 55, 60, 65, 70],
+# response_times=[30, 35, 40, 45, 50, 55, 60, 65, 70]
 
-# error_count=1,
+# error_count=1
 
-# success_count=9,
+# success_count=9
 
 # )
 
@@ -500,9 +500,9 @@ AI 服务监控与优化快速指南
 
 #
 
-# 在 main.py 中已自动添加 MetricsMiddleware，
+# 在 main.py 中已自动添加 MetricsMiddleware
 
-# 所有 API 请求都会自动记录以下信息：
+# 所有 API 请求都会自动记录以下信息
 
 #
 
@@ -520,7 +520,7 @@ AI 服务监控与优化快速指南
 
 #
 
-# 在需要的地方手动记录特定指标：
+# 在需要的地方手动记录特定指标
 
 #
 
@@ -564,7 +564,7 @@ AI 服务监控与优化快速指南
 
 #
 
-# 解决方案：
+# 解决方案
 
 # - 修改 start_metrics_server 的端口参数
 
@@ -576,7 +576,7 @@ AI 服务监控与优化快速指南
 
 #
 
-# 解决方案：
+# 解决方案
 
 # - 确保 Redis 服务正在运行：docker-compose ps
 
@@ -590,7 +590,7 @@ AI 服务监控与优化快速指南
 
 #
 
-# 原因分析：
+# 原因分析
 
 # - 查询内容差异大（缓存键不同）
 
@@ -600,7 +600,7 @@ AI 服务监控与优化快速指南
 
 #
 
-# 优化方案：
+# 优化方案
 
 # - 增加 TTL 配置
 

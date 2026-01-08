@@ -7,13 +7,6 @@ import type { User, Role } from '@/types';
 
 const { Option } = Select;
 
-const roleColors: Record<string, string> = {
-  admin: 'red',
-  doctor: 'blue',
-  health_manager: 'green',
-  patient: 'default',
-};
-
 const roleLabels: Record<string, string> = {
   admin: '管理员',
   doctor: '医生',
@@ -44,6 +37,7 @@ export default function UsersPage() {
 
   useEffect(() => {
     fetchUsers();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page, filters]);
 
   const handleRoleChange = (userId: number, role: string) => {
