@@ -10,6 +10,67 @@
 
 ### Changed
 
+- 升级 Qdrant 向量数据库到最新稳定版本 - 2026-01-07 @backend-ts
+  - Qdrant 服务器：v1.7.4 → v1.16.2
+  - qdrant-client：1.7.0 → 1.16.2
+  - 修复 API 兼容性问题（`search` → `query_points`）
+  - 修复 `get_collection_info` 方法适配新版本 API
+  - 影响：RAG 知识库功能正常工作
+- 修复后端 AI 服务 URL 配置：从 8000 改为 8001 - 2026-01-06 @pm
+- 同步 DeepSeek API Key 配置到 AI 服务 - 2026-01-06 @pm
+- 调整任务策略：将 AI 功能联调作为独立任务跟踪 - 2026-01-06 @pm
+  - 原因：AI 服务配置问题不应阻塞整体进度
+  - 影响：核心业务功能（用户、健康、积分）已完成联调，可继续推进
+- 清理项目临时测试文件和日志文件 - 2026-01-07 @pm
+  - 删除 ai-service/ 目录下 5 个临时测试脚本
+  - 删除 3 个临时日志文件
+  - 删除根目录下 8 个临时测试 JSON 文件
+  - 更新 .gitignore 防止此类文件再次被提交
+  - 详见：`docs/reports/file-cleanup-report-2026-01-07.md`
+- 重组项目文件结构 - 2026-01-07 @pm
+  - 移动 `test_ai_integration.py` → `scripts/integration-tests/ai-integration-test.py`
+  - 移动 `test_ai_integration.sh` → `scripts/integration-tests/ai-integration-test.sh`
+  - 移动 `ai-service/MONITORING_GUIDE.md` → `docs/guides/ai-service-monitoring.md`
+  - 添加 `scripts/integration-tests/README.md` 说明文档
+
+### Added
+
+- 完成前后端联调测试（非 AI 功能）- 2026-01-06 @pm
+  - 用户认证功能测试通过（注册/登录/JWT）
+  - AI 服务健康检查通过
+  - 科普文章接口测试通过
+- 生成集成测试报告 `docs/reports/integration-test-report-2026-01-06.md` - 2026-01-06 @pm
+
+### Fixed
+
+- 修复 Qdrant 集成 API 版本兼容性问题 - 2026-01-07 @backend-ts
+  - 根本原因：客户端 1.7.0 与服务器 1.7.4 版本差距太大，API 已发生变化
+  - 解决方案：统一升级到 v1.16.2，使用最新稳定版本
+  - 修复内容：
+    - `collection_exists` 方法不存在 → 升级客户端版本
+    - `info.vectors_count` 属性不存在 → 使用 `indexed_vectors_count`
+    - `client.search()` 方法不存在 → 改用 `client.query_points()`
+  - 验证：完整集成测试通过（文档添加、检索、删除、统计）
+- 修复后端 `.env` 中 AI_SERVICE_URL 端口配置错误 - 2026-01-06 @pm
+- 修复后端依赖安装问题（重新安装 node_modules） - 2026-01-06 @pm
+
+### Security
+
+- 安全删除包含硬编码 API Key 的测试文件 test_call_openai.py - 2026-01-07 @pm
+  - ⚠️ 建议立即轮换泄露的 DeepSeek API Key
+
+### Blocked
+
+- AI 聊天功能测试 ⚠️ 部分阻塞 - 2026-01-06 @pm
+  - **当前状态**：AI 服务已启动，但聊天接口返回 500 错误
+  - **已完成**：配置文件已更新（API Key、服务 URL）
+  - **待解决**：需要重启 AI 服务和后端服务以加载新配置
+  - **影响范围**：仅影响 AI 聊天功能，其他功能正常
+
+---
+
+### Changed
+
 - **Git 分支清理和 AI 功能归档** - 2026-01-05 @pm
   - 删除已合并分支：
     - `babeloo/issue5` - 所有内容已通过 PR #7 合并到 master

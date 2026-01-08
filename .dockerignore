@@ -1,0 +1,17 @@
+# Prevent sending huge contexts to the daemon
+**/node_modules
+**/.pnpm-store
+**/.turbo
+**/dist
+**/build
+**/.next
+**/.cache
+**/.vite
+**/.env
+**/.env.*
+logs
+**/logs
+.git
+.vscode
+.idea
+.DS_Store

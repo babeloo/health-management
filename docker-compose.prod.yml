@@ -1,5 +1,3 @@
-version: '3.8'
-
 # ================================
 # 生产环境 Docker Compose 配置
 # ================================
@@ -103,7 +101,7 @@ services:
 
   # Qdrant 向量数据库
   qdrant:
-    image: qdrant/qdrant:v1.7.4
+    image: qdrant/qdrant:v1.16.2
     container_name: health-qdrant
     restart: always
     volumes:
@@ -169,7 +167,7 @@ services:
       EMQX_HOST: ${EMQX_HOST:-emqx}
       EMQX_DASHBOARD__DEFAULT_USERNAME: ${EMQX_USER:-admin}
       EMQX_DASHBOARD__DEFAULT_PASSWORD: ${EMQX_PASSWORD:?EMQX_PASSWORD is required}
-      EMQX_LOADED_PLUGINS: "emqx_dashboard,emqx_management,emqx_auth_mnesia"
+      EMQX_LOADED_PLUGINS: 'emqx_dashboard,emqx_management,emqx_auth_mnesia'
     volumes:
       - emqx_data:/opt/emqx/data
       - emqx_log:/opt/emqx/log
@@ -198,7 +196,7 @@ services:
 
   # MinIO 对象存储
   minio:
-    image: minio/minio:RELEASE-2024-01-01T16-36-33Z
+    image: minio/minio:RELEASE.2025-09-07T16-13-09Z
     container_name: health-minio
     restart: always
     command: server /data --console-address ":9001"
@@ -336,6 +334,11 @@ services:
       DEEPSEEK_API_KEY: ${DEEPSEEK_API_KEY:?DEEPSEEK_API_KEY is required}
       DEEPSEEK_API_BASE: ${DEEPSEEK_API_BASE:-https://api.deepseek.com/v1}
       DEEPSEEK_MODEL: ${DEEPSEEK_MODEL:-deepseek-chat}
+      # Embedding API 配置
+      EMBEDDING_PROVIDER: ${EMBEDDING_PROVIDER:-openai}
+      EMBEDDING_API_KEY: ${EMBEDDING_API_KEY}
+      EMBEDDING_BASE_URL: ${EMBEDDING_BASE_URL:-https://api.openai.com/v1}
+      EMBEDDING_MODEL: ${EMBEDDING_MODEL:-text-embedding-ada-002}
       # 后端服务配置
       BACKEND_URL: http://backend:5000
       # JWT 配置

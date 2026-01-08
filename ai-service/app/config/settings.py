@@ -1,9 +1,16 @@
 """
 配置管理模块
+
+配置加载优先级（从低到高）：
+1. 代码中的默认值
+2. 根目录 .env 文件（全局配置）
+3. ai-service/.env 文件（模块配置，覆盖全局）
+4. 环境变量（最高优先级）
 """
 
 from pydantic_settings import BaseSettings
 from typing import Optional
+from pathlib import Path
 
 
 class Settings(BaseSettings):
@@ -16,7 +23,7 @@ class Settings(BaseSettings):
 
     # DeepSeek API
     deepseek_api_key: Optional[str] = None
-    deepseek_api_base: str = "https://api.deepseek.com/v1"
+    deepseek_base_url: str = "https://api.deepseek.com/v1"
     deepseek_timeout: int = 60
     deepseek_max_retries: int = 3
     deepseek_model: str = "deepseek-chat"
@@ -25,6 +32,8 @@ class Settings(BaseSettings):
 
     # Embedding 配置
     embedding_provider: str = "openai"  # openai 或 local
+    embedding_api_key: Optional[str] = None  # OpenAI API Key (如使用openai provider)
+    embedding_base_url: str = "https://api.openai.com/v1"  # OpenAI API 地址
     embedding_model: str = "text-embedding-ada-002"  # OpenAI 模型
     embedding_local_model: str = "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"  # 本地模型
     embedding_dimension: int = 1536  # text-embedding-ada-002 的维度
@@ -64,8 +73,51 @@ class Settings(BaseSettings):
     cors_origins: str = "*"
 
     class Config:
-        env_file = ".env"
+        # 配置文件加载顺序：先加载根目录.env，再加载ai-service/.env
+        # 后面的文件会覆盖前面的配置项
+        _base_dir = Path(__file__).parent.parent.parent  # ai-service 目录
+        _project_root = _base_dir.parent  # 项目根目录
+
+        env_file = [
+            str(_project_root / ".env"),  # 1. 根目录全局配置
+            str(_base_dir / ".env"),      # 2. ai-service 模块配置（覆盖）
+        ]
+        env_file_encoding = "utf-8"
         case_sensitive = False
+        extra = "ignore"
+
+    def get_config_files(self) -> list[str]:
+        """获取配置文件路径列表"""
+        return [
+            str(Path(__file__).parent.parent.parent.parent / ".env"),
+            str(Path(__file__).parent.parent.parent / ".env"),
+        ]
+
+    def print_config_info(self):
+        """打印配置加载信息（调试用）"""
+        from loguru import logger
+
+        logger.info("=" * 60)
+        logger.info("Configuration Loading Info")
+        logger.info("=" * 60)
+
+        for i, config_file in enumerate(self.get_config_files(), 1):
+            exists = Path(config_file).exists()
+            status = "✓ Found" if exists else "✗ Not Found"
+            logger.info(f"{i}. {status}: {config_file}")
+
+        logger.info("-" * 60)
+        logger.info("Key Configuration Values:")
+        logger.info(f"  Environment: {self.environment}")
+        logger.info(f"  DeepSeek Base URL: {self.deepseek_base_url}")
+        logger.info(f"  DeepSeek API Key: {'*' * 10 if self.deepseek_api_key else 'Not Set'}")
+        logger.info(f"  Embedding Provider: {self.embedding_provider}")
+        logger.info(f"  Embedding Base URL: {self.embedding_base_url}")
+        logger.info(f"  Embedding API Key: {'*' * 10 if self.embedding_api_key else 'Not Set (fallback to DeepSeek)'}")
+        logger.info(f"  Qdrant URL: {self.qdrant_url}")
+        logger.info(f"  Redis Host: {self.redis_host}")
+        logger.info(f"  MongoDB URL: {self.mongodb_url[:50]}...")
+        logger.info("=" * 60)
 
 
 settings = Settings()

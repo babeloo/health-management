@@ -185,14 +185,16 @@ class QdrantService:
 
         try:
             logger.debug(f"Searching in {collection_name}, limit={limit}, threshold={score_threshold}")
-            results = client.search(
+            # 新版本使用 query_points 替代 search
+            response = client.query_points(
                 collection_name=collection_name,
-                query_vector=query_vector,
+                query=query_vector,
                 limit=limit,
                 score_threshold=score_threshold,
                 query_filter=filter_conditions,
             )
 
+            results = response.points if hasattr(response, 'points') else []
             logger.info(f"Found {len(results)} results")
             return results
 
@@ -217,14 +219,28 @@ class QdrantService:
                 raise ValueError(f"Collection {collection_name} does not exist")
 
             info = client.get_collection(collection_name)
+
+            # 获取向量配置
+            vectors_config = info.config.params.vectors
+            # 处理 dict 或单个向量配置
+            if isinstance(vectors_config, dict):
+                # 多向量配置（新版本可能支持）
+                first_vector = next(iter(vectors_config.values()))
+                vector_size = first_vector.size
+                distance = str(first_vector.distance)
+            else:
+                # 单向量配置
+                vector_size = vectors_config.size
+                distance = str(vectors_config.distance)
+
             return {
                 "name": collection_name,
-                "vectors_count": info.vectors_count,
+                "vectors_count": info.indexed_vectors_count or 0,
                 "points_count": info.points_count,
-                "status": info.status,
+                "status": str(info.status),
                 "config": {
-                    "vector_size": info.config.params.vectors.size,
-                    "distance": info.config.params.vectors.distance.name,
+                    "vector_size": vector_size,
+                    "distance": distance,
                 },
             }
         except Exception as e:

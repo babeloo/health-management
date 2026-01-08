@@ -28,7 +28,7 @@ class DeepSeekClient:
         """初始化 DeepSeek 客户端"""
         self.client = AsyncOpenAI(
             api_key=settings.deepseek_api_key,
-            base_url=settings.deepseek_api_base,
+            base_url=settings.deepseek_base_url,
             timeout=settings.deepseek_timeout,
             max_retries=0,  # 禁用 SDK 自动重试，使用自定义重试逻辑
         )
@@ -44,7 +44,7 @@ class DeepSeekClient:
 
         logger.info(
             f"DeepSeek client initialized: model={self.model}, "
-            f"base_url={settings.deepseek_api_base}"
+            f"base_url={settings.deepseek_base_url}"
         )
 
     async def chat(
