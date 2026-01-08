@@ -87,7 +87,9 @@ jobs:
           cache: 'pnpm'
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile --unsafe-perm
+        run: pnpm install --frozen-lockfile
+        env:
+          npm_config_unsafe_perm: true
 
       - name: Setup environment variables
         run: |
@@ -253,7 +255,9 @@ jobs:
           cache: 'pnpm'
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile --unsafe-perm
+        run: pnpm install --frozen-lockfile
+        env:
+          npm_config_unsafe_perm: true
 
       - name: Setup environment variables
         run: |
