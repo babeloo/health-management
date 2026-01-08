@@ -19,11 +19,13 @@
 **文件**：`docs/NAMING-CONVENTIONS.md`
 
 **新增内容**：
+
 - 添加了 9 种文档类型的后缀规范
 - 提供后缀选择决策树
 - 包含大量正反示例
 
 **规范的文档类型**：
+
 1. 任务完成报告：`task-{编号}-{功能描述}.md`
 2. 模块完成报告：`{模块名}-completion.md`
 3. 阶段总结报告：`stage{编号}-summary.md`
@@ -41,12 +43,14 @@
 **问题**：两个不同的文件都使用 Task 24 编号
 
 **解决方案**：
+
 - `backend/task-24-completion.md` → `backend/task-24-ai-frontend-implementation.md`
 - `frontend-patient/task-24-ai-integration.md` → `frontend-patient/task-24-ai-frontend-integration.md`
 
 #### 1.2 统一任务报告命名（13个文件）
 
 **frontend-patient**（6个文件）：
+
 | 旧文件名 | 新文件名 | 说明 |
 |---------|---------|------|
 | task-22-summary.md | task-22-health-checkin.md | 健康打卡功能 |
@@ -57,6 +61,7 @@
 | implementation-summary.md | task-24-implementation-summary.md | Task 24 实现总结 |
 
 **backend**（3个文件）：
+
 | 旧文件名 | 新文件名 | 说明 |
 |---------|---------|------|
 | task-36-completion.md | task-36-mqtt-broker-config.md | MQTT Broker 配置 |
@@ -64,12 +69,14 @@
 | influxdb-integration-completion.md | influxdb-integration.md | InfluxDB 集成 |
 
 **infrastructure**（2个文件）：
+
 | 旧文件名 | 新文件名 | 说明 |
 |---------|---------|------|
 | task-38-completion.md | task-38-docker-deployment-v1.md | Docker 部署 v1 |
 | task-38-completion-docker.md | task-38-docker-deployment-v2.md | Docker 部署 v2 |
 
 **frontend-web**（1个文件）：
+
 | 旧文件名 | 新文件名 | 说明 |
 |---------|---------|------|
 | task-35-completion.md | task-35-admin-system-config.md | 管理后台系统配置 |
@@ -101,6 +108,7 @@
 #### 2.2 优化 completion 文件夹结构
 
 **优化前**：
+
 ```
 completion/
 ├── admin-frontend.md
@@ -113,6 +121,7 @@ completion/
 ```
 
 **优化后**：
+
 ```
 completion/
 ├── modules/  ← 新增：模块完成报告
@@ -131,6 +140,7 @@ completion/
 ```
 
 **优势**：
+
 - 模块、阶段、任务三类报告分开存放
 - 层次结构更清晰
 - 易于查找特定类型的报告
@@ -142,11 +152,13 @@ completion/
 ### 1. 命名一致性 ✅
 
 **优化前**：
+
 - 混用 `-completion`、`-summary`、`-implementation` 后缀
 - 有的文件只有编号，没有功能描述
 - 同一任务编号出现在不同文件中
 
 **优化后**：
+
 - 所有任务报告统一使用 `task-{编号}-{功能描述}` 格式
 - 功能描述清晰明确（如 `health-checkin`、`mqtt-broker-config`）
 - 编号冲突已解决
@@ -154,10 +166,12 @@ completion/
 ### 2. 分类清晰 ✅
 
 **优化前**：
+
 - 模块报告、阶段总结、任务报告混在一起
 - 难以快速找到特定类型的文档
 
 **优化后**：
+
 - `modules/`：功能模块完成报告
 - `stages/`：阶段总结报告
 - `tasks/`：具体任务完成报告（按技术栈分类）
@@ -165,10 +179,12 @@ completion/
 ### 3. 易于查找 ✅
 
 **优化前**：
+
 - 没有索引文件
 - 需要逐个打开文件才能了解内容
 
 **优化后**：
+
 - 每个子文件夹都有 README.md 索引
 - 索引包含任务列表、分类、技术栈说明
 - 提供相关文档链接
@@ -176,10 +192,12 @@ completion/
 ### 4. 规范完善 ✅
 
 **优化前**：
+
 - NAMING-CONVENTIONS.md 缺少后缀规范
 - 没有明确的命名决策指导
 
 **优化后**：
+
 - 详细的文件后缀规范（9种文档类型）
 - 后缀选择决策树
 - 大量正反示例
@@ -187,10 +205,12 @@ completion/
 ### 5. 结构优化 ✅
 
 **优化前**：
+
 - completion 文件夹扁平化
 - 不同类型文档混在一起
 
 **优化后**：
+
 - 三层结构：modules/stages/tasks
 - 每层职责明确
 - 便于扩展和维护

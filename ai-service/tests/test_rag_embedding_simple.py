@@ -193,9 +193,7 @@ async def test_embedding_rag_integration():
                 all_success = False
             print(f"     查询: '{query}' -> {len(results)} 条结果")
 
-        print(
-            f"[{'OK' if all_success else 'WARN'}] 中文检索测试{'完成' if all_success else '部分失败'}"
-        )
+        print(f"[{'OK' if all_success else 'WARN'}] 中文检索测试{'完成' if all_success else '部分失败'}")
         test_results.append(("中文检索", all_success))
     except Exception as e:
         print(f"[FAIL] 中文检索失败: {str(e)}")

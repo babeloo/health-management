@@ -809,11 +809,11 @@ await app.listen(port, host);
 
 ## 资源链接
 
-- **NestJS 文档**：https://docs.nestjs.com
-- **Prisma 文档**：https://www.prisma.io/docs
-- **Uni-app 文档**：https://uniapp.dcloud.net.cn
-- **InfluxDB Flux 语法**：https://docs.influxdata.com/flux
-- **DeepSeek API**：https://platform.deepseek.com/docs
+- **NestJS 文档**：<https://docs.nestjs.com>
+- **Prisma 文档**：<https://www.prisma.io/docs>
+- **Uni-app 文档**：<https://uniapp.dcloud.net.cn>
+- **InfluxDB Flux 语法**：<https://docs.influxdata.com/flux>
+- **DeepSeek API**：<https://platform.deepseek.com/docs>
 
 ---
 

@@ -436,7 +436,7 @@ git worktree prune
 
 ## 📚 参考资料
 
-- **Git Worktree 官方文档**: https://git-scm.com/docs/git-worktree
+- **Git Worktree 官方文档**: <https://git-scm.com/docs/git-worktree>
 - **并行任务分析报告**: `docs/reports/plan/parallel-tasks-analysis.md`
 - **项目任务清单**: `.claude/specs/chronic-disease-management/tasks.md`
 - **需求文档**: `.claude/specs/chronic-disease-management/requirements.md`

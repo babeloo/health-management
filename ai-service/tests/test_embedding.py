@@ -270,9 +270,7 @@ class EmbeddingTester:
             is_valid = len(embedding) == self.service.dimension and any(x != 0 for x in embedding)
 
             text_length = len(long_text)
-            self.print_result(
-                "长文本处理", is_valid, f"文本长度: {text_length} 字符 | 耗时: {elapsed:.3f}s"
-            )
+            self.print_result("长文本处理", is_valid, f"文本长度: {text_length} 字符 | 耗时: {elapsed:.3f}s")
 
             return is_valid
 

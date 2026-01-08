@@ -176,7 +176,7 @@ Get-NetTCPConnection -LocalPort 5000
 
 **使用 WSL2 运行 Docker**：
 
-1. 安装 WSL2：https://docs.microsoft.com/en-us/windows/wsl/install
+1. 安装 WSL2：<https://docs.microsoft.com/en-us/windows/wsl/install>
 2. 安装 Docker Desktop for Windows
 3. 在 Docker Desktop 设置中启用 WSL2 backend
 

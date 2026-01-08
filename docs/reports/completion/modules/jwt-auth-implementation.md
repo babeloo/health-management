@@ -496,9 +496,9 @@ uvicorn app.main:app --port 8001
 
 ### 10.2 技术参考
 
-- **FastAPI 安全**: https://fastapi.tiangolo.com/tutorial/security/
-- **python-jose 文档**: https://python-jose.readthedocs.io/
-- **JWT 标准**: https://datatracker.ietf.org/doc/html/rfc7519
+- **FastAPI 安全**: <https://fastapi.tiangolo.com/tutorial/security/>
+- **python-jose 文档**: <https://python-jose.readthedocs.io/>
+- **JWT 标准**: <https://datatracker.ietf.org/doc/html/rfc7519>
 
 ### 10.3 联系方式
 

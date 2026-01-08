@@ -274,6 +274,7 @@ influxdb-integration.md
 **格式**：`{主题}-{类型}.md`
 
 **后缀规则**：
+
 - 策略文档使用 `-strategy`
 - 计划文档使用 `-plan`
 - 执行计划使用 `-execution-plan`
@@ -290,6 +291,7 @@ influxdb-integration.md
 **格式**：`{主题}-{类型}-report.md` 或 `YYYY-MM-DD.md`
 
 **后缀规则**：
+
 - 状态报告使用 `-status-report`
 - 清理报告使用 `-cleanup-report`
 - 进度报告使用日期格式
@@ -315,4 +317,3 @@ influxdb-integration.md
 ├─ 计划文档 → {主题}-plan.md
 └─ 状态报告 → {主题}-status-report.md
 ```
-

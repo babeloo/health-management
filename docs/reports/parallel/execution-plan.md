@@ -12,10 +12,12 @@
 基于当前项目进度和 worktree 环境配置,现制定后续任务的详细执行计划:
 
 **✅ 已完成**:
+
 - 第一阶段(项目基础设施): 100% 完成
 - 第二阶段(后端核心服务): 100% 完成,包括任务 4-12 的所有 11 个模块
 
 **🚀 即将启动**:
+
 - 第二组任务: AI 服务开发(任务 13-18)
 - 第三组任务: 前端初始化(任务 19 和 28)
 
@@ -36,12 +38,14 @@
 #### 详细任务清单
 
 1. **使用 uv 初始化 Python 项目**
+
    ```bash
    cd ai-service
    uv init
    ```
 
 2. **创建 requirements.txt**
+
    ```
    fastapi==0.109.0
    uvicorn[standard]==0.27.0
@@ -64,7 +68,7 @@
      - `LOG_LEVEL`
 
 4. **配置 CORS 中间件**
-   - 允许 NestJS 后端(http://localhost:5000)调用
+   - 允许 NestJS 后端(<http://localhost:5000)调用>
    - 允许前端开发服务器调用
 
 5. **设置日志配置(structlog)**
@@ -73,6 +77,7 @@
    - 日志轮转配置
 
 6. **创建项目结构**
+
    ```
    ai-service/
    ├── app/
@@ -105,7 +110,7 @@
 
 - ✅ AC1: FastAPI 应用能够正常启动(uvicorn app.main:app --reload)
 - ✅ AC2: 健康检查端点 `GET /health` 返回 200 状态码
-- ✅ AC3: CORS 配置允许 NestJS 后端调用(http://localhost:5000)
+- ✅ AC3: CORS 配置允许 NestJS 后端调用(<http://localhost:5000>)
 - ✅ AC4: 日志正常输出到控制台和文件
 - ✅ AC5: 环境变量能够正确加载(.env.development)
 - ✅ AC6: 单元测试框架配置完成(pytest)
@@ -275,6 +280,7 @@ curl http://localhost:8001/metrics
 **@data-infra 负责部分**:
 
 1. **在 docker-compose.yml 中添加 Qdrant 服务**
+
    ```yaml
    qdrant:
      image: qdrant/qdrant:v1.7.0
@@ -367,6 +373,7 @@ pytest tests/performance/test_rag_performance.py -v
 #### 准备测试数据
 
 创建 10+ 篇医疗科普文章(Markdown 格式),包含:
+
 - 糖尿病管理指南
 - 高血压饮食建议
 - 卒中风险预防
@@ -523,6 +530,7 @@ curl -X POST http://localhost:8001/api/v1/ai/risk-prediction \
 #### 准备测试数据
 
 创建模拟患者健康档案:
+
 - 患者 A: 糖尿病高风险,血糖波动大
 - 患者 B: 高血压稳定控制,低风险
 - 患者 C: 卒中高风险,血压持续偏高
@@ -724,6 +732,7 @@ git push origin feature/stage4-patient-app
 #### 详细任务清单
 
 1. **使用 Vite 创建 React + TypeScript 项目**
+
    ```bash
    npm create vite@latest frontend-web -- --template react-ts
    ```
@@ -857,6 +866,7 @@ Week 3-4: 继续前端开发和 IoT 集成(详见 tasks.md)
 ### 2. 每日同步机制
 
 **每日站会(Daily Standup)** - 每天上午 9:30,15 分钟
+
 - 参与者: @pm, @architect, @ai-python, @mobile, @backend-ts, @data-infra
 - 内容:
   1. 昨天完成了什么任务?
@@ -867,8 +877,10 @@ Week 3-4: 继续前端开发和 IoT 集成(详见 tasks.md)
 ### 3. 代码同步策略
 
 **Master 分支同步规则**:
+
 - 每个 worktree 每天至少同步一次 master 分支更新
 - 命令:
+
   ```bash
   git fetch origin master:master
   git merge master
@@ -876,6 +888,7 @@ Week 3-4: 继续前端开发和 IoT 集成(详见 tasks.md)
   ```
 
 **冲突解决优先级**:
+
 1. 后端 API 契约变更: 优先级最高,立即通知前端 agents
 2. 数据库 Schema 变更: 需要 @architect 审查
 3. 环境配置变更: 需要更新所有 worktrees 的 `.env.example`
@@ -883,11 +896,13 @@ Week 3-4: 继续前端开发和 IoT 集成(详见 tasks.md)
 ### 4. API 契约管理
 
 **Swagger 文档锁定**:
+
 - 在前端开发前,由 @architect 审查并锁定后端 API 契约
 - 所有 API 变更必须先更新 Swagger 文档,再实现代码
 - 前端使用 Swagger 生成的 TypeScript 类型定义
 
 **Mock 服务器**:
+
 - 前端使用 MSW (Mock Service Worker) 进行开发
 - Mock 数据基于 Swagger 定义
 - 降低对后端的依赖
@@ -895,6 +910,7 @@ Week 3-4: 继续前端开发和 IoT 集成(详见 tasks.md)
 ### 5. 集成测试策略
 
 **每周集成测试**:
+
 - 时间: 每周五下午 3:00
 - 参与者: @pm, @architect, 所有开发 agents
 - 内容:
@@ -907,6 +923,7 @@ Week 3-4: 继续前端开发和 IoT 集成(详见 tasks.md)
 ### 6. 文档同步
 
 **文档更新规则**:
+
 - 每次任务完成后,立即更新 `tasks.md`
 - 每次代码改动合并后,立即更新 `CHANGELOG.md`
 - 每次 API 变更后,立即更新 Swagger 文档
@@ -921,11 +938,13 @@ Week 3-4: 继续前端开发和 IoT 集成(详见 tasks.md)
 **描述**: DeepSeek API 集成遇到问题,导致 AI 服务开发延期
 
 **影响范围**:
+
 - 任务 14-18 延期
 - 患者端任务 24(AI 健康科普)无法开始
 - 医生端任务 30(AI 辅助诊断)无法开始
 
 **应对措施**:
+
 1. **立即启动备选方案**: 使用 OpenAI API 作为备选
 2. **前端优先开发非 AI 功能**: 任务 20-23、25-26 先行
 3. **使用 Mock AI 响应**: 前端使用 Mock 数据进行开发
@@ -940,10 +959,12 @@ Week 3-4: 继续前端开发和 IoT 集成(详见 tasks.md)
 **描述**: 患者端和医生端同时开发,可能出现组件库或样式冲突
 
 **影响范围**:
+
 - 任务 19-27(患者端)
 - 任务 28-35(医生端)
 
 **应对措施**:
+
 1. **统一组件库**: 创建共享组件库(`shared-components`)
 2. **样式命名约定**: 使用 BEM 命名规范,避免 CSS 冲突
 3. **代码审查**: @architect 审查所有前端组件
@@ -958,9 +979,11 @@ Week 3-4: 继续前端开发和 IoT 集成(详见 tasks.md)
 **描述**: 后端 API 在前端开发过程中发生变更,导致前端需要重新适配
 
 **影响范围**:
+
 - 所有前端任务(任务 19-35)
 
 **应对措施**:
+
 1. **API 契约锁定**: 前端开发前,@architect 审查并锁定 API 契约
 2. **Swagger 文档版本控制**: 使用 Swagger 版本号,前端锁定特定版本
 3. **前端 Mock 数据**: 前端使用 MSW Mock 数据,降低对后端依赖
@@ -975,9 +998,11 @@ Week 3-4: 继续前端开发和 IoT 集成(详见 tasks.md)
 **描述**: 多个 worktrees 同时修改相同文件,导致 Git 冲突
 
 **影响范围**:
+
 - 所有 worktrees
 
 **应对措施**:
+
 1. **每日同步**: 每个 worktree 每天至少同步一次 master 分支
 2. **冲突预防**: 避免修改共享文件(如 `package.json`、`docker-compose.yml`)
 3. **冲突解决**: 遇到冲突立即通知 @pm,优先解决
@@ -992,9 +1017,11 @@ Week 3-4: 继续前端开发和 IoT 集成(详见 tasks.md)
 **描述**: 并行开发导致测试覆盖率下降,集成测试失败率高
 
 **影响范围**:
+
 - 所有开发任务
 
 **应对措施**:
+
 1. **强制测试要求**: 每个任务必须达到 70% 测试覆盖率才能合并
 2. **CI 自动检查**: GitHub Actions 自动运行测试,未通过不允许合并
 3. **每周集成测试**: 每周五进行全量集成测试
@@ -1058,6 +1085,7 @@ git push origin master
 ### 4. 任务阻塞处理
 
 **任务阻塞标注格式**:
+
 ```markdown
 - [!] 任务 14: DeepSeek API 集成 ⚠️ 阻塞中
   - 阻塞原因: DeepSeek API 返回 429 Too Many Requests 错误
@@ -1067,6 +1095,7 @@ git push origin master
 ```
 
 **阻塞预警机制**:
+
 - 阻塞时长 < 1 天: 标注并尝试技术解决
 - 阻塞时长 1-2 天: 向用户发送黄色预警 🟡
 - 阻塞时长 > 2 天: 向用户发送红色预警 🔴,提出替代方案
@@ -1078,6 +1107,7 @@ git push origin master
 ### Week 1 里程碑: AI 服务基础完成 + 前端项目初始化
 
 **交付物**:
+
 1. Python FastAPI 项目框架(任务 13)
 2. DeepSeek API 集成完成(任务 14)
 3. RAG 知识库实现完成(任务 15)
@@ -1085,6 +1115,7 @@ git push origin master
 5. React 医生/管理端项目初始化(任务 28)
 
 **验收标准**:
+
 - ✅ AI 服务能够正常启动并响应 API 请求
 - ✅ RAG 问答功能正常工作
 - ✅ 患者端微信小程序能够正常运行
@@ -1095,6 +1126,7 @@ git push origin master
 ### Week 2 里程碑: AI 服务完成 + 前端核心功能开发
 
 **交付物**:
+
 1. AI Agent 对话管理完成(任务 16)
 2. AI 辅助诊断完成(任务 17)
 3. AI 服务监控与优化完成(任务 18)
@@ -1103,6 +1135,7 @@ git push origin master
 6. 医生端患者管理(任务 29)
 
 **验收标准**:
+
 - ✅ AI Agent 能够协助用户完成打卡
 - ✅ AI 辅助诊断返回准确的健康分析
 - ✅ 患者端能够完成登录和健康档案管理
@@ -1123,6 +1156,7 @@ git push origin master
 7. **任务完成验收流程**: 从自检到合并 master 的完整流程
 
 **下一步行动**:
+
 1. **立即启动任务 13**: @ai-python 开始 Python FastAPI 项目初始化
 2. **立即启动任务 19**: @mobile 开始 Uni-app 项目初始化
 3. **立即启动任务 28**: @backend-ts 开始 React 项目初始化
@@ -1130,6 +1164,7 @@ git push origin master
 5. **周五集成测试**: 2025-12-27 下午 3:00 第一次集成测试
 
 **预期成果**:
+
 - Week 1 结束时,AI 服务基础完成,前端项目初始化完成
 - Week 2 结束时,AI 服务全部完成,前端核心功能开发完成
 - 总工期从 12 周缩短至 10 周,节省 2 周时间

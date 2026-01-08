@@ -62,9 +62,7 @@ class Settings(BaseSettings):
     disclaimer_text: str = "此建议仅供参考，请咨询专业医生。AI 生成内容不应替代专业医疗诊断和治疗。"
 
     # 日志配置
-    log_format: str = (
-        "<green>{time:YYYY-MM-DD HH:mm:ss}</green> | <level>{level: <8}</level> | <cyan>{name}</cyan>:<cyan>{line}</cyan> - <level>{message}</level>"
-    )
+    log_format: str = "<green>{time:YYYY-MM-DD HH:mm:ss}</green> | <level>{level: <8}</level> | <cyan>{name}</cyan>:<cyan>{line}</cyan> - <level>{message}</level>"
     log_level: str = "INFO"
     log_rotation: str = "10 MB"  # 日志文件轮转大小
     log_retention: str = "7 days"  # 日志保留时间

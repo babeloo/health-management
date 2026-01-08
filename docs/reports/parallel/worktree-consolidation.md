@@ -36,6 +36,7 @@
 **可合并性**: ✅ 可直接合并
 
 **完成内容**：
+
 - ✅ FastAPI 应用骨架
 - ✅ CORS 中间件配置
 - ✅ 健康检查端点
@@ -55,6 +56,7 @@
 **可合并性**: ⚠️ 需先提交未跟踪文件
 
 **已完成内容**：
+
 - ✅ Uni-app 项目创建（Vue 3 + TypeScript）
 - ✅ Pinia 状态管理 + 持久化
 - ✅ API 请求封装（JWT Token 拦截器）
@@ -62,6 +64,7 @@
 - ✅ 环境变量配置
 
 **待处理**：
+
 - ⚠️ `frontend-patient/src/api/` 目录未提交（可能是开发中的 API 接口）
 
 **对应 tasks.md 状态**: 任务 19 (Uni-app 项目初始化) 已标记完成 ✅
@@ -75,6 +78,7 @@
 **可合并性**: ❌ 需等待任务完成
 
 **已完成内容**（任务28）：
+
 - ✅ React + TypeScript 项目（Vite）
 - ✅ Ant Design Pro 框架
 - ✅ React Router v6 路由
@@ -84,12 +88,14 @@
 - ✅ 认证路由守卫
 
 **开发中内容**（任务29）：
+
 - 🚧 患者列表页面（PatientList.tsx）
 - 🚧 患者服务 API（patient.ts）
 - 🚧 患者类型定义（patient.ts）
 - 🚧 package.json 更新（可能添加了依赖）
 
 **对应 tasks.md 状态**:
+
 - 任务 28 (React 项目初始化) 未标记 ❌
 - 任务 29 (医生端患者管理) 未开始 ❌
 
@@ -149,6 +155,7 @@ git commit -m "docs: 同步 AI Service 初始化完成状态 (任务13)"
 ```
 
 **预期结果**：
+
 - feature/stage3-ai-service 合并到 master ✅
 - tasks.md 中任务13标记为完成 ✅
 - CHANGELOG.md 记录变更 ✅
@@ -182,6 +189,7 @@ git commit -m "docs: 记录患者端初始化变更 (任务19)"
 ```
 
 **预期结果**：
+
 - frontend-patient/src/api/ 文件已处理 ✅
 - feature/stage4-patient-app 合并到 master ✅
 - CHANGELOG.md 记录变更 ✅
@@ -193,6 +201,7 @@ git commit -m "docs: 记录患者端初始化变更 (任务19)"
 **当前状态**: 任务29（医生端患者管理）开发中
 
 **等待条件**：
+
 1. ✅ 患者列表页面开发完成（PatientList.tsx）
 2. ✅ 患者服务 API 实现完成（patient.ts）
 3. ✅ 单元测试通过
@@ -202,6 +211,7 @@ git commit -m "docs: 记录患者端初始化变更 (任务19)"
 **执行时机**：@backend-ts 报告任务29完成后
 
 **合并步骤**（待执行）：
+
 ```bash
 # 1. 验证任务完成
 cd D:/Code/ai-gen/intl-health-mgmt-parallel/intl-health-mgmt-admin
@@ -234,6 +244,7 @@ git commit -m "docs: 同步医生端开发完成状态 (任务28-29)"
 **影响**: 可自动解决（接受两边修改）
 
 **解决方案**：
+
 ```bash
 # 合并时使用策略
 git merge feature/stage5-admin-web --strategy-option=theirs pnpm-lock.yaml
@@ -251,6 +262,7 @@ git commit -m "chore: 更新依赖锁文件"
 **影响**: 需手动合并
 
 **解决方案**：
+
 ```bash
 # 合并前先提交主工作区的变更
 git add .claude/specs/chronic-disease-management/tasks.md
@@ -267,6 +279,7 @@ git merge feature/stage3-ai-service
 **影响**: 需手动合并
 
 **解决方案**：
+
 ```bash
 # 1. 合并时保留双方变更
 git merge feature/stage3-ai-service
@@ -337,6 +350,7 @@ git commit -m "chore: 合并 CHANGELOG 变更"
 **概率**: 低（10%）
 **影响**: 高
 **应对**：
+
 - ✅ 合并前创建备份分支（`git branch backup-master`）
 - ✅ 使用 `--no-ff` 强制创建合并提交（可回滚）
 - ✅ 合并后立即运行全量测试
@@ -346,6 +360,7 @@ git commit -m "chore: 合并 CHANGELOG 变更"
 **概率**: 中（30%）
 **影响**: 中
 **应对**：
+
 - ✅ 使用本报告作为检查清单
 - ✅ 每次合并后立即更新文档
 - ✅ 最终验收时对比 git log 和 CHANGELOG.md
@@ -355,6 +370,7 @@ git commit -m "chore: 合并 CHANGELOG 变更"
 **概率**: 中（40%）
 **影响**: 低（不阻塞其他任务）
 **应对**：
+
 - ✅ 先合并任务7、13、19（独立任务）
 - ✅ 定期跟进任务29进度
 - ✅ 如超期，考虑拆分任务（先合并任务28）

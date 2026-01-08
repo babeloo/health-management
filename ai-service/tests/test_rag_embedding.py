@@ -150,9 +150,7 @@ class RAGEmbeddingTester:
             # 验证结果
             has_results = len(results) > 0
 
-            self.print_result(
-                "语义检索", has_results, f"查询: '{query}' | 返回结果: {len(results)} 条"
-            )
+            self.print_result("语义检索", has_results, f"查询: '{query}' | 返回结果: {len(results)} 条")
 
             # 打印检索结果
             if has_results:

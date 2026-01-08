@@ -50,6 +50,7 @@ git worktree add ../worktrees/task38-docker -b feature/task38-docker
 ```
 
 **验证结果**:
+
 ```
 D:/Code/ai-gen/intl-health-mgmt-parallel/intl-health-mgmt                 ad60190 [master]
 D:/Code/ai-gen/intl-health-mgmt-parallel/worktrees/task24-ai-integration  ad60190 [feature/task24-ai-integration]
@@ -67,6 +68,7 @@ D:/Code/ai-gen/intl-health-mgmt-parallel/worktrees/task38-docker          ad6019
 **负责人**: @ai-python
 
 **验收标准**:
+
 - [ ] POST /api/v1/ai/chat 接口返回200
 - [ ] GET /api/v1/ai/conversations/:userId 接口返回200
 - [ ] POST /api/v1/ai/health-advice 接口返回200
@@ -74,6 +76,7 @@ D:/Code/ai-gen/intl-health-mgmt-parallel/worktrees/task38-docker          ad6019
 - [ ] 响应格式符合前端预期
 
 **执行步骤**:
+
 ```bash
 cd worktrees/task24-ai-integration/ai-service
 
@@ -95,6 +98,7 @@ curl -X POST http://localhost:8001/api/v1/ai/chat \
 **负责人**: @mobile
 
 **验收标准**:
+
 - [ ] 前端成功调用AI聊天接口
 - [ ] 对话历史正确加载
 - [ ] 健康建议接口正常工作
@@ -102,6 +106,7 @@ curl -X POST http://localhost:8001/api/v1/ai/chat \
 - [ ] 加载状态显示正确
 
 **执行步骤**:
+
 ```bash
 cd worktrees/task24-ai-integration/frontend-patient
 
@@ -124,6 +129,7 @@ pnpm dev:h5
 **负责人**: @mobile + @ai-python
 
 **验收标准**:
+
 - [ ] 完整对话流程测试通过
 - [ ] 科普内容推荐正常
 - [ ] AI Agent自然语言打卡测试通过
@@ -131,6 +137,7 @@ pnpm dev:h5
 - [ ] 性能指标达标（响应时间<2秒）
 
 **执行步骤**:
+
 ```bash
 # 1. 运行E2E测试套件
 cd worktrees/task24-ai-integration/frontend-patient
@@ -154,6 +161,7 @@ pnpm test:e2e
 **负责人**: @data-infra
 
 **验收标准**:
+
 - [ ] 4个Dockerfile创建完成
 - [ ] 多阶段构建优化镜像大小
 - [ ] 健康检查配置正确
@@ -161,6 +169,7 @@ pnpm test:e2e
 - [ ] 镜像构建成功
 
 **执行步骤**:
+
 ```bash
 cd worktrees/task38-docker
 
@@ -199,6 +208,7 @@ docker build -t chronic-web:latest ./frontend-web
 **负责人**: @data-infra
 
 **验收标准**:
+
 - [ ] 所有服务定义完整
 - [ ] 服务依赖关系正确
 - [ ] 网络配置合理
@@ -206,6 +216,7 @@ docker build -t chronic-web:latest ./frontend-web
 - [ ] 环境变量配置完整
 
 **执行步骤**:
+
 ```bash
 cd worktrees/task38-docker
 
@@ -243,6 +254,7 @@ cd worktrees/task38-docker
 **负责人**: @data-infra
 
 **验收标准**:
+
 - [ ] 所有容器启动成功
 - [ ] 服务间通信正常
 - [ ] 健康检查通过
@@ -250,6 +262,7 @@ cd worktrees/task38-docker
 - [ ] 性能指标达标
 
 **执行步骤**:
+
 ```bash
 cd worktrees/task38-docker
 
@@ -465,12 +478,14 @@ git worktree list
 本次并行开发计划充分利用了Git Worktree的优势，实现了两个独立任务的并行推进。通过严格的文件路径隔离和清晰的责任分工，最大程度降低了代码冲突风险，预计可节省1.5天的开发时间。
 
 **关键成功因素**:
+
 1. 技术领域完全独立
 2. 无代码冲突风险
 3. 清晰的验收标准
 4. 完善的风险管理
 
 **下一步行动**:
+
 1. @ai-python 和 @mobile 开始任务24开发
 2. @data-infra 开始任务38开发
 3. @pm 每日跟踪进度并更新 `tasks.md`

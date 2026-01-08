@@ -1,6 +1,7 @@
 # 任务22：患者端健康打卡功能实现总结
 
 ## 任务信息
+
 - **任务编号**: 22
 - **任务名称**: 患者端健康打卡
 - **负责人**: @mobile
@@ -13,12 +14,14 @@
 ### 1. API 接口和类型定义 (`src/api/checkin.ts`)
 
 **核心功能**:
+
 - 定义了6种打卡类型: 血压、血糖、体重、用药、运动、饮食
 - 完整的 TypeScript 类型定义
 - 积分规则配置
 - RESTful API 封装
 
 **关键类型**:
+
 ```typescript
 export type CheckInType = 'blood_pressure' | 'blood_glucose' | 'weight' | 'medication' | 'exercise' | 'diet'
 export interface CheckInRecord { ... }
@@ -27,6 +30,7 @@ export interface CheckInCalendar { ... }
 ```
 
 **积分规则**:
+
 - 血压打卡: +10分
 - 血糖打卡: +10分
 - 体重打卡: +5分
@@ -38,6 +42,7 @@ export interface CheckInCalendar { ... }
 ### 2. 打卡首页 (`src/pages/checkin/index.vue`)
 
 **核心功能**:
+
 - 今日打卡状态展示(已打卡/未打卡)
 - 连续打卡天数和积分统计
 - 6种打卡类型快速入口(网格布局)
@@ -45,6 +50,7 @@ export interface CheckInCalendar { ... }
 - 快捷导航(历史、提醒、积分规则)
 
 **UI 特性**:
+
 - 响应式设计(使用 rpx 单位)
 - 渐变色顶部统计卡片
 - 打卡状态徽章(已打卡显示✓)
@@ -53,6 +59,7 @@ export interface CheckInCalendar { ... }
 ### 3. 血压打卡页面 (`src/pages/checkin/blood-pressure.vue`)
 
 **核心功能**:
+
 - 收缩压输入(80-200 mmHg,实时校验)
 - 舒张压输入(40-120 mmHg,实时校验)
 - 心率输入(可选)
@@ -62,11 +69,13 @@ export interface CheckInCalendar { ... }
 - 血压评估(偏低/正常/偏高/过高)
 
 **数据校验**:
+
 - 输入范围校验
 - 必填字段校验
 - 友好的错误提示
 
 **血压评估逻辑**:
+
 ```typescript
 收缩压 < 90 && 舒张压 < 60  → 血压偏低
 收缩压 < 120 && 舒张压 < 80 → 血压正常
@@ -77,6 +86,7 @@ export interface CheckInCalendar { ... }
 ### 4. 血糖打卡页面 (`src/pages/checkin/blood-glucose.vue`)
 
 **核心功能**:
+
 - 血糖值输入(2-30 mmol/L)
 - 测量时间选择器
 - 测量状态(空腹/餐后2小时/随机)
@@ -84,6 +94,7 @@ export interface CheckInCalendar { ... }
 - 血糖评估(根据测量状态判断)
 
 **血糖评估逻辑**:
+
 - **空腹血糖**:
   - < 3.9: 偏低
   - 3.9-6.1: 正常
@@ -98,6 +109,7 @@ export interface CheckInCalendar { ... }
 ### 5. 体重打卡页面 (`src/pages/checkin/weight.vue`)
 
 **核心功能**:
+
 - 体重输入(30-200 kg)
 - 自动 BMI 计算
 - BMI 评估(偏轻/正常/超重/肥胖)
@@ -105,11 +117,13 @@ export interface CheckInCalendar { ... }
 - 体重趋势图(近7天)
 
 **BMI 计算**:
+
 ```typescript
 BMI = 体重(kg) / 身高(m)²
 ```
 
 **BMI 评估标准**:
+
 - < 18.5: 体重偏轻
 - 18.5-24: 体重正常
 - 24-28: 体重超重
@@ -118,6 +132,7 @@ BMI = 体重(kg) / 身高(m)²
 ### 6. 用药打卡页面 (`src/pages/checkin/medication.vue`)
 
 **核心功能**:
+
 - 从健康档案加载用药列表
 - 选择要打卡的药品
 - 服药时间选择
@@ -126,12 +141,14 @@ BMI = 体重(kg) / 身高(m)²
 - 不良反应记录
 
 **智能提示**:
+
 - 无用药记录时引导用户添加
 - 显示药品剂量和频率
 
 ### 7. 运动打卡页面 (`src/pages/checkin/exercise.vue`)
 
 **核心功能**:
+
 - 运动类型选择(步行/慢跑/游泳/瑜伽/骑行/其他)
 - 运动时长输入(分钟)
 - 运动强度选择(轻度/中度/高强度)
@@ -139,6 +156,7 @@ BMI = 体重(kg) / 身高(m)²
 - 开始时间选择
 
 **卡路里计算**:
+
 ```typescript
 消耗卡路里 = 时长(分钟) × 系数
 系数根据运动类型和强度确定
@@ -148,6 +166,7 @@ BMI = 体重(kg) / 身高(m)²
 ### 8. 饮食打卡页面 (`src/pages/checkin/diet.vue`)
 
 **核心功能**:
+
 - 餐次类型选择(早餐/午餐/晚餐/加餐)
 - 饮食类型选择(清淡/正常/油腻)
 - 食物拍照上传(最多3张)
@@ -155,6 +174,7 @@ BMI = 体重(kg) / 身高(m)²
 - 用餐时间选择
 
 **图片上传**:
+
 - 支持相机拍照和相册选择
 - 自动压缩图片
 - 上传到后端存储
@@ -162,6 +182,7 @@ BMI = 体重(kg) / 身高(m)²
 ### 9. 打卡历史页面 (`src/pages/checkin/history.vue`)
 
 **核心功能**:
+
 - 按类型筛选记录
 - 按日期范围筛选
 - 分页加载(每页20条)
@@ -169,6 +190,7 @@ BMI = 体重(kg) / 身高(m)²
 - 下拉加载更多
 
 **数据展示**:
+
 - 不同类型打卡记录格式化显示
 - 相对时间显示(今天/昨天/日期)
 - 打卡类型图标标识
@@ -176,6 +198,7 @@ BMI = 体重(kg) / 身高(m)²
 ### 10. 打卡提醒设置页面 (`src/pages/checkin/reminder.vue`)
 
 **核心功能**:
+
 - 血压打卡提醒开关
 - 血糖打卡提醒开关
 - 用药提醒开关
@@ -184,18 +207,21 @@ BMI = 体重(kg) / 身高(m)²
 - 本地存储提醒配置
 
 **TODO**:
+
 - 集成系统通知 API
 - 后端提醒服务
 
 ### 11. 积分规则说明页面 (`src/pages/checkin/points.vue`)
 
 **核心功能**:
+
 - 基础积分规则展示
 - 连续打卡奖励说明
 - 积分用途介绍
 - 温馨提示
 
 **积分用途**:
+
 - 参与排行榜竞争
 - 解锁健康功能
 - 兑换礼品(即将上线)
@@ -204,28 +230,33 @@ BMI = 体重(kg) / 身高(m)²
 ## 技术亮点
 
 ### 1. 跨平台兼容性
+
 - 使用 Vue 3 Composition API (setup 语法)
 - 兼容微信小程序、H5、App
 - 响应式单位 rpx (适配不同屏幕)
 
 ### 2. 数据校验
+
 - 前端输入范围校验
 - 必填字段校验
 - 友好的错误提示
 
 ### 3. 用户体验优化
+
 - 实时数据评估反馈
 - 默认时间自动填充为当前时间
 - 打卡成功后自动返回
 - Loading 状态提示
 
 ### 4. 样式设计
+
 - 渐变色主题
 - 卡片式布局
 - 触摸友好的按钮(≥44rpx)
 - 统一的视觉风格
 
 ### 5. 性能优化
+
 - 图片上传压缩
 - 分页加载历史记录
 - 避免频繁的数据更新
@@ -256,6 +287,7 @@ frontend-patient/
 ## 路由配置
 
 已在 `src/pages.json` 中注册所有打卡页面路由:
+
 ```json
 {
   "path": "pages/checkin/index",
@@ -279,27 +311,33 @@ frontend-patient/
 ## 注意事项
 
 ### 1. API 依赖
+
 - 所有页面依赖后端打卡 API (`/api/v1/check-ins`)
 - 确保后端 API 已实现并可访问
 
 ### 2. 图片上传
+
 - 饮食打卡依赖图片上传 API (`/api/v1/upload/checkin-image`)
 - 需要配置对象存储(MinIO/OSS)
 
 ### 3. 用药打卡
+
 - 依赖健康档案中的用药记录
 - 用户需要先添加用药记录才能进行用药打卡
 
 ### 4. 体重打卡
+
 - BMI 计算需要从健康档案获取用户身高
 - 用户需要先完善基本信息
 
 ### 5. 测试建议
+
 - 在微信开发者工具中测试小程序兼容性
 - 在浏览器中测试 H5 版本
 - 在真机上测试触摸交互和图片上传
 
 ### 6. 后续优化
+
 - [ ] 集成 ECharts 绘制体重趋势图
 - [ ] 实现系统通知提醒
 - [ ] 添加打卡数据导出功能
@@ -312,11 +350,12 @@ frontend-patient/
 - **需求文档**: `.claude/specs/chronic-disease-management/requirements.md` #4
 - **设计文档**: `.claude/specs/chronic-disease-management/design.md` 第 7.3 章
 - **任务计划**: `docs/reports/parallel/task-groups-execution-plan.md` 第 3.5 节
-- **Uni-app 文档**: https://uniapp.dcloud.net.cn
+- **Uni-app 文档**: <https://uniapp.dcloud.net.cn>
 
 ## 下一步工作
 
 1. 启动开发服务器测试功能:
+
    ```bash
    cd frontend-patient
    pnpm dev:mp-weixin  # 微信小程序
@@ -332,6 +371,7 @@ frontend-patient/
 ## 提交信息
 
 建议的 Git commit 消息:
+
 ```
 feat: 实现患者端健康打卡功能 (#4)
 

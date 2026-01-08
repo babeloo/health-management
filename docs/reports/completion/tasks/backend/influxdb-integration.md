@@ -542,8 +542,8 @@ from(bucket: "health-data")
 
 ### 代码仓库
 
-- 主分支：https://github.com/your-org/intl-health-mgmt/tree/main
-- 功能分支：https://github.com/your-org/intl-health-mgmt/tree/feature/influxdb-integration
+- 主分支：<https://github.com/your-org/intl-health-mgmt/tree/main>
+- 功能分支：<https://github.com/your-org/intl-health-mgmt/tree/feature/influxdb-integration>
 
 ### 文档
 
@@ -559,7 +559,7 @@ from(bucket: "health-data")
 
 ### 部署
 
-- Staging 环境：https://staging.vakyi.com
+- Staging 环境：<https://staging.vakyi.com>
 - Production 环境：（待部署）
 
 ---
